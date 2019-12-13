@@ -1,5 +1,5 @@
 
-public class LipidAdduct:
+class LipidAdduct:
 
     def __init__(self):
         lipid = None

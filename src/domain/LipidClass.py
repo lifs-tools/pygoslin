@@ -1,4 +1,4 @@
-
+from .LipidCategory import LipidCategory
 from enum import Enum
 
 class LipidClass(Enum):

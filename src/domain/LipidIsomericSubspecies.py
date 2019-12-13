@@ -1,4 +1,4 @@
-
+from .LipidStructuralSubspecies import LipidStructuralSubspecies
 
 class LipidIsomericSubspecies(LipidStructuralSubspecies):
 
@@ -9,7 +9,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
         num_hydroxyl = 0
         num_double_bonds = 0
         lipid_FA_bond_type = LipidFaBondType.UNDEFINED
-        if fa.length > 0
+        if fa.length > 0:
             lipid_FA_bond_type = LipidFaBondType.ESTER
         
         for fas in fa:
@@ -22,10 +22,10 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
                 num_hydroxyl += fas.num_hydroxyl
                 num_double_bonds += fas.num_double_bonds
                 
-                if lipid_FA_bond_type == LipidFaBondType.ESTER and (fas.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL || fas.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL):
+                if lipid_FA_bond_type and LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL):
                     lipid_FA_bond_type = fas.lipid_FA_bond_type
                     
-                elif lipid_FA_bond_type != LipidFaBondType.ESTER && (fas.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL || fas.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL):
+                elif lipid_FA_bond_type != LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL):
                     raise ConstraintViolationException("Only one FA can define an ether bond to the head group! Tried to add %s over existing %s" % (fas.lipid_FA_bond_type, lipid_FA_bond_type))
                 
         super().info = LipidSpeciesInfo(LipidLevel.ISOMERIC_SUBSPECIES, num_carbon, num_hydroxyl, num_double_bonds, lipid_FA_bond_type)
@@ -35,7 +35,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
     def build_lipid_isomeric_substructure_name(self):
         fa_strings = []
         for fa_key in self.fa:
-            fatty_acid = fa[fa_key]:
+            fatty_acid = fa[fa_key]
             num_carbon = 0
             num_hydroxyl = 0
             num_double_bonds = fatty_acid.num_double_bonds
