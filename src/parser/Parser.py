@@ -29,7 +29,7 @@ class DPNode:
         
 
 class TreeNode:
-{
+
     def __init__(self, _rule, _fireEvent):
         self.ruleIndex = _rule
         self.left = null
@@ -63,51 +63,52 @@ class Bitfield:
         s = 1 + ((l + 1) >> 6)
         self.field = [0] * l
         self.superfield = [0] * s
-    }
+
     
     
     def ulong(num):
         return num & ((1 << 64) - 1)
     
+    
     def set(self, pos):
-        self.field[pos >> 6] |= ulong(1 << (pos & 63))
-        self.superfield[pos >> 12] |= ulong(1 << ((pos >> 6) & 63))
-    }
+        self.field[pos >> 6] |= Bitfield.ulong(1 << (pos & 63))
+        self.superfield[pos >> 12] |= Bitfield.ulong(1 << ((pos >> 6) & 63))
     
     
-    def isSet(self, pos):
+    
+    def is_set(self, pos):
         return ((self.field[pos >> 6] >> (pos & 63)) & 1) == 1
     
     
-    def isNotSet(self, pos):
+    def is_not_set(self, pos):
         return ((self.field[pos >> 6] >> (pos & 63)) & 1) == 0
     
     
-    def getBitPositions(self):
+    def get_bit_positions(self):
         spre = 0
         for cell in self.superfield:
             sv = cell
             while sv != 0:
                 # algorithm for getting least significant bit position
-                sv1 = ulong(sv & -sv)
-                pos = spre + positions[ulong(sv1 * multiplicator) >> 58];
+                sv1 = Bitfield.ulong(sv & -sv)
+                pos = spre + Bitfield.positions[Bitfield.ulong(sv1 * Bitfield.multiplicator) >> 58];
                 
-                ulong v = self.field[pos]
+                v = self.field[pos]
                 while v != 0:
                     # algorithm for getting least significant bit position
-                    v1 = ulong(v & -v)
-                    yield (pos << 6) + positions[ulong(ulong(v1 * multiplicator) >> 58)]
+                    v1 = Bitfield.ulong(v & -v)
+                    yield (pos << 6) + Bitfield.positions[Bitfield.ulong(Bitfield.ulong(v1 * Bitfield.multiplicator) >> 58)]
                     v &= v - 1
                 
                 sv &= sv - 1
             spre += 64
     
     
-    def getPositions(self, x):
+    def get_positions(self, x):
         while x != 0:
             # algorithm for getting least significant bit position
-            v1 = ulong(x & -x)
-            yield positions[ulong(ulong(v1 * multiplicator) >> 58)]
+            v1 = Bitfield.ulong(x & -x)
+            yield positions[Bitfield.ulong(Bitfield.ulong(v1 * multiplicator) >> 58)]
             x &= x - 1
         
         
@@ -117,7 +118,7 @@ class Bitfield:
 class Parser:
     
     SHIFT = 32
-    MASK = (1L << SHIFT) - 1
+    MASK = (1 << SHIFT) - 1
     RULE_ASSIGNMENT = ':'
     RULE_SEPARATOR = '|'
     RULE_TERMINAL = ';'
@@ -127,42 +128,55 @@ class Parser:
     START_RULE = 2
     
     
+    
+    
+    def get_next_free_rule_index(self):
+        if self.next_free_rule_index <= Parser.MASK:
+            n = self.next_free_rule_index
+            self.next_free_rule_index += 1
+            return n
+        raise Exception("Error: grammar is too big.")
+    
+    
+    
+    
+    
     def __init__(self, _parserEventHandler, grammar_filename, _quote = '"'):
-        self.next_free_rule_index = START_RULE
+        self.next_free_rule_index = Parser.START_RULE
         self.TtoNT = {}
         self.NTtoNT = {}
         self.NTtoRule = {}
         self.quote = _quote
-        self.parserEventHandler = _parserEventHandler
+        self.parser_event_handler = _parserEventHandler
         self.parse_tree = None
-        self.wordInGrammar = False
+        self.word_in_grammar = False
         self.grammar_name = ""
         self.used_eof = False
         
         if path.exists(grammar_filename):
             # interpret the rules and create the structure for parsing
-            rules = Parser.extract_text_based_rules(grammar_filename, quote)
-            self.grammar_name = split_string(rules[0], ' ', quote)[1]
+            rules = Parser.extract_text_based_rules(grammar_filename, self.quote)
+            self.grammar_name = Parser.split_string(rules[0], ' ', self.quote)[1]
             del rules[0]
-            ruleToNT = {EOF_RULE_NAME: EOF_RULE}
-            self.TtoNT[EOF_SIGN] = set(EOF_RULE)
+            ruleToNT = {Parser.EOF_RULE_NAME: Parser.EOF_RULE}
+            self.TtoNT[Parser.EOF_SIGN] = set([Parser.EOF_RULE])
             for rule_line in rules:
                 tokens_level_1 = []
-                for t in split_string(rule_line, RULE_ASSIGNMENT, quote): tokens_level_1.append(t.strip(' '))
+                for t in Parser.split_string(rule_line, Parser.RULE_ASSIGNMENT, self.quote): tokens_level_1.append(t.strip(' '))
                 if len(tokens_level_1) != 2: raise Exception("Error: corrupted token in grammar rule: '%s'" % rule_line);
                 
-                if len(split_string(tokens_level_1[0], ' ', quote)) > 1:
+                if len(Parser.split_string(tokens_level_1[0], ' ', self.quote)) > 1:
                     raise Exception("Error: several rule names on left hand side in grammar rule: '%s'" % rule_line);
-                }
-
-                string rule = tokens_level_1[0]
                 
-                if rule ==  EOF_RULE_NAME:
+
+                rule = tokens_level_1[0]
+                
+                if rule ==  Parser.EOF_RULE_NAME:
                     raise Exception("Error: rule name is not allowed to be called EOF")
                 
-                products = [p.strip(' ') for p in split_string(tokens_level_1[1], RULE_SEPARATOR, quote)]
+                products = [p.strip(' ') for p in Parser.split_string(tokens_level_1[1], Parser.RULE_SEPARATOR, self.quote)]
                 
-                if rule not in ruleToNT: ruleToNT[rule] = get_next_free_rule_index()
+                if rule not in ruleToNT: ruleToNT[rule] = self.get_next_free_rule_index()
                 new_rule_index = ruleToNT[rule]
                 
                 if new_rule_index not in self.NTtoRule: self.NTtoRule[new_rule_index] = rule
@@ -170,23 +184,23 @@ class Parser:
                 
                 for product in products:
                     non_terminals, non_terminal_rules = [], []
-                    for NT in split_string(product, ' ', quote):
+                    for NT in Parser.split_string(product, ' ', self.quote):
                         stripedNT = NT.strip(' ')
-                        if is_terminal(stripedNT, quote): stripedNT = de_escape(stripedNT, quote)
+                        if Parser.is_terminal(stripedNT, self.quote): stripedNT = Parser.de_escape(stripedNT, self.quote)
                         non_terminals.append(stripedNT)
-                        usedEOF |= stripedNT == EOF_RULE_NAME
+                        self.used_eof |= stripedNT == Parser.EOF_RULE_NAME
                         
                     
                     NTFirst = non_terminals[0]
-                    if len(non_terminals) > 1 or not is_terminal(NTFirst, quote) or len(NTFirst) != 3:
+                    if len(non_terminals) > 1 or not Parser.is_terminal(NTFirst, self.quote) or len(NTFirst) != 3:
                         for non_terminal in non_terminals:
                             
-                            if is_terminal(non_terminal, quote):
-                                non_terminal_rules.append(add_terminal(non_terminal))
+                            if Parser.is_terminal(non_terminal, self.quote):
+                                non_terminal_rules.append(self.add_terminal(non_terminal))
                                 
                             else:
                                 if non_terminal not in ruleToNT:
-                                    ruleToNT[non_terminal] = get_next_free_rule_index()
+                                    ruleToNT[non_terminal] = self.get_next_free_rule_index()
                                 non_terminal_rules.append(ruleToNT[non_terminal])
                                 
                     else:
@@ -200,10 +214,10 @@ class Parser:
                         rule_index_2 = non_terminal_rules.pop()
                         rule_index_1 = non_terminal_rules.pop()
                         
-                        key = compute_rule_key(rule_index_1, rule_index_2)
-                        next_index = get_next_free_rule_index()
+                        key = Parser.compute_rule_key(rule_index_1, rule_index_2)
+                        next_index = self.get_next_free_rule_index()
                         if key not in self.NTtoNT: self.NTtoNT[key] = set()
-                        self.NTtoNT[key].Add(nextIndex)
+                        self.NTtoNT[key].add(next_index)
                         non_terminal_rules.append(next_index)
                     
                         
@@ -211,7 +225,7 @@ class Parser:
                     if len(non_terminal_rules) == 2:
                         rule_index_1 = non_terminal_rules.pop()
                         rule_index_2 = non_terminal_rules.pop()
-                        key = compute_rule_key(rule_index_1, rule_index_2)
+                        key = Parser.compute_rule_key(rule_index_1, rule_index_2)
                         if key not in self.NTtoNT: self.NTtoNT[key] = set()
                         self.NTtoNT[key].add(new_rule_index)
                     
@@ -221,14 +235,14 @@ class Parser:
                         if rule_index_1 == new_rule_index:
                             raise Exception("Error: corrupted token in grammar: rule '%s' is not allowed to refer soleley to itself." % rule)
                         
-                        if rule_index1 not in self.NTtoNT: self.NTtoNT[rule_index_1] = set()
+                        if rule_index_1 not in self.NTtoNT: self.NTtoNT[rule_index_1] = set()
                         self.NTtoNT[rule_index_1].add(new_rule_index)
             
             # adding all rule names into the event handler
             for rule_name in ruleToNT:
-                parser_event_handler.rule_names.add(ruleName)
+                self.parser_event_handler.rule_names.add(rule_name)
                 
-            self.parser_event_handler.parser = this
+            self.parser_event_handler.parser = self
             self.parser_event_handler.sanity_check()
             
         else:
@@ -236,22 +250,22 @@ class Parser:
         
         
         
-        keys = set(TtoNT.keys())
+        keys = set(self.TtoNT.keys())
         for c in keys:
-            rules = set(TtoNT[c])
-            TtoNT[c].clear()
-            for  rule in rules:
-                for p in collect_backwards(rule):
-                    
-                    key = compute_rule_key(p, rule)
-                    TtoNT[c].add(key)
-        
-        
-        keysNT = set(NTtoNT.Keys)
-        for r in keysNT:
-            rules = set(NTtoNT[r])
+            rules = set(self.TtoNT[c])
+            self.TtoNT[c].clear()
             for rule in rules:
-                for p in collect_backwards(rule): NTtoNT[r].add(p)
+                for p in self.collect_one_backwards(rule):
+                    
+                    key = Parser.compute_rule_key(p, rule)
+                    self.TtoNT[c].add(key)
+        
+        
+        keysNT = set(self.NTtoNT.keys())
+        for r in keysNT:
+            rules = set(self.NTtoNT[r])
+            for rule in rules:
+                for p in self.collect_one_backwards(rule): self.NTtoNT[r].add(p)
     
     
     
@@ -270,8 +284,8 @@ class Parser:
         # the other contexts have to be ignored.
         sb = []
         current_context = Context.NoContext
-        current_position = 0;
-        int last_escaped_backslash = -1;
+        current_position = 0
+        last_escaped_backslash = -1
         for i in range (grammar_length - 1):
             match = MatchWords.NoMatch
             
@@ -287,13 +301,13 @@ class Parser:
             
             if match != MatchWords.NoMatch:
                 
-                if current_context == NoContext:
+                if current_context == Context.NoContext:
                     if match == MatchWords.LongCommentStart:
-                        sb.append(grammar[current_position, i])
+                        sb.append(grammar[current_position : i])
                         current_context = Context.InLongComment
                         
                     elif match == MatchWords.LineCommentStart:
-                        sb.append(grammar[current_position, i])
+                        sb.append(grammar[current_position : i])
                         current_context = Context.InLineComment
                         
                     elif match == MatchWords.Quote:
@@ -317,25 +331,25 @@ class Parser:
                     
                     
         if current_context == Context.NoContext:
-            sb.append(grammar[current_position, grammar_length])
+            sb.append(grammar[current_position : grammar_length])
             
         else:
             raise Exception("Error: corrupted grammar '%s', ends either in comment or quote" % grammar_filename)
         
         grammar = "".join(sb).replace("\r\n", "").replace("\n", "").replace("\r", "").strip(" ");
-        if grammar[-1] != RULE_TERMINAL:
+        if grammar[-1] != Parser.RULE_TERMINAL:
             raise Exception("Error: corrupted grammar'%s', last rule has no termininating sign, was: '%s'" % (grammar_filename, grammar[-1]))
         
-        rules = split_string(grammar, RULE_TERMINAL, quote)
+        rules = Parser.split_string(grammar, Parser.RULE_TERMINAL, quote)
         
         if len(rules) < 1:
             raise Exception("Error: corrupted grammar '%s', grammar is empty" % grammar_filename)
         
-        grammar_name_rule = split_string(rules[0], ' ', quote)
+        grammar_name_rule = Parser.split_string(rules[0], ' ', quote)
         if grammar_name_rule[0] != "grammar":
             raise Exception("Error: first rule must start with the keyword 'grammar'")
         
-        elif len(grammarNameRule) != 2:
+        elif len(grammar_name_rule) != 2:
             raise Exception("Error: incorrect first rule")
         
         return rules
@@ -344,26 +358,16 @@ class Parser:
     
     
     
-    def get_next_free_rule_index(self):
-        if self.next_free_rule_index <= MASK:
-            n = selfnext_free_rule_index
-            self.next_free_rule_index += 1
-            return n
-        raise Exception("Error: grammar is too big.")
-    
-    
-    
     
     def compute_rule_key(ruleIndex1, ruleIndex2):
-        return (ruleIndex1 << SHIFT) | ruleIndex2;
+        return (ruleIndex1 << Parser.SHIFT) | ruleIndex2
     
     
     
     
     
     
-    def split_string(text, separator, quote)
-    {
+    def split_string(text, separator, quote):
         in_quote = False
         tokens = []
         sb = []
@@ -378,15 +382,15 @@ class Parser:
                         tokens.append("".join(sb))
                     sb = []
                 else:
-                    if c == quote: in_quote = !in_quote
+                    if c == quote: in_quote = not in_quote
                     sb.append(c)
                     
             else:
-                if :c == '\\' and last_char == '\\' and !last_escaped_backslash:
+                if c == '\\' and last_char == '\\' and not last_escaped_backslash:
                     escaped_backslash = True
                     
-                elif c == quote and !(last_char == '\\' and !last_escaped_backslash):
-                    in_quote = !in_quote
+                elif c == quote and not (last_char == '\\' and not last_escaped_backslash):
+                    in_quote = not in_quote
                 sb.append(c)
             last_escaped_backslash = escaped_backslash
             last_char = c
@@ -400,65 +404,60 @@ class Parser:
     
     
     # checking if string is terminal
-    def is_terminal(productToken, quote:
-        return productToken[0] == quote and productToken[-1] == quote and len(productToken) > 2
+    def is_terminal(product_token, quote):
+        return product_token[0] == quote and product_token[-1] == quote and len(product_token) > 2
     
     
     
     
     def de_escape(text, quote):
         # remove the escape chars
-        StringBuilder sb = new StringBuilder();
-        bool lastEscapeChar = false;
-        foreach (char c in text)
-        {
-            bool escapeChar = false;
+        sb = []
+        last_escape_char = False
+        for c in text:
+            escape_char = False
             
-            if (c != '\\')
-            {
-                sb.Append(c);
-            }
-            else
-            {
-                if (!lastEscapeChar) escapeChar = true;
-                else sb.Append(c);
-            } 
+            if c != '\\':
+                sb.append(c)
+                
+            else:
+                if not last_escape_char: escape_char = True
+                else: sb.append(c)
             
-            lastEscapeChar = escapeChar;
-        }
-        return sb.ToString();
-    }
+            last_escape_char = escape_char
+        
+        return "".join(sb)
     
     
     
     # splitting the whole terminal in a tree structure where characters of terminal are the leafs and the inner nodes are added non terminal rules
     def add_terminal(self, text):
-        terminalRules = []
-        for i in range(1; text.Length - 1):
+        terminal_rules = []
+        for i in range(1, len(text) - 1):
             c = text[i]
-            if c not in TtoNT: TtoNT[c] = set()
-            next_index = get_next_free_rule_index()
+            if c not in self.TtoNT: self.TtoNT[c] = set()
+            next_index = self.get_next_free_rule_index()
             self.TtoNT[c].add(next_index)
-            terminalRules.append(next_index)
-        
-        while len(terminalRules) > 1:
-            rule_index_2 = terminalRules.pop()
-            rule_index_1 = terminalRules.pop()
-            
-            next_index = get_next_free_rule_index()
-            
-            key = compute_rule_key(rule_index_1, rule_index_2)
-            if key not in self.NTtoNT: NTtoNT[key] = set()
-            NTtoNT[key].add(next_index)
             terminal_rules.append(next_index)
         
-        return terminalRules[0]
+        while len(terminal_rules) > 1:
+            rule_index_2 = terminal_rules.pop()
+            rule_index_1 = terminal_rules.pop()
+            
+            next_index = self.get_next_free_rule_index()
+            
+            key = Parser.compute_rule_key(rule_index_1, rule_index_2)
+            if key not in self.NTtoNT: self.NTtoNT[key] = set()
+            self.NTtoNT[key].add(next_index)
+            terminal_rules.append(next_index)
+        
+        return terminal_rules[0]
     
     
     
     
     # expanding singleton rules, e.g. S -> A, A -> B, B -> C
-    def collect_backwards(self, rule_index):
+    def collect_one_backwards(self, rule_index):
     
         collection = [rule_index]
         i = 0
@@ -466,7 +465,7 @@ class Parser:
             current_index = collection[i]
             if current_index in self.NTtoNT:
                 
-                for previous_index in self.NTtoNT[currentIndex]: collection.append(previous_index)
+                for previous_index in self.NTtoNT[current_index]: collection.append(previous_index)
             i += 1
             if i >= len(collection): break
         
@@ -500,16 +499,16 @@ class Parser:
     def raise_events(self, node = None):
         if node != None:
             node_rule_name = self.NTtoRule[node.rule_index] if node.fire_event else ""
-            if (node.fire_event) self.parser_event_handler.handle_event(node_rule_name + "_pre_event", node)
+            if node.fire_event: self.parser_event_handler.handle_event(node_rule_name + "_pre_event", node)
             
             if node.left != None: # node.terminal is != null when node is leaf
                 raise_events(node.left)
                 if node.right != None: raise_events(node.right)
                 
-            if (node.fire_event) self.parser_event_handler.handle_event(node_rule_name + "_post_event", node)
+            if node.fire_event: self.parser_event_handler.handle_event(node_rule_name + "_post_event", node)
             
         else:
-            if (self.parse_tree != null) raise_events(self.parse_tree)
+            if self.parse_tree != None: raise_events(self.parse_tree)
     
     
 
@@ -527,7 +526,7 @@ class Parser:
         
         if dp_node.left != None: # None => leaf
             node.left = TreeNode(dp_node.rule_index_1, dp_node.rule_index_1 in self.NTtoRule)
-            node.right = new TreeNode(dp_node.rule_index_2, dp_node.rule_index_2 in self.NTtoRule)
+            node.right = TreeNode(dp_node.rule_index_2, dp_node.rule_index_2 in self.NTtoRule)
             fillTree(node.left, dp_node.left)
             fillTree(node.right, dp_node.right)
             
@@ -541,9 +540,9 @@ class Parser:
     
     # re-implementation of Cocke-Younger-Kasami algorithm
     def parse(self, text_to_parse):
-        if usedEOF: text_to_parse += EOF_SIGN
+        if self.used_eof: text_to_parse += Parser.EOF_SIGN
         
-        parse_regular(text_to_parse)
+        self.parse_regular(text_to_parse)
         
         
         
@@ -551,54 +550,54 @@ class Parser:
     def parse_regular(self, text_to_parse):
         self.wordInGrammar = False
         parse_tree = None
-        n = len(text_to_parse.Length;
+        n = len(text_to_parse)
         # dp stands for dynamic programming, nothing else
         dp_table = [None] * n;
-        # Ks is a lookup, which fields in the dpTable are filled
+        # Ks is a lookup, which fields in the dp_table are filled
         Ks = [None] * n            
         
         for i in range(n):
-            dpTable[i] = [None] * (n - i)
+            dp_table[i] = [None] * (n - i)
             Ks[i] = Bitfield(n - 1)
-            for j in range(n - i): dpTable[i][j] = {}
+            for j in range(n - i): dp_table[i][j] = {}
         
         for i in range(n):
             c = text_to_parse[i]
             if c not in self.TtoNT: return
             
-            foreach ruleIndex in self.TtoNT[c]:
-                newKey = ruleIndex >> SHIFT
-                oldKey = ruleIndex & MASK
+            for rule_index in self.TtoNT[c]:
+                newKey = rule_index >> Parser.SHIFT
+                oldKey = rule_index & Parser.MASK
                 dp_node = DPNode(c, oldKey, None, None)
-                dpTable[i][0][newKey] = dp_node
+                dp_table[i][0][newKey] = dp_node
                 Ks[i].set(0)
         
         for i in range (1, n):
             im1 = i - 1
             for j in range(n - i):
-                D = dpTable[j]
+                D = dp_table[j]
                 Di = D[i]
                 jp1 = j + 1
                 
-                for k in Ks[j].getBitPositions():
+                for k in Ks[j].get_bit_positions():
                     if k >= i: break
                     if Ks[jp1 + k].is_not_set(im1 - k): continue
                 
                     for index_pair_1 in D[k]:
-                        for index_pair_2 in dpTable[jp1 + k][im1 - k]:
-                            key = compute_rule_key(index_pair_1, index_pair_2)
+                        for index_pair_2 in dp_table[jp1 + k][im1 - k]:
+                            key = Parser.compute_rule_key(index_pair_1, index_pair_2)
                             if key not in self.NTtoNT: continue
                             
-                            content = DPNode(index_pair_1, index_pair_2, D[k][indexPair1], dpTable[jp1 + k][im1 - k][indexPair2])
+                            content = DPNode(index_pair_1, index_pair_2, D[k][index_pair_1], dp_table[jp1 + k][im1 - k][index_pair_2])
                             Ks[j].set(i)
                             for rule_index in self.NTtoNT[key]:
-                                Di[ruleIndex] = content
+                                Di[rule_index] = content
         
         for i in range(n - 1, 0, -1):
-            if START_RULE in dpTable[0][i]:
+            if Parser.START_RULE in dp_table[0][i]:
                 self.word_in_grammar = True
-                parse_tree = TreeNode(START_RULE, START_rule in self.NTtoRule)
-                fill_tree(parse_tree, dp_table[0][i][START_RULE])
+                parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
+                fill_tree(parse_tree, dp_table[0][i][Parser.START_RULE])
                 break
         
         
