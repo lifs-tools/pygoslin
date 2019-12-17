@@ -40,9 +40,15 @@ class ParserTest(unittest.TestCase):
                 lipidnames.append(Parser.split_string(line, ",", "\"")[0].strip("\""))
         
         goslin_parser_event_handler = GoslinParserEventHandler()
-        parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
+        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         
+        lipid_name = "PE 16:1-12:0"
+        goslin_parser.parse(lipid_name)
+        assert goslin_parser.word_in_grammar
+        goslin_parser.raise_events()
+        
+        """
         goslin_fragment_parser_event_handler = GoslinFragmentParserEventHandler()
         fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/test/Goslin-Fragments.g4", ParserTest.PARSER_QUOTE)
         
@@ -50,7 +56,7 @@ class ParserTest(unittest.TestCase):
         lipid_maps_parser_event_handler = LipidMapsParserEventHandler()
         lipid_maps_parser = Parser(lipid_maps_parser_event_handler, os.path.abspath(".") + "/test/LipidMaps.g4", ParserTest.PARSER_QUOTE)
         
-        parsers = [[parser, goslin_parser_event_handler],
+        parsers = [[goslin_parser, goslin_parser_event_handler],
                    [fragment_parser, goslin_fragment_parser_event_handler],
                    [lipid_maps_parser, lipid_maps_parser_event_handler]]
         
@@ -65,3 +71,4 @@ class ParserTest(unittest.TestCase):
                     break
                     prs.raise_events()
             assert found
+        """

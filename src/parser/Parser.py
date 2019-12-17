@@ -146,6 +146,7 @@ class Parser:
         self.TtoNT = {}
         self.NTtoNT = {}
         self.NTtoRule = {}
+        self.originalNTtoNT = {}
         self.quote = _quote
         self.parser_event_handler = _parserEventHandler
         self.parse_tree = None
@@ -261,14 +262,13 @@ class Parser:
                     key = Parser.compute_rule_key(p, rule)
                     self.TtoNT[c].add(key)
         
+        self.originalNTtoNT = {k: set(v) for k, v in self.NTtoNT.items()}
         
         keysNT = set(self.NTtoNT.keys())
         for r in keysNT:
             rules = set(self.NTtoNT[r])
             for rule in rules:
                 for p in self.collect_one_backwards(rule): self.NTtoNT[r].add(p)
-    
-    
     
     
     
@@ -464,13 +464,12 @@ class Parser:
     
         collection = [rule_index]
         i = 0
-        while True:
+        while i < len(collection):
             current_index = collection[i]
             if current_index in self.NTtoNT:
                 
                 for previous_index in self.NTtoNT[current_index]: collection.append(previous_index)
             i += 1
-            if i >= len(collection): break
         
         return collection
     
@@ -479,20 +478,18 @@ class Parser:
     
     
     def collect_backwards(self, child_rule_index, parent_rule_index):
-        if child_rule_index not in self.NTtoNT: return None
-        collection = None
+        if child_rule_index not in self.originalNTtoNT: return None
         
-        for previous_index in self.NTtoNT[child_rule_index]:
+        
+        for previous_index in self.originalNTtoNT[child_rule_index]:
             if previous_index == parent_rule_index:
-                collection = []
-                return collection
+                return []
             
-            elif previous_index in self.NTtoNT:
+            elif previous_index in self.originalNTtoNT:
                 collection = self.collect_backwards(previous_index, parent_rule_index)
                 if collection != None:
                     collection.append(previous_index)
                     return collection
-                
         return None
         
         
@@ -505,13 +502,15 @@ class Parser:
             if node.fire_event: self.parser_event_handler.handle_event(node_rule_name + "_pre_event", node)
             
             if node.left != None: # node.terminal is != None when node is leaf
-                raise_events(node.left)
-                if node.right != None: raise_events(node.right)
+                self.raise_events(node.left)
+                if node.right != None: self.raise_events(node.right)
                 
             if node.fire_event: self.parser_event_handler.handle_event(node_rule_name + "_post_event", node)
             
         else:
-            if self.parse_tree != None: raise_events(self.parse_tree)
+            if self.parse_tree != None: self.raise_events(self.parse_tree)
+    
+    
     
     
 
@@ -519,10 +518,10 @@ class Parser:
     def fill_tree(self, node, dp_node):
         # checking and extending nodes for single rule chains
         key = Parser.compute_rule_key(dp_node.rule_index_1, dp_node.rule_index_2) if dp_node.left != None else dp_node.rule_index_2
+        
         merged_rules = self.collect_backwards(key, node.rule_index)
         if merged_rules != None:
             for rule_index in merged_rules:
-                
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
                 node = node.left
         
@@ -592,13 +591,13 @@ class Parser:
                 
                 
                 
-                    for index_pair_1 in sorted(D[k]):
-                        for index_pair_2 in sorted(dp_table[jp1 + k][im1 - k]):
-                            key = Parser.compute_rule_key(index_pair_1, index_pair_2)
+                    for index_pair_1 in D[k].items():
+                        for index_pair_2 in dp_table[jp1 + k][im1 - k].items():
+                            key = Parser.compute_rule_key(index_pair_1[0], index_pair_2[0])
                             
                             if key not in self.NTtoNT: continue
                             
-                            content = DPNode(index_pair_1, index_pair_2, D[k][index_pair_1], dp_table[jp1 + k][im1 - k][index_pair_2])
+                            content = DPNode(index_pair_1[0], index_pair_2[0], index_pair_1[1], index_pair_2[1])
                             Ks[j].set(i)
                             for rule_index in self.NTtoNT[key]:
                                 Di[rule_index] = content
@@ -606,85 +605,8 @@ class Parser:
         for i in range(n - 1, 0, -1):
             if Parser.START_RULE in dp_table[0][i]:
                 self.word_in_grammar = True
-                parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
-                self.fill_tree(parse_tree, dp_table[0][i][Parser.START_RULE])
+                self.parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
+                self.fill_tree(self.parse_tree, dp_table[0][i][Parser.START_RULE])
                 break
         
         
-        
-        
-    """
-    public void parseSubstring(string textToParse)
-    {
-        wordInGrammar = false;
-        parseTree = null;
-        int n = textToParse.Length;
-        // dp stands for dynamic programming, nothing else
-        Dictionary<long, DPNode>[][] dpTable = new Dictionary<long, DPNode>[n][];
-        // Ks is a lookup, which fields in the dpTable are filled
-        Bitfield[] Ks = new Bitfield[n];
-        DPNode startNode = null;
-        
-        for (int i = 0; i < n; ++i)
-        {
-            dpTable[i] = new Dictionary<long, DPNode>[n - i];
-            Ks[i] = new Bitfield(n - 1);
-            for (int j = 0; j < n - i; ++j) dpTable[i][j] = new Dictionary<long, DPNode>();
-        }
-        
-        for (int i = 0; i < n; ++i)
-        {
-            char c = textToParse[i];
-            if (!TtoNT.ContainsKey(c)) continue;
-            
-            foreach (long ruleIndex in TtoNT[c])
-            {
-                long newKey = ruleIndex >> SHIFT;
-                long oldKey = ruleIndex & MASK;
-                DPNode dp_node = new DPNode((long)c, oldKey, null, null);
-                dpTable[i][0][newKey] =  dp_node;
-                Ks[i].set(0);
-            }
-        }
-        
-        for (int i = 1; i < n; ++i)
-        {
-            int im1 = i - 1;
-            for (int j = 0; j < n - i; ++j)
-            {
-                Dictionary<long, DPNode>[] D = dpTable[j];
-                Dictionary<long, DPNode> Di = D[i];
-                int jp1 = j + 1;
-                
-                foreach(int k in Ks[j].getBitPositions())
-                {
-                    if (k >= i) break;
-                    if (Ks[jp1 + k].isNotSet(im1 - k)) continue;
-                    foreach (KeyValuePair<long, DPNode> indexPair1 in D[k])
-                    {
-                        foreach (KeyValuePair<long, DPNode> indexPair2 in dpTable[jp1 + k][im1 - k])
-                        {
-                            long key = compute_rule_key(indexPair1.Key, indexPair2.Key);
-                            if (!NTtoNT.ContainsKey(key)) continue;
-                            
-                            DPNode content = new DPNode(indexPair1.Key, indexPair2.Key, indexPair1.Value, indexPair2.Value);
-                            Ks[j].set(i);
-                            foreach (long ruleIndex in NTtoNT[key])
-                            {
-                                Di[ruleIndex] = content;
-                                if (START_RULE == ruleIndex) startNode = content; 
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (startNode != null)
-        {
-            wordInGrammar = true;
-            parseTree = new TreeNode(START_RULE, NTtoRule.ContainsKey(START_RULE));
-            fillTree(parseTree, startNode);
-        }
-    }
-    """
