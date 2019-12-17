@@ -461,18 +461,15 @@ class Parser:
     
     # expanding singleton rules, e.g. S -> A, A -> B, B -> C
     def collect_one_backwards(self, rule_index):
-    
         collection = [rule_index]
         i = 0
         while i < len(collection):
             current_index = collection[i]
             if current_index in self.NTtoNT:
-                
                 for previous_index in self.NTtoNT[current_index]: collection.append(previous_index)
             i += 1
         
         return collection
-    
     
     
     

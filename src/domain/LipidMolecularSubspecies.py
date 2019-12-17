@@ -1,11 +1,12 @@
 from .LipidSpecies import LipidSpecies
+from .LipidFaBondType import LipidFaBondType
 
 class LipidMolecularSubspecies(LipidSpecies):
 
 
     def __init__(self, head_group, fa):
+        super().__init__(head_group)
         self.fa = []
-        super.__init__(head_group)
         num_carbon = 0
         num_hydroxyl = 0
         num_double_bonds = 0
