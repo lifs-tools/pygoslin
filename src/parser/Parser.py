@@ -20,8 +20,8 @@ class MatchWords(Enum):
 class DPNode:
     
     def __init__(self, _rule1, _rule2, _left, _right):
-        self.rule_index1 = _rule1
-        self.rule_index2 = _rule2
+        self.rule_index_1 = _rule1
+        self.rule_index_2 = _rule2
         self.left = _left
         self.right = _right
         
@@ -30,10 +30,10 @@ class DPNode:
 
 class TreeNode:
 
-    def __init__(self, _rule, _fireEvent):
-        self.ruleIndex = _rule
-        self.left = null
-        self.right = null
+    def __init__(self, _rule, _fire_event):
+        self.rule_index = _rule
+        self.left = None
+        self.right = None
         self.terminal = '\0'
         self.fire_event = _fire_event
     
@@ -161,6 +161,7 @@ class Parser:
             ruleToNT = {Parser.EOF_RULE_NAME: Parser.EOF_RULE}
             self.TtoNT[Parser.EOF_SIGN] = set([Parser.EOF_RULE])
             for rule_line in rules:
+                
                 tokens_level_1 = []
                 for t in Parser.split_string(rule_line, Parser.RULE_ASSIGNMENT, self.quote): tokens_level_1.append(t.strip(' '))
                 if len(tokens_level_1) != 2: raise Exception("Error: corrupted token in grammar rule: '%s'" % rule_line);
@@ -223,8 +224,8 @@ class Parser:
                         
                     # two product rules
                     if len(non_terminal_rules) == 2:
-                        rule_index_1 = non_terminal_rules.pop()
-                        rule_index_2 = non_terminal_rules.pop()
+                        rule_index_2 = non_terminal_rules[1]
+                        rule_index_1 = non_terminal_rules[0]
                         key = Parser.compute_rule_key(rule_index_1, rule_index_2)
                         if key not in self.NTtoNT: self.NTtoNT[key] = set()
                         self.NTtoNT[key].add(new_rule_index)
@@ -266,6 +267,7 @@ class Parser:
             rules = set(self.NTtoNT[r])
             for rule in rules:
                 for p in self.collect_one_backwards(rule): self.NTtoNT[r].add(p)
+    
     
     
     
@@ -346,6 +348,7 @@ class Parser:
             raise Exception("Error: corrupted grammar '%s', grammar is empty" % grammar_filename)
         
         grammar_name_rule = Parser.split_string(rules[0], ' ', quote)
+        
         if grammar_name_rule[0] != "grammar":
             raise Exception("Error: first rule must start with the keyword 'grammar'")
         
@@ -359,8 +362,8 @@ class Parser:
     
     
     
-    def compute_rule_key(ruleIndex1, ruleIndex2):
-        return (ruleIndex1 << Parser.SHIFT) | ruleIndex2
+    def compute_rule_key(rule_index_1, rule_index_2):
+        return Bitfield.ulong((rule_index_1 << Parser.SHIFT) | rule_index_2)
     
     
     
@@ -476,16 +479,16 @@ class Parser:
     
     
     def collect_backwards(self, child_rule_index, parent_rule_index):
-        if child_rule_index not in NTtoNT: return None
-        collection = None;
+        if child_rule_index not in self.NTtoNT: return None
+        collection = None
         
-        for previous_index in NTtoNT[child_rule_index]:
+        for previous_index in self.NTtoNT[child_rule_index]:
             if previous_index == parent_rule_index:
                 collection = []
                 return collection
             
             elif previous_index in self.NTtoNT:
-                collection = collect_backwards(previous_index, parent_rule_index)
+                collection = self.collect_backwards(previous_index, parent_rule_index)
                 if collection != None:
                     collection.append(previous_index)
                     return collection
@@ -501,7 +504,7 @@ class Parser:
             node_rule_name = self.NTtoRule[node.rule_index] if node.fire_event else ""
             if node.fire_event: self.parser_event_handler.handle_event(node_rule_name + "_pre_event", node)
             
-            if node.left != None: # node.terminal is != null when node is leaf
+            if node.left != None: # node.terminal is != None when node is leaf
                 raise_events(node.left)
                 if node.right != None: raise_events(node.right)
                 
@@ -515,9 +518,9 @@ class Parser:
     # filling the syntax tree including events
     def fill_tree(self, node, dp_node):
         # checking and extending nodes for single rule chains
-        key = compute_rule_key(dp_node.rule_index_1, dp_node.rule_index_2) if dp_node.left != None else dp_node.rule_index_2
-        mergedRules = collect_backwards(key, node.rule_index)
-        if mergedRules != None:
+        key = Parser.compute_rule_key(dp_node.rule_index_1, dp_node.rule_index_2) if dp_node.left != None else dp_node.rule_index_2
+        merged_rules = self.collect_backwards(key, node.rule_index)
+        if merged_rules != None:
             for rule_index in merged_rules:
                 
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
@@ -527,8 +530,8 @@ class Parser:
         if dp_node.left != None: # None => leaf
             node.left = TreeNode(dp_node.rule_index_1, dp_node.rule_index_1 in self.NTtoRule)
             node.right = TreeNode(dp_node.rule_index_2, dp_node.rule_index_2 in self.NTtoRule)
-            fillTree(node.left, dp_node.left)
-            fillTree(node.right, dp_node.right)
+            self.fill_tree(node.left, dp_node.left)
+            self.fill_tree(node.right, dp_node.right)
             
         else:
             # I know, it is not 100% clean to store the character in an integer
@@ -552,12 +555,16 @@ class Parser:
         parse_tree = None
         n = len(text_to_parse)
         # dp stands for dynamic programming, nothing else
-        dp_table = [None] * n;
+        dp_table = [None for x in range(n)]
         # Ks is a lookup, which fields in the dp_table are filled
-        Ks = [None] * n            
+        Ks = [None for x in range(n)]
+        
+        
+        
+        
         
         for i in range(n):
-            dp_table[i] = [None] * (n - i)
+            dp_table[i] = [None for x in range(n - i)]
             Ks[i] = Bitfield(n - 1)
             for j in range(n - i): dp_table[i][j] = {}
         
@@ -565,11 +572,11 @@ class Parser:
             c = text_to_parse[i]
             if c not in self.TtoNT: return
             
-            for rule_index in self.TtoNT[c]:
-                newKey = rule_index >> Parser.SHIFT
-                oldKey = rule_index & Parser.MASK
-                dp_node = DPNode(c, oldKey, None, None)
-                dp_table[i][0][newKey] = dp_node
+            for rule_index in sorted(self.TtoNT[c]):
+                new_key = rule_index >> Parser.SHIFT
+                old_key = rule_index & Parser.MASK
+                dp_node = DPNode(c, old_key, None, None)
+                dp_table[i][0][new_key] = dp_node
                 Ks[i].set(0)
         
         for i in range (1, n):
@@ -583,9 +590,12 @@ class Parser:
                     if k >= i: break
                     if Ks[jp1 + k].is_not_set(im1 - k): continue
                 
-                    for index_pair_1 in D[k]:
-                        for index_pair_2 in dp_table[jp1 + k][im1 - k]:
+                
+                
+                    for index_pair_1 in sorted(D[k]):
+                        for index_pair_2 in sorted(dp_table[jp1 + k][im1 - k]):
                             key = Parser.compute_rule_key(index_pair_1, index_pair_2)
+                            
                             if key not in self.NTtoNT: continue
                             
                             content = DPNode(index_pair_1, index_pair_2, D[k][index_pair_1], dp_table[jp1 + k][im1 - k][index_pair_2])
@@ -597,7 +607,7 @@ class Parser:
             if Parser.START_RULE in dp_table[0][i]:
                 self.word_in_grammar = True
                 parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
-                fill_tree(parse_tree, dp_table[0][i][Parser.START_RULE])
+                self.fill_tree(parse_tree, dp_table[0][i][Parser.START_RULE])
                 break
         
         
