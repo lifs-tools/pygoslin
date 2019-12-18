@@ -43,7 +43,7 @@ class ParserTest(unittest.TestCase):
         goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         
-        lipid_name = "PE 16:1-12:0"
+        lipid_name = "PE 16:1"
         goslin_parser.parse(lipid_name)
         assert goslin_parser.word_in_grammar
         goslin_parser.raise_events()

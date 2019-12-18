@@ -48,7 +48,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
                 
             num_carbon += fattyAcid.num_carbon
             num_hydroxyl += fattyAcid.num_hydroxyl
-            fa_strings.append("%i:%i%s%s%s" % (num_carbon, num_double_bonds, db_pos, ";" + str(num_hydroxy) if num_hydroxy > 0 else "", fatty_acid.lipid_FA_bond_type.suffix()))
+            fa_strings.append("%i:%i%s%s%s" % (num_carbon, num_double_bonds, db_pos, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", fatty_acid.lipid_FA_bond_type.suffix()))
             
         return self.head_group + " " + "/".join(self.fa_strings)
     

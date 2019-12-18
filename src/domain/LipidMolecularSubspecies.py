@@ -1,12 +1,15 @@
 from .LipidSpecies import LipidSpecies
 from .LipidFaBondType import LipidFaBondType
+from .LipidExceptions import ConstraintViolationException
+from .LipidSpeciesInfo import LipidSpeciesInfo
+from .LipidLevel import LipidLevel
 
 class LipidMolecularSubspecies(LipidSpecies):
 
 
     def __init__(self, head_group, fa):
         super().__init__(head_group)
-        self.fa = []
+        self.fa = {}
         num_carbon = 0
         num_hydroxyl = 0
         num_double_bonds = 0
@@ -32,20 +35,25 @@ class LipidMolecularSubspecies(LipidSpecies):
                 elif lipid_FA_bond_type != LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL):
                     raise ConstraintViolationException("Only one FA can define an ether bond to the head group! Tried to add %s over existing %s" % (fas.lipid_FA_bond_type, lipid_FA_bond_type))
                 
-        super.info = LipidSpeciesInfo(LipidLevel.MOLECULAR_SUBSPECIES, num_carbon, num_hydroxyl, num_double_bonds, lipid_FA_bond_type)
-        self.lipidSpeciesString = build_lipid_subspecies_name("_")
+        self.info = LipidSpeciesInfo()
+        self.info.level = LipidLevel.MOLECULAR_SUBSPECIES
+        self.info.num_carbon = num_carbon
+        self.info.num_hydroxyl = num_hydroxyl
+        self.info.num_double_bonds = num_double_bonds
+        self.info.lipid_FA_bond_type = lipid_FA_bond_type
+        self.lipidSpeciesString = self.build_lipid_subspecies_name("_")
     
 
     def build_lipid_subspecies_name(self, fa_separator):
         fa_strings = []
         for fa_key in self.fa:
             fatty_acid = self.fa[fa_key]
-            num_double_bonds = fattyAcid.num_double_bonds
-            num_carbon = fattyAcid.num_carbon
-            num_hydroxyl = fattyAcid.num_hydroxyl
-            fa_strings.append("%i:%i%s%s" % (num_carbon, num_double_bonds, ";" + str(num_hydroxy) if num_hydroxy > 0 else "", fatty_acid.lipid_FA_bond_type.suffix()))
+            num_double_bonds = fatty_acid.num_double_bonds
+            num_carbon = fatty_acid.num_carbon
+            num_hydroxyl = fatty_acid.num_hydroxyl
+            fa_strings.append("%i:%i%s%s" % (num_carbon, num_double_bonds, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", fatty_acid.lipid_FA_bond_type.suffix()))
             
-        return self.head_group() + " " + faSeparator.join(fa_strings)
+        return self.head_group + " " + fa_separator.join(fa_strings)
     
     
     
