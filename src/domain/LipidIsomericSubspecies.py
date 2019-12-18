@@ -3,8 +3,8 @@ from .LipidStructuralSubspecies import LipidStructuralSubspecies
 class LipidIsomericSubspecies(LipidStructuralSubspecies):
 
 
-    def __init__(self, head_group, fa):
-        LipidStructuralSubspecies.__init__(head_group)
+    def __init__(self, head_group, fa = []):
+        super().__init__(head_group)
         num_carbon = 0
         num_hydroxyl = 0
         num_double_bonds = 0
@@ -18,6 +18,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
             
             else:
                 self.fa[fas.name] = fas
+                self.fa_list.append(fas)
                 num_carbon += fas.num_carbon
                 num_hydroxyl += fas.num_hydroxyl
                 num_double_bonds += fas.num_double_bonds
@@ -28,14 +29,18 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
                 elif lipid_FA_bond_type != LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL):
                     raise ConstraintViolationException("Only one FA can define an ether bond to the head group! Tried to add %s over existing %s" % (fas.lipid_FA_bond_type, lipid_FA_bond_type))
                 
-        super().info = LipidSpeciesInfo(LipidLevel.ISOMERIC_SUBSPECIES, num_carbon, num_hydroxyl, num_double_bonds, lipid_FA_bond_type)
+        self.info = LipidSpeciesInfo()
+        self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES
+        self.info.num_carbon = num_carbon
+        self.info.num_hydroxyl = num_hydroxyl
+        self.info.num_double_bonds = num_double_bonds
+        self.info.lipid_FA_bond_type = lipid_FA_bond_type
         self.lipid_species_string = build_lipid_isomeric_substructure_name()
     
 
     def build_lipid_isomeric_substructure_name(self):
         fa_strings = []
-        for fa_key in self.fa:
-            fatty_acid = fa[fa_key]
+        for fatty_acid in self.fa_list:
             num_carbon = 0
             num_hydroxyl = 0
             num_double_bonds = fatty_acid.num_double_bonds
@@ -53,8 +58,8 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
         return self.head_group + " " + "/".join(self.fa_strings)
     
 
-    def get_lipid_string(self, level):
-        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+    def get_lipid_string(self, level = None):
+        if level == None or level == LipidLevel.ISOMERIC_SUBSPECIES:
             return self.lipid_species_string
         
         elif level in (LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):

@@ -7,9 +7,10 @@ from .LipidLevel import LipidLevel
 class LipidMolecularSubspecies(LipidSpecies):
 
 
-    def __init__(self, head_group, fa):
+    def __init__(self, head_group, fa = []):
         super().__init__(head_group)
         self.fa = {}
+        self.fa_list = []
         num_carbon = 0
         num_hydroxyl = 0
         num_double_bonds = 0
@@ -23,6 +24,7 @@ class LipidMolecularSubspecies(LipidSpecies):
             
             else:
                 self.fa[fas.name] = fas
+                self.fa_list.append(fas)
                 num_carbon += fas.num_carbon
                 num_hydroxyl += fas.num_hydroxyl
                 num_double_bonds += fas.num_double_bonds
@@ -41,13 +43,12 @@ class LipidMolecularSubspecies(LipidSpecies):
         self.info.num_hydroxyl = num_hydroxyl
         self.info.num_double_bonds = num_double_bonds
         self.info.lipid_FA_bond_type = lipid_FA_bond_type
-        self.lipidSpeciesString = self.build_lipid_subspecies_name("_")
+        self.lipid_species_string = self.build_lipid_subspecies_name("_")
     
 
     def build_lipid_subspecies_name(self, fa_separator):
         fa_strings = []
-        for fa_key in self.fa:
-            fatty_acid = self.fa[fa_key]
+        for fatty_acid in self.fa_list:
             num_double_bonds = fatty_acid.num_double_bonds
             num_carbon = fatty_acid.num_carbon
             num_hydroxyl = fatty_acid.num_hydroxyl
@@ -57,8 +58,9 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     
     
-    def get_lipid_string(self, level):
-        if level == LipidLevel.MOLECULAR_SUBSPECIES:
+    def get_lipid_string(self, level = None):
+        
+        if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
             return self.lipid_species_string
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
