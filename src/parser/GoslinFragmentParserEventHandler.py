@@ -46,6 +46,7 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_subspecies_level
         
         self.registered_events["lcb_pre_event"] = self.new_lcb
+        self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
         
@@ -109,6 +110,12 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
             
         elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
             self.lcb = StructuralFattyAcid("LCB", 2, 0, 1, LipidFaBondType.ESTER, True, 1)
+            
+        self.current_fa = self.lcb
+            
+            
+    def clean_lcb(self, node):
+        self.current_fa = None
             
             
     def append_fa(self, node):

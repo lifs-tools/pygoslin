@@ -74,6 +74,6 @@ class LipidClass(Enum):
         return class_to_category[name]
     
     def get_class(name):
-        class_to_class = {lipid_class.value[2]: lipid_class.name for lipid_class in LipidClass}
+        class_to_class = {key: lipid_class for lipid_class in LipidClass for key in lipid_class.value[2:]}
         return class_to_class[name]
         
