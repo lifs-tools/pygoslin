@@ -34,7 +34,7 @@ class ParserTest(unittest.TestCase):
     
     def test_tree_node(self):
         goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
+        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         lipid_name = "PE 16:1-12:0"
         goslin_parser.parse(lipid_name)
@@ -51,7 +51,7 @@ class ParserTest(unittest.TestCase):
     def test_lipid_fragment_fail(self):
     
         goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
+        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         
         lipid_name = "PE 16:1-12:0 - -(H20)"
@@ -67,7 +67,7 @@ class ParserTest(unittest.TestCase):
     def test_lipid_fragment_success(self):
     
         goslin_fragment_parser_event_handler = GoslinFragmentParserEventHandler()
-        goslin_fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/test/Goslin-Fragments.g4", ParserTest.PARSER_QUOTE)
+        goslin_fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin-Fragments.g4", ParserTest.PARSER_QUOTE)
         
         
         lipid_name = "PE 16:1-12:0 - -(H20)"
@@ -85,7 +85,7 @@ class ParserTest(unittest.TestCase):
         
     def test_lipid_names(self):
         goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
+        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         ## glycerophospholipid
         lipid_name = "PE 16:1/12:0"
@@ -150,15 +150,15 @@ class ParserTest(unittest.TestCase):
                 lipidnames.append(Parser.split_string(line, ",", "\"")[0].strip("\""))
         
         goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
+        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         
         goslin_fragment_parser_event_handler = GoslinFragmentParserEventHandler()
-        fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/test/Goslin-Fragments.g4", ParserTest.PARSER_QUOTE)
+        fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin-Fragments.g4", ParserTest.PARSER_QUOTE)
         
         
         lipid_maps_parser_event_handler = LipidMapsParserEventHandler()
-        lipid_maps_parser = Parser(lipid_maps_parser_event_handler, os.path.abspath(".") + "/test/LipidMaps.g4", ParserTest.PARSER_QUOTE)
+        lipid_maps_parser = Parser(lipid_maps_parser_event_handler, os.path.abspath(".") + "/../data/goslin/LipidMaps.g4", ParserTest.PARSER_QUOTE)
         
         parsers = [[goslin_parser, goslin_parser_event_handler],
                    [fragment_parser, goslin_fragment_parser_event_handler],
