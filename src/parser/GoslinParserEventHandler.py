@@ -54,6 +54,11 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["carbon_pre_event"] = self.add_carbon
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
         
+        
+        self.registered_events["adduct_info_pre_event"] = self.new_adduct
+        self.registered_events["adduct_pre_event"] = self.add_adduct
+        self.registered_events["charge_pre_event"] = self.add_charge
+        self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
     
 
     def reset_lipid(self, node):
@@ -63,6 +68,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.lcb = None
         self.fa_list = []
         self.current_fa = None
+        self.adduct = None
         
 
     def set_head_group_name(self, node):
@@ -114,15 +120,21 @@ class GoslinParserEventHandler(BaseParserEventHandler):
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
         
+        lipid = None
+        
         if self.level == LipidLevel.SPECIES:
-            self.lipid = LipidSpecies(self.head_group, self.fa_list[0])
+            lipid = LipidSpecies(self.head_group, self.fa_list[0])
             
         elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
-            self.current_fa = LipidMolecularSubspecies(self.head_group, self.fa_list)
+            lipid = LipidMolecularSubspecies(self.head_group, self.fa_list)
             
         elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            self.current_fa = LipidStructuralSubspecies(self.head_group, self.fa_list)
+            lipid = LipidStructuralSubspecies(self.head_group, self.fa_list)
     
+        self.lipid = LipidAdduct()
+        self.lipid.lipid = lipid
+        self.lipid.adduct = self.adduct
+        
         
     def add_ether(self, node):
         ether = node.get_text()
@@ -137,16 +149,33 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         
     def add_double_bonds(self, node):
-        self.current_fa.num_double_bonds = node.get_text()
+        self.current_fa.num_double_bonds = int(node.get_text())
         
         
     def add_carbon(self, node):
-        self.current_fa.num_carbon = node.get_text()
+        self.current_fa.num_carbon = int(node.get_text())
         
         
     def add_hydroxyl(self, node):
-        self.current_fa.num_hydroxyl = node.get_text()
+        self.current_fa.num_hydroxyl = int(node.get_text())
         
+        
+    def new_adduct(self, node):
+        self.adduct = Adduct("", "", 0, 0)
+        
+        
+    def add_adduct(self, node):
+        self.adduct.adduct_string = int(node.get_text())
+        
+        
+    def add_charge(self, node):
+        self.adduct.charge = int (node.get_text())
+        
+        
+    def add_charge_sign(self, node):
+        sign = node.get_text()
+        if sign == "+": self.adduct.set_charge_sign(1)
+        if sign == "-": self.adduct.set_charge_sign(-1)
         
         
         

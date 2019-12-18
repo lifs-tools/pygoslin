@@ -34,15 +34,17 @@ class TreeNode:
         self.rule_index = _rule
         self.left = None
         self.right = None
-        self.terminal = '\0'
+        self.terminal = 0
         self.fire_event = _fire_event
     
     
     
-    def get_text(self, node = None):
-        if node == None: node = self
-        if node.terminal == '\0': return get_text(node.left) + get_text(node.right) if node.right != None else ""
-        return str(node.terminal)
+    def get_text(self):
+        if self.terminal == 0:
+            left_str = self.left.get_text()
+            right_str = self.right.get_text() if self.right != None else ""
+            return "%s%s" % (left_str if left_str != Parser.EOF_SIGN else "", right_str if right_str != Parser.EOF_SIGN else "")
+        return self.terminal
         
         
         
@@ -123,7 +125,7 @@ class Parser:
     RULE_SEPARATOR = '|'
     RULE_TERMINAL = ';'
     EOF_RULE_NAME = "EOF"
-    EOF_SIGN = '\0'
+    EOF_SIGN = chr(1)
     EOF_RULE = 1
     START_RULE = 2
     

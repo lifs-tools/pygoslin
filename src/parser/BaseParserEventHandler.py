@@ -21,7 +21,6 @@ class BaseParserEventHandler:
     
     
     def handle_event(self, event_name, node):
-        
         if event_name in self.registered_events:
             self.registered_events[event_name](node)
             

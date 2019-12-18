@@ -28,6 +28,18 @@ class ParserTest(unittest.TestCase):
         
     
     
+    
+    def test_tree_node(self):
+        goslin_parser_event_handler = GoslinParserEventHandler()
+        goslin_parser = Parser(goslin_parser_event_handler, os.path.abspath(".") + "/test/Goslin.g4", ParserTest.PARSER_QUOTE)
+        
+        
+        lipid_name = "PE 16:1"
+        goslin_parser.parse(lipid_name)
+        assert goslin_parser.word_in_grammar
+        goslin_parser.raise_events()
+        
+        assert lipid_name == goslin_parser.parse_tree.get_text()
         
     
     def test_parser_read(self):
