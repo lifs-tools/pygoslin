@@ -2,6 +2,7 @@
 class LipidAdduct:
 
     def __init__(self):
-        lipid = None
-        adduct = None
-        sum_formula = None
+        self.lipid = None
+        self.adduct = None
+        self.fragment = None
+        self.sum_formula = None

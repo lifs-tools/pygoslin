@@ -35,7 +35,6 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
         self.info.num_hydroxyl = num_hydroxyl
         self.info.num_double_bonds = num_double_bonds
         self.info.lipid_FA_bond_type = lipid_FA_bond_type
-        self.lipid_species_string = build_lipid_isomeric_substructure_name()
     
 
     def build_lipid_isomeric_substructure_name(self):
@@ -60,7 +59,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
 
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.ISOMERIC_SUBSPECIES:
-            return self.lipid_species_string
+            return build_lipid_isomeric_substructure_name()
         
         elif level in (LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)

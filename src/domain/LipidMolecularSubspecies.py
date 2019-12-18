@@ -43,7 +43,6 @@ class LipidMolecularSubspecies(LipidSpecies):
         self.info.num_hydroxyl = num_hydroxyl
         self.info.num_double_bonds = num_double_bonds
         self.info.lipid_FA_bond_type = lipid_FA_bond_type
-        self.lipid_species_string = self.build_lipid_subspecies_name("_")
     
 
     def build_lipid_subspecies_name(self, fa_separator):
@@ -59,9 +58,8 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     
     def get_lipid_string(self, level = None):
-        
         if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
-            return self.lipid_species_string
+            return self.build_lipid_subspecies_name("_")
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)

@@ -66,3 +66,14 @@ class LipidClass(Enum):
     # FC = (LipidCategory.ST, "Cholesterol [LMST01010001]", "FC")
     CH = (LipidCategory.ST, "Cholesterol [LMST01010001]", "FC", "Ch", "Cholesterol")
     CHE = (LipidCategory.ST, "Cholesteryl esters [ST0102]", "ChE", "CE")
+    
+
+
+    def get_category(name):
+        class_to_category = {key: lipid_class.value[0] for lipid_class in LipidClass for key in lipid_class.value[2:]}
+        return class_to_category[name]
+    
+    def get_class(name):
+        class_to_class = {lipid_class.value[2]: lipid_class.name for lipid_class in LipidClass}
+        return class_to_class[name]
+        
