@@ -79,6 +79,7 @@ To use a specific parser, you can use the following code:
 
 
 ```
+# using solely the Goslin parser
 from pygoslin.parser.Parser import GoslinParser
 goslin_parser = GoslinParser()
 goslin_parser_event_handler = goslin_parser.event_handler
@@ -91,7 +92,7 @@ if lipid != None:
     
     
     
-    
+# using solely the Goslin Fragment parser
 from pygoslin.parser.Parser import GoslinFragmentParser
 goslin_fragment_parser = GoslinFragmentParser()
 goslin_fragment_parser_event_handler = goslin_fragment_parser.event_handler
@@ -105,7 +106,7 @@ if lipid != None:
     
     
     
-    
+# using solely the LipidMaps parser
 from pygoslin.parser.Parser import LipidMapsParser
 lipid_maps_parser = LipidMapsParser()
 lipid_maps_parser_event_handler = lipid_maps_parser.event_handler
