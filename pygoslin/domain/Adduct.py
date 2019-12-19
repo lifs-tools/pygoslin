@@ -12,3 +12,5 @@ class Adduct:
             
         else: raise IllegalArgumentException("Sign can only be -1, 0, or 1")
             
+    def get_lipid_string(self):
+        return "[M%s%s]%i%s" % (self.sum_formula, self.adduct_string, self.charge, self.charge_sign)

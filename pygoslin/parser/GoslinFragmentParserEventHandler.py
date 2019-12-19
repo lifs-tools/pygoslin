@@ -1,6 +1,7 @@
 from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.Adduct import Adduct
 from pygoslin.domain.MolecularFattyAcid import MolecularFattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
@@ -177,7 +178,7 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         
         
     def add_adduct(self, node):
-        self.adduct.adduct_string = int(node.get_text())
+        self.adduct.adduct_string = node.get_text()
         
         
     def add_charge(self, node):

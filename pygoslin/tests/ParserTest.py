@@ -136,7 +136,20 @@ class ParserTest(unittest.TestCase):
         assert goslin_parser_event_handler.lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "ST"
         
         
+    def test_adduct(self):
+        from pygoslin.parser.Parser import Parser
+        from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
+        goslin_parser_event_handler = GoslinParserEventHandler()
+        goslin_parser = Parser(goslin_parser_event_handler, "data/goslin/Goslin.g4")
+
+        lipid_name = "PE 16:1/12:0[M+H]1+"
+        goslin_parser.parse(lipid_name)
+        assert goslin_parser.word_in_grammar
         
+        goslin_parser.raise_events()
+        lipid = goslin_parser_event_handler.lipid
+
+        print(lipid.get_lipid_string())
         
         
     
