@@ -55,16 +55,14 @@ python3 -m unittest pygoslin.tests.ParserTest
 The two major function within pygoslin are the parsing and printing of lipid names. This example will demonstrate both functions. Open a Python shell and type in:
 
 ```
-from pygoslin.parser.Parser import Parser
-from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
-goslin_parser_event_handler = GoslinParserEventHandler()
-goslin_parser = Parser(goslin_parser_event_handler, "data/goslin/Goslin.g4")
+from pygoslin.parser.Parser import GoslinParser
+goslin_parser = GoslinParser()
+goslin_parser_event_handler = goslin_parser.event_handler
 
-lipid_name = "PE 16:1/12:0"
+lipid_name = "Cer 18:1;2/12:0"
 goslin_parser.parse(lipid_name)
-goslin_parser.raise_events()
-lipid = goslin_parser_event_handler.lipid
-
-print(lipid.get_lipid_string())
+if goslin_parser.word_in_grammar:
+    lipid = goslin_parser_event_handler.lipid
+    print(lipid.get_lipid_string())
 ```
 
