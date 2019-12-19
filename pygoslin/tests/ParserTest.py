@@ -43,6 +43,34 @@ class ParserTest(unittest.TestCase):
         assert lipid_parser.lipid.get_lipid_string() == "PA 16:1_12:0"
         assert lipid_parser.lipid.get_lipid_fragment_string() == "PA 16:1_12:0 - fragment"
         
+        lipid_name = "PE O-16:1p/12:0"
+        lipid_parser.parse(lipid_name)
+        assert lipid_parser.lipid != None
+        assert lipid_parser.lipid.get_lipid_string() == "PE O-16:1p/12:0"
+        
+
+
+    def test_lyso(self):
+        lipid_parser = LipidParser()
+        
+        lipid_name = "LPA 16:1a"
+        lipid_parser.parse(lipid_name)
+        assert lipid_parser.lipid != None
+        assert lipid_parser.lipid.get_lipid_string() == "LPA 16:1a"
+        
+        lipid_name = "LPC O-16:1a"
+        lipid_parser.parse(lipid_name)
+        assert lipid_parser.lipid != None
+        assert lipid_parser.lipid.get_lipid_string() == "LPC O-16:1a"
+        
+        lipid_name = "LPE O-16:1p"
+        lipid_parser.parse(lipid_name)
+        assert lipid_parser.lipid != None
+        assert lipid_parser.lipid.get_lipid_string() == "LPE O-16:1p"
+        
+        lipid_name = "LPE O-16:1p/12:0"
+        lipid_parser.parse(lipid_name)
+        assert lipid_parser.lipid == None
 
     
     def test_tree_node(self):

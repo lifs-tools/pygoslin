@@ -23,7 +23,7 @@ make (optional)
 To install the package globally in your python distribution, simply type:
 
 ```
-make install
+[sudo] make install
 ```
 or
 
@@ -111,7 +111,7 @@ from pygoslin.parser.Parser import LipidMapsParser
 lipid_maps_parser = LipidMapsParser()
 lipid_maps_parser_event_handler = lipid_maps_parser.event_handler
 
-lipid_name = "C 18:1;2/12:0"
+lipid_name = "Cer(d18:1/12:0)"
 lipid_maps_parser.parse(lipid_name)
 lipid = lipid_maps_parser_event_handler.lipid
 if lipid != None:

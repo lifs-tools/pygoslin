@@ -630,14 +630,20 @@ class GoslinFragmentParser(Parser):
         super().__init__(self.event_handler, dir_name + "/data/goslin/GoslinFragments.g4", Parser.DEFAULT_QUOTE)
         
         
+class LipidMapsParser(Parser):
+    def __init__(self):
+        self.event_handler = LipidMapsParserEventHandler()
+        dir_name = path.dirname(pygoslin.__file__)
+        super().__init__(self.event_handler, dir_name + "/data/goslin/LipidMaps.g4", Parser.DEFAULT_QUOTE)
+        
+        
 class LipidParser:
-    
     def __init__(self):
         self.parser = None
         self.lipid = None
         self.event_handler = None
         
-        self.parser_list = [GoslinParser(), GoslinFragmentParser()]
+        self.parser_list = [GoslinParser(), GoslinFragmentParser(), LipidMapsParser()]
         
     def parse(self, lipid_name):
         self.parser = None

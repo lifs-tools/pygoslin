@@ -39,7 +39,6 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_species_pre_event"] = self.set_species_level
         self.registered_events["chc_pre_event"] = self.set_species_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
-        
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_subspecies_level
@@ -150,7 +149,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         if ether == "a": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "p": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
+        elif ether == "p": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         
         
     def add_old_hydroxyl(self, node):

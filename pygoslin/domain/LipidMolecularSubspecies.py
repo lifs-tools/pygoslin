@@ -3,6 +3,7 @@ from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidExceptions import ConstraintViolationException
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidClass import LipidClass
 
 class LipidMolecularSubspecies(LipidSpecies):
 
@@ -47,15 +48,17 @@ class LipidMolecularSubspecies(LipidSpecies):
 
     def build_lipid_subspecies_name(self, fa_separator):
         fa_strings = []
+        special_case = self.lipid_class in [LipidClass.PC, LipidClass.LPC, LipidClass.PE, LipidClass.LPE]
         for fatty_acid in self.fa_list:
             num_double_bonds = fatty_acid.num_double_bonds
             num_carbon = fatty_acid.num_carbon
             num_hydroxyl = fatty_acid.num_hydroxyl
-            fa_strings.append("%i:%i%s%s" % (num_carbon, num_double_bonds, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", fatty_acid.lipid_FA_bond_type.suffix()))
-            
+            suffix = fatty_acid.lipid_FA_bond_type.suffix()
+            fa_strings.append("%s%i:%i%s%s" % ("O-" if special_case and len(suffix) > 0 else "", num_carbon, num_double_bonds, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", suffix))
+        
         fa_string = " " + fa_separator.join(fa_strings) if len(fa_strings) > 0 else ""
             
-        return self.head_group + fa_string
+        return (self.lipid_class.value[2] if not self.use_headgroup else self.head_group) + fa_string
     
     
     

@@ -152,7 +152,7 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         if ether == "a": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "p": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
+        elif ether == "p": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         
         
     def add_old_hydroxyl(self, node):

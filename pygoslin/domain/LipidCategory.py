@@ -10,3 +10,4 @@ class LipidCategory(Enum):
     SP = 3 # SLM:000000525 Sphingolipids
     ST = 4 # SLM:000500463 Steroids and derivatives
     FA = 5 # SLM:000390054 Fatty acyls and derivatives
+    SL = 6 # Saccharolipids
