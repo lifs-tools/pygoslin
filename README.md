@@ -52,7 +52,31 @@ python3 -m unittest pygoslin.tests.ParserTest
 
 ### Using pygoslin
 
-The two major function within pygoslin are the parsing and printing of lipid names. This example will demonstrate both functions. Open a Python shell and type in:
+The two major function within pygoslin are the parsing and printing of lipid names. You have several options, to access these functions. This example will demonstrate both functions the easiest way. Open a Python shell and type in:
+
+
+```
+from pygoslin.parser.Parser import LipidParser
+lipid_parser = LipidParser()
+
+lipid_name = "PE 16:1-12:0"
+lipid_parser.parse(lipid_name)
+lipid = lipid_parser.lipid
+
+if lipid != None:
+    print(lipid.get_lipid_string())
+
+```
+
+Be aware, that this method is subsequencially using all available parsers until the first parser hits a lipid name. Currently, three parsers are available, namely:
+```
+GoslinParser
+GoslinFragmentParser
+LipidMapsParser
+```
+
+To use a specific parser, you can use the following code:
+
 
 ```
 from pygoslin.parser.Parser import GoslinParser
@@ -61,8 +85,36 @@ goslin_parser_event_handler = goslin_parser.event_handler
 
 lipid_name = "Cer 18:1;2/12:0"
 goslin_parser.parse(lipid_name)
-if goslin_parser.word_in_grammar:
-    lipid = goslin_parser_event_handler.lipid
+lipid = goslin_parser_event_handler.lipid
+if lipid != None:
+    print(lipid.get_lipid_string())
+    
+    
+    
+    
+from pygoslin.parser.Parser import GoslinFragmentParser
+goslin_fragment_parser = GoslinFragmentParser()
+goslin_fragment_parser_event_handler = goslin_fragment_parser.event_handler
+
+lipid_name = "DAG 18:1-12:0 - -(H2O)"
+goslin_fragment_parser.parse(lipid_name)
+lipid = goslin_fragment_parser_event_handler.lipid
+if lipid != None:
+    print(lipid.get_lipid_string())
+    print(lipid.get_lipid_fragment_string())
+    
+    
+    
+    
+from pygoslin.parser.Parser import LipidMapsParser
+lipid_maps_parser = LipidMapsParser()
+lipid_maps_parser_event_handler = lipid_maps_parser.event_handler
+
+lipid_name = "C 18:1;2/12:0"
+lipid_maps_parser.parse(lipid_name)
+lipid = lipid_maps_parser_event_handler.lipid
+if lipid != None:
     print(lipid.get_lipid_string())
 ```
 
+Be aware, that with this method you retrieve the lipid not from the parser class, but from the event according handler class. To be as generic as possible, no treatment of validation of the fragment is conducted within the GoslinFragmentParser.

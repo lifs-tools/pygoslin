@@ -4,6 +4,7 @@ from os import path
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
+import pygoslin
 
 class Context(Enum):
     NoContext = 1
@@ -552,8 +553,8 @@ class Parser:
         
         
     def parse_regular(self, text_to_parse):
-        self.wordInGrammar = False
-        parse_tree = None
+        self.word_in_grammar = False
+        self.parse_tree = None
         n = len(text_to_parse)
         # dp stands for dynamic programming, nothing else
         dp_table = [None for x in range(n)]
@@ -617,11 +618,36 @@ class Parser:
 class GoslinParser(Parser):
     def __init__(self):
         self.event_handler = GoslinParserEventHandler()
-        super().__init__(self.event_handler, "data/goslin/Goslin.g4", Parser.DEFAULT_QUOTE)
+        dir_name = path.dirname(pygoslin.__file__)
+        super().__init__(self.event_handler, dir_name + "/data/goslin/Goslin.g4", Parser.DEFAULT_QUOTE)
         
         
         
 class GoslinFragmentParser(Parser):
     def __init__(self):
         self.event_handler = GoslinFragmentParserEventHandler()
-        super().__init__(self.event_handler, "data/goslin/Goslin-Fragments.g4", Parser.DEFAULT_QUOTE)
+        dir_name = path.dirname(pygoslin.__file__)
+        super().__init__(self.event_handler, dir_name + "/data/goslin/GoslinFragments.g4", Parser.DEFAULT_QUOTE)
+        
+        
+class LipidParser:
+    
+    def __init__(self):
+        self.parser = None
+        self.lipid = None
+        self.event_handler = None
+        
+        self.parser_list = [GoslinParser(), GoslinFragmentParser()]
+        
+    def parse(self, lipid_name):
+        self.parser = None
+        self.lipid = None
+        self.event_handler = None
+        
+        for parser in self.parser_list:
+            parser.parse(lipid_name)
+            if parser.word_in_grammar:
+                self.parser = parser
+                self.event_handler = parser.event_handler
+                self.lipid = self.event_handler.lipid
+                break
