@@ -149,7 +149,7 @@ class ParserTest(unittest.TestCase):
         goslin_parser.raise_events()
         lipid = goslin_parser_event_handler.lipid
 
-        print(lipid.get_lipid_string())
+        assert lipid.get_lipid_string() == "PE 16:1/12:0[M+H]1+"
         
         
     
