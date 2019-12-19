@@ -1,4 +1,4 @@
-from domain.StructuralFattyAcid import StructuralFattyAcid
+from pygoslin.domain.StructuralFattyAcid import StructuralFattyAcid
 
 class IsomericFattyAcid(StructuralFattyAcid):
 

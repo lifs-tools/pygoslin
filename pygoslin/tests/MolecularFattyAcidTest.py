@@ -1,8 +1,8 @@
 import unittest
 
-from domain.LipidFaBondType import LipidFaBondType
-from domain.MolecularFattyAcid import MolecularFattyAcid
-from domain.LipidExceptions import *
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.MolecularFattyAcid import MolecularFattyAcid
+from pygoslin.domain.LipidExceptions import *
 
 class MolecularFattyAcidTest(unittest.TestCase):
     

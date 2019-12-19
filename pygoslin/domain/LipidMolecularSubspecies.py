@@ -1,8 +1,8 @@
-from domain.LipidSpecies import LipidSpecies
-from domain.LipidFaBondType import LipidFaBondType
-from domain.LipidExceptions import ConstraintViolationException
-from domain.LipidSpeciesInfo import LipidSpeciesInfo
-from domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.LipidExceptions import ConstraintViolationException
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidLevel import LipidLevel
 
 class LipidMolecularSubspecies(LipidSpecies):
 

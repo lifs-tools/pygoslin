@@ -1,4 +1,4 @@
-from domain.LipidCategory import LipidCategory
+from pygoslin.domain.LipidCategory import LipidCategory
 from enum import Enum
 
 class LipidClass(Enum):

@@ -1,7 +1,7 @@
-from domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from domain.LipidFaBondType import LipidFaBondType
-from domain.LipidSpeciesInfo import LipidSpeciesInfo
-from domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidLevel import LipidLevel
 
 class LipidStructuralSubspecies(LipidMolecularSubspecies):
 

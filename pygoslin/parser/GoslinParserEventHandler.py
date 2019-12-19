@@ -1,13 +1,13 @@
-from parser.BaseParserEventHandler import BaseParserEventHandler
-from domain.LipidAdduct import LipidAdduct
-from domain.LipidLevel import LipidLevel
-from domain.MolecularFattyAcid import MolecularFattyAcid
-from domain.LipidFaBondType import LipidFaBondType
-from domain.LipidSpeciesInfo import LipidSpeciesInfo
-from domain.LipidSpecies import LipidSpecies
-from domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from domain.StructuralFattyAcid import StructuralFattyAcid
+from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.domain.LipidAdduct import LipidAdduct
+from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.MolecularFattyAcid import MolecularFattyAcid
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
+from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
+from pygoslin.domain.StructuralFattyAcid import StructuralFattyAcid
 
 class GoslinParserEventHandler(BaseParserEventHandler):
     

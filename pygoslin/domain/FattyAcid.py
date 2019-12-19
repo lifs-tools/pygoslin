@@ -1,4 +1,4 @@
-from domain.LipidExceptions import *
+from pygoslin.domain.LipidExceptions import *
 
 class FattyAcid:
 

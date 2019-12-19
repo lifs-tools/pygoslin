@@ -1,5 +1,5 @@
-from domain.FattyAcid import FattyAcid
-from domain.LipidExceptions import ConstraintViolationException
+from pygoslin.domain.FattyAcid import FattyAcid
+from pygoslin.domain.LipidExceptions import ConstraintViolationException
 
 class MolecularFattyAcid(FattyAcid):
     

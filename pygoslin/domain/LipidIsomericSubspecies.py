@@ -1,4 +1,4 @@
-from domain.LipidStructuralSubspecies import LipidStructuralSubspecies
+from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 
 class LipidIsomericSubspecies(LipidStructuralSubspecies):
 

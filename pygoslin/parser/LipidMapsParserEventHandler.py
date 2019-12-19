@@ -1,4 +1,4 @@
-from parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 
 class LipidMapsParserEventHandler(BaseParserEventHandler):
     pass

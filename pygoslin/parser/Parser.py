@@ -128,6 +128,7 @@ class Parser:
     EOF_SIGN = chr(1)
     EOF_RULE = 1
     START_RULE = 2
+    DEFAULT_QUOTE = "'"
     
     
     
@@ -143,7 +144,7 @@ class Parser:
     
     
     
-    def __init__(self, _parserEventHandler, grammar_filename, _quote = '"'):
+    def __init__(self, _parserEventHandler, grammar_filename, _quote = DEFAULT_QUOTE):
         self.next_free_rule_index = Parser.START_RULE
         self.TtoNT = {}
         self.NTtoNT = {}
@@ -275,7 +276,7 @@ class Parser:
     
     
     
-    def extract_text_based_rules(grammar_filename, quote):
+    def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
         grammar = ""
         with open(grammar_filename, mode = "rt") as infile:
             grammar = infile.read() + "\n";
@@ -372,7 +373,7 @@ class Parser:
     
     
     
-    def split_string(text, separator, quote):
+    def split_string(text, separator, quote = DEFAULT_QUOTE):
         in_quote = False
         tokens = []
         sb = []
