@@ -1,6 +1,10 @@
 from enum import Enum
 from os import path
 
+from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
+from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
+from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
+
 class Context(Enum):
     NoContext = 1
     InLineComment = 2
@@ -496,7 +500,7 @@ class Parser:
         
         
     
-    def raise_events(self, node = None):
+    def raise_events(self, node):
         if node != None:
             node_rule_name = self.NTtoRule[node.rule_index] if node.fire_event else ""
             if node.fire_event: self.parser_event_handler.handle_event(node_rule_name + "_pre_event", node)
@@ -507,8 +511,6 @@ class Parser:
                 
             if node.fire_event: self.parser_event_handler.handle_event(node_rule_name + "_post_event", node)
             
-        else:
-            if self.parse_tree != None: self.raise_events(self.parse_tree)
     
     
     
@@ -607,6 +609,19 @@ class Parser:
                 self.word_in_grammar = True
                 self.parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
                 self.fill_tree(self.parse_tree, dp_table[0][i][Parser.START_RULE])
+                self.raise_events(self.parse_tree)
                 break
         
+    
+    
+class GoslinParser(Parser):
+    def __init__(self):
+        self.event_handler = GoslinParserEventHandler()
+        super().__init__(self.event_handler, "data/goslin/Goslin.g4", Parser.DEFAULT_QUOTE)
         
+        
+        
+class GoslinFragmentParser(Parser):
+    def __init__(self):
+        self.event_handler = GoslinFragmentParserEventHandler()
+        super().__init__(self.event_handler, "data/goslin/Goslin-Fragments.g4", Parser.DEFAULT_QUOTE)

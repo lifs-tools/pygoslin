@@ -39,7 +39,6 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_species_pre_event"] = self.set_species_level
         self.registered_events["chc_pre_event"] = self.set_species_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
-        self.registered_events["mediatorc_pre_event"] = self.set_species_level
         
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_subspecies_level
@@ -88,11 +87,6 @@ class GoslinParserEventHandler(BaseParserEventHandler):
     def new_fa(self, node):
         if self.level == LipidLevel.SPECIES:
             self.current_fa = LipidSpeciesInfo()
-            self.current_fa.level = None
-            self.current_fa.num_carbon = None
-            self.current_fa.num_hydroxyl = None
-            self.current_fa.num_double_bonds = None
-            self.current_fa.lipid_FA_bond_type = None
             
         elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
             self.current_fa = MolecularFattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, -1)
@@ -103,7 +97,8 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
     def new_lcb(self, node):
         if self.level == LipidLevel.SPECIES:
-            self.lcb = StructuralFattyAcid()
+            self.lcb = LipidSpeciesInfo()
+            self.lcb.lipid_FA_bond_type = LipidFaBondType.ESTER
             
         elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
             self.lcb = StructuralFattyAcid("LCB", 2, 0, 1, LipidFaBondType.ESTER, True, 1)
@@ -131,8 +126,15 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         lipid = None
         
+        
+        
         if self.level == LipidLevel.SPECIES:
-            lipid = LipidSpecies(self.head_group, self.fa_list[0])
+            if len(self.fa_list) > 0:
+                lipid_species_info = LipidSpeciesInfo(self.fa_list[0])
+                lipid_species_info.level = LipidLevel.SPECIES
+                lipid = LipidSpecies(self.head_group, lipid_species_info = lipid_species_info)
+            else:
+                lipid = LipidSpecies(self.head_group)
             
         elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
             lipid = LipidMolecularSubspecies(self.head_group, self.fa_list)

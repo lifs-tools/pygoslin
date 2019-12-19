@@ -53,7 +53,9 @@ class LipidMolecularSubspecies(LipidSpecies):
             num_hydroxyl = fatty_acid.num_hydroxyl
             fa_strings.append("%i:%i%s%s" % (num_carbon, num_double_bonds, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", fatty_acid.lipid_FA_bond_type.suffix()))
             
-        return self.head_group + " " + fa_separator.join(fa_strings)
+        fa_string = " " + fa_separator.join(fa_strings) if len(fa_strings) > 0 else ""
+            
+        return self.head_group + fa_string
     
     
     

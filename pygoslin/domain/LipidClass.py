@@ -6,22 +6,24 @@ class LipidClass(Enum):
     UNDEFINED = (LipidCategory.UNDEFINED, "UNDEFINED", "Undefined lipid class")
     
     ## Fatty acyls [FA] Fatty acids and conjugates [FA01]
-    FA = (LipidCategory.FA, "Fatty acids and conjugates [FA01]", "FA")
+    FA = (LipidCategory.FA, "Fatty acids and conjugates [FA01]", "FA", "10-HDoHE","11-HDoHE","11-HETE","11,12-DHET","11(12)-EET", "12-HEPE","12-HETE","12-HHTrE","12-OxoETE","12(13)-EpOME","13-HODE","13-HOTrE","14,15-DHET","14(15)-EET","14(15)-EpETE","15-HEPE","15-HETE","15d-PGJ2","16-HDoHE","16-HETE","18-HEPE","5-HEPE","5-HETE","5-HpETE","5-OxoETE","5,12-DiHETE","5,6-DiHETE","5,6,15-LXA4","5(6)-EET","8-HDoHE","8-HETE","8,9-DHET","8(9)-EET","9-HEPE","9-HETE","9-HODE","9-HOTrE","9(10)-EpOME","AA","alpha-LA","DHA","EPA","Linoleic acid","LTB4","LTC4","LTD4","Maresin 1","Palmitic acid","PGB2","PGD2","PGE2","PGF2alpha","PGI2","Resolvin D1","Resolvin D2","Resolvin D3","Resolvin D5","tetranor-12-HETE","TXB1","TXB2","TXB3")
     
-    ## Glycerolipids [GL] Monoradylglycerols [GL01]
-    MG = (LipidCategory.GL, "Monoradylglycerols [GL01]", "MG", "MAG")
+    ## Glycerolipids [GL]
+    MG = (LipidCategory.GL, "Monoradylglycerols [GL01]", "MG", "MAG") ## Glycerolipids [GL] Monoradylglycerols [GL01]
+    DG = (LipidCategory.GL, "Diradylglycerols [GL02]", "DG", "DAG") ## Diradylglycerols [GL02]
+    TG = (LipidCategory.GL, "Triradylglycerols [GL03]", "TG", "TAG") ## Triradylglycerols [GL03]
+    MGDG = (LipidCategory.GL, "Glycosyldiradylglycerols [GL05]", "MGDG")
+    DGDG = (LipidCategory.GL, "Glycosyldiradylglycerols [GL05]", "DGDG")
+    SQDG = (LipidCategory.GL, "Glycosyldiradylglycerols [GL05]", "SQDG")
     
-    ## Diradylglycerols [GL02]
-    DG = (LipidCategory.GL, "Diradylglycerols [GL02]", "DG", "DAG")
     
-    ## Triradylglycerols [GL03]
-    TG = (LipidCategory.GL, "Triradylglycerols [GL03]", "TG", "TAG")
     
     # TODO: there are some newer categories in LipidMaps, like Glycosylmono/di-radylglycerols, SQMG and SQDG */
     ## Glycerophospholipids [GP]
     BMP = (LipidCategory.GP, "Monoacylglycerophosphomonoradylglycerols [GP0410]", "BMP")
+    CDPDAG = (LipidCategory.GP, "CDP-Glycerols [GP13]", "CDPDAG")
     CL = (LipidCategory.GP, "Glycerophosphoglycerophosphoglycerols [GP12]", "CL")
-    MLCL = (LipidCategory.GP, "Glycerophosphoglycerophosphoglycerols [GP12]", "CL")
+    MLCL = (LipidCategory.GP, "Glycerophosphoglycerophosphoglycerols [GP12]", "MLCL")
     PA = (LipidCategory.GP, "Glycerophosphates [GP10]", "PA")
     LPA = (LipidCategory.GP, "Glycerophosphates [GP10]", "LPA")
     PC = (LipidCategory.GP, "Glycerophosphocholines [GP01]", "PC")
@@ -30,6 +32,7 @@ class LipidClass(Enum):
     LPC_O = (LipidCategory.GP, "Glycerophosphocholines [GP01]", "LPC O")
     PE = (LipidCategory.GP, "Glycerophosphoethanolamines [GP02]", "PE")
     PE_O = (LipidCategory.GP, "Glycerophosphoethanolamines [GP02]", "PE O")
+    PET = (LipidCategory.GP, "Glycerophosphoethanolamines [GP02]", "PEt")
     LPE = (LipidCategory.GP, "Glycerophosphoethanolamines [GP02]", "LPE")
     LPE_O = (LipidCategory.GP, "Glycerophosphoethanolamines [GP02]", "LPE O")
     PG = (LipidCategory.GP, "Glycerophosphoglycerols [GP04]", "PG")
@@ -46,6 +49,9 @@ class LipidClass(Enum):
     PIP2_3p_5p = (LipidCategory.GP, "Glycerophosphoinositol bisphosphates [GP08]", "PIP2[3',5']")
     PIP3 = (LipidCategory.GP, "Glycerophosphoinositol trisphosphates [GP09]", "PIP3")
     PS = (LipidCategory.GP, "Glycerophosphoserines [GP03]", "PS")
+    LPS = (LipidCategory.GP, "Glycerophosphoserines [GP03]", "LPS")
+    
+    
     
     ## Sphingolipids
     CER = (LipidCategory.SP, "Ceramides [SP02]", "Cer")
@@ -59,6 +65,9 @@ class LipidClass(Enum):
     HEX2CER = (LipidCategory.SP, "Neutral glycosphingolipids [SP05]", "Hex2Cer")
     HEX3CER = (LipidCategory.SP, "Neutral glycosphingolipids [SP05]", "Hex3Cer")
     LACCER = (LipidCategory.SP, "Neutral glycosphingolipids [SP05]", "LacCer")
+    SHEXCER = (LipidCategory.SP, "Acidic glycosphingolipids [SP06]", "SHexCer")
+    LCB = (LipidCategory.SP, "Sphingoid bases [SP01]", "LCB")
+    
     
     ## Sterol lipids
     ST = (LipidCategory.ST, "Sterols [ST01]", "ST")
