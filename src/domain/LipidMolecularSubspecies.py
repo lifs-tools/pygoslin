@@ -1,8 +1,8 @@
-from .LipidSpecies import LipidSpecies
-from .LipidFaBondType import LipidFaBondType
-from .LipidExceptions import ConstraintViolationException
-from .LipidSpeciesInfo import LipidSpeciesInfo
-from .LipidLevel import LipidLevel
+from domain.LipidSpecies import LipidSpecies
+from domain.LipidFaBondType import LipidFaBondType
+from domain.LipidExceptions import ConstraintViolationException
+from domain.LipidSpeciesInfo import LipidSpeciesInfo
+from domain.LipidLevel import LipidLevel
 
 class LipidMolecularSubspecies(LipidSpecies):
 

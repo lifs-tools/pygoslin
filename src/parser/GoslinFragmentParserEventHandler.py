@@ -1,4 +1,4 @@
-from .BaseParserEventHandler import BaseParserEventHandler
+from parser.BaseParserEventHandler import BaseParserEventHandler
 from domain.LipidAdduct import LipidAdduct
 from domain.LipidLevel import LipidLevel
 from domain.MolecularFattyAcid import MolecularFattyAcid

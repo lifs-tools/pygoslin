@@ -1,4 +1,4 @@
-from .LipidStructuralSubspecies import LipidStructuralSubspecies
+from domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 
 class LipidIsomericSubspecies(LipidStructuralSubspecies):
 

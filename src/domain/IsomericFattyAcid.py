@@ -1,4 +1,4 @@
-from .StructuralFattyAcid import StructuralFattyAcid
+from domain.StructuralFattyAcid import StructuralFattyAcid
 
 class IsomericFattyAcid(StructuralFattyAcid):
 

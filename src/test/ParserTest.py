@@ -67,7 +67,7 @@ class ParserTest(unittest.TestCase):
     def test_lipid_fragment_success(self):
     
         goslin_fragment_parser_event_handler = GoslinFragmentParserEventHandler()
-        goslin_fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin-Fragments.g4", ParserTest.PARSER_QUOTE)
+        goslin_fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/../data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)
         
         
         lipid_name = "PE 16:1-12:0 - -(H20)"
@@ -154,7 +154,7 @@ class ParserTest(unittest.TestCase):
         
         
         goslin_fragment_parser_event_handler = GoslinFragmentParserEventHandler()
-        fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/../data/goslin/Goslin-Fragments.g4", ParserTest.PARSER_QUOTE)
+        fragment_parser = Parser(goslin_fragment_parser_event_handler, os.path.abspath(".") + "/../data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)
         
         
         lipid_maps_parser_event_handler = LipidMapsParserEventHandler()
@@ -166,7 +166,6 @@ class ParserTest(unittest.TestCase):
         
         
         for lipidname in lipidnames:
-            print("check: %s" % lipidname)
             found = False
             for pp in parsers:
                 prs, handler = pp

@@ -1,5 +1,5 @@
-from .FattyAcid import FattyAcid
-from .LipidExceptions import ConstraintViolationException
+from domain.FattyAcid import FattyAcid
+from domain.LipidExceptions import ConstraintViolationException
 
 class MolecularFattyAcid(FattyAcid):
     

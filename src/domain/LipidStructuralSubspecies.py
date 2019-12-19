@@ -1,7 +1,7 @@
-from .LipidMolecularSubspecies import LipidMolecularSubspecies
-from . LipidFaBondType import LipidFaBondType
-from . LipidSpeciesInfo import LipidSpeciesInfo
-from . LipidLevel import LipidLevel
+from domain.LipidMolecularSubspecies import LipidMolecularSubspecies
+from domain.LipidFaBondType import LipidFaBondType
+from domain.LipidSpeciesInfo import LipidSpeciesInfo
+from domain.LipidLevel import LipidLevel
 
 class LipidStructuralSubspecies(LipidMolecularSubspecies):
 

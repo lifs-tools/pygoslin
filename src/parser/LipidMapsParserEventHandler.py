@@ -1,4 +1,4 @@
-from .BaseParserEventHandler import BaseParserEventHandler
+from parser.BaseParserEventHandler import BaseParserEventHandler
 
 class LipidMapsParserEventHandler(BaseParserEventHandler):
     pass
