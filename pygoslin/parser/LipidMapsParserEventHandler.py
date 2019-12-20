@@ -1,5 +1,10 @@
 from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.StructuralFattyAcid import StructuralFattyAcid
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
+from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
+from pygoslin.domain.LipidAdduct import LipidAdduct
 
 class LipidMapsParserEventHandler(BaseParserEventHandler):
     def __init__(self):
@@ -42,8 +47,12 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
+        self.registered_events["hydroxyl_lcb_pre_event"] = self.add_hydroxyl_lcb
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
+        
+        self.registered_events["mod_text_pre_event"] = self.increment_hydroxyl
+        
         
         
     def reset_lipid(self, node):
@@ -54,7 +63,11 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.fa_list = []
         self.current_fa = None
         self.use_head_group = False
+        self.omit_fa = False
         
+        
+    def set_molecular_subspecies_level(self, node):
+        self.level = LipidLevel.MOLECULAR_SUBSPECIES
         
         
     def mediator_event(self, node):
@@ -68,6 +81,10 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
     def set_species_level(self, node):
         self.level = LipidLevel.SPECIES
         
+        
+    def increment_hydroxyl(self, node):
+        if node.get_text() == "OH":
+            self.current_fa.num_hydroxyl += 1
         
           
     def new_fa(self, node):
@@ -101,7 +118,8 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         if self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
             self.current_fa.position = len(self.fa_list) + 1
             
-        self.fa_list.append(self.current_fa)
+        if self.current_fa.num_carbon > 0: self.fa_list.append(self.current_fa)
+        else: self.omit_fa = True
         self.current_fa = None
         
         
@@ -113,10 +131,13 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def add_hydroxyl(self, node):
+        self.current_fa.num_hydroxyl = int(node.get_text())
+        
+    def add_hydroxyl_lcb(self, node):
         hydroxyl = node.get_text()
         if hydroxyl == "m": self.current_fa.num_hydroxyl = 1
-        if hydroxyl == "d": self.current_fa.num_hydroxyl = 2
-        if hydroxyl == "t": self.current_fa.num_hydroxyl = 3
+        elif hydroxyl == "d": self.current_fa.num_hydroxyl = 2
+        elif hydroxyl == "t": self.current_fa.num_hydroxyl = 3
         
         
     def add_double_bonds(self, node):
@@ -127,10 +148,13 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.current_fa.num_carbon = int(node.get_text())
         
         
-        
-        
-        
+
     def build_lipid(self, node):
+        
+        if self.omit_fa and self.head_group in set(["PA", "PC", "PE", "PG", "PI", "PS"]):
+            self.head_group = "L" + self.head_group
+        
+        
         if self.lcb != None:
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
@@ -155,6 +179,5 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
     
         self.lipid = LipidAdduct()
         self.lipid.lipid = lipid
-        self.lipid.adduct = self.adduct
         
         

@@ -58,7 +58,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         
         fa_string = " " + fa_separator.join(fa_strings) if len(fa_strings) > 0 else ""
             
-        return (self.lipid_class.value[2] if not self.use_headgroup else self.head_group) + fa_string
+        return (self.lipid_class.value[2] if not self.use_head_group else self.head_group) + fa_string
     
     
     

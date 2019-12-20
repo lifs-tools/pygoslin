@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from pygoslin.parser.Parser import Parser, Bitfield, GoslinParser, LipidParser
+from pygoslin.parser.Parser import Parser, Bitfield, GoslinParser, LipidParser, LipidMapsParser
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
@@ -48,6 +48,33 @@ class ParserTest(unittest.TestCase):
         assert lipid_parser.lipid != None
         assert lipid_parser.lipid.get_lipid_string() == "PE O-16:1p/12:0"
         
+        
+        
+        
+        
+    def test_lipid_maps(self):
+        lipid_maps_parser = LipidMapsParser()
+        lipid_maps_parser_event_handler = lipid_maps_parser.event_handler
+        
+        for lipid_name_input, lipid_name_output in [["PA(16:1/12:0)", "PA 16:1/12:0"],
+                           ["PC(O-14:0/0:0)", "LPC O-14:0a"],
+                           ["SQMG(16:1(11Z)/0:0)", "SQMG 16:1"],
+                           ["TG(13:0/22:3(10Z,13Z,16Z)/22:5(7Z,10Z,13Z,16Z,19Z))[iso6]", "TAG 13:0/22:3/22:5"],
+                           ["13R-HODE", "13R-HODE"],
+                           ["CL(1'-[20:0/20:0],3'-[20:4(5Z,8Z,11Z,14Z)/18:2(9Z,12Z)])", "CL 20:0/20:0/20:4/18:2"],
+                           ["PA(P-20:0/18:3(6Z,9Z,12Z))", "PA 20:0p/18:3"],
+                           ["M(IP)2C(t18:0/20:0(2OH))", "M(IP)2C 18:0;3/20:0;1"],
+                           ["Cer(d16:2(4E,6E)/22:0(2OH))", "Cer 16:2;2/22:0;1"],
+                           ["MG(18:1(11E)/0:0/0:0)[rac]", "MAG 18:1"],
+                           ["PAT18(24:1(2E)(2Me,4Me[S],6Me[S])/25:1(2E)(2Me,4Me[S],6Me[S])/26:1(2E)(2Me,4Me[S],6Me[S])/24:1(2E)(2Me,4Me[S],6Me[S]))", "PAT18 24:1/25:1/26:1/24:1"],
+                           ["(3'-sulfo)Galbeta-Cer(d18:1/20:0)", "SHexCer 18:1;2/20:0"],
+                           ["GlcCer(d15:2(4E,6E)/22:0(2OH))", "HexCer 15:2;2/22:0;1"]
+                          ]:
+            lipid_maps_parser.parse(lipid_name_input)
+
+            assert lipid_maps_parser_event_handler.lipid != None
+            assert lipid_maps_parser_event_handler.lipid.get_lipid_string() == lipid_name_output
+        
 
 
     def test_lyso(self):
@@ -71,6 +98,9 @@ class ParserTest(unittest.TestCase):
         lipid_name = "LPE O-16:1p/12:0"
         lipid_parser.parse(lipid_name)
         assert lipid_parser.lipid == None
+
+
+
 
     
     def test_tree_node(self):
@@ -193,7 +223,7 @@ class ParserTest(unittest.TestCase):
         assert goslin_parser_event_handler.lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "TAG 16:1/12:0/20:2"
         assert goslin_parser_event_handler.lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "TAG 16:1_12:0_20:2"
         assert goslin_parser_event_handler.lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "TAG 48:3"
-        assert goslin_parser_event_handler.lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "TG"
+        assert goslin_parser_event_handler.lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "TAG"
         assert goslin_parser_event_handler.lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GL"
         
         ## sterol

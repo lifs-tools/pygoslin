@@ -117,7 +117,6 @@ class LipidClass(Enum):
     PIM5 = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PIM5")
     PIM6 = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PIM6")
     GLCDG = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "Glc-DG")
-    PGP = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PGP")
     PENME2 = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PE-NMe2")
     AC2SGL = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "AC2SGL")
     DAT = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "DAT")
@@ -177,9 +176,9 @@ class LipidClass(Enum):
 
     def get_category(name):
         class_to_category = {key: lipid_class.value[0] for lipid_class in LipidClass for key in lipid_class.value[2:]}
-        return class_to_category[name]
+        return class_to_category[name] if name in class_to_category else LipidCategory.UNDEFINED
     
     def get_class(name):
         class_to_class = {key: lipid_class for lipid_class in LipidClass for key in lipid_class.value[2:]}
-        return class_to_class[name]
+        return class_to_class[name] if name in class_to_class else LipidClass.UNDEFINED
         
