@@ -7,7 +7,7 @@ This is the Goslin reference implementation  for Python 3.
 The pygoslin has been developed with regard the following general issues:
 
 1. Ease the handling with lipid names for developers working on mass spectrometry-based lipidomics tools.
-2. Offering a tool to unify all existing dialects of lipids.
+2. Offering a tool to unify all existing dialects of lipid names.
 
 
 ## Installation
@@ -20,7 +20,7 @@ python3-pip
 make (optional)
 ```
 
-To install the package globally in your python distribution, simply type:
+To install the package globally in your Python distribution, simply type:
 
 ```
 [sudo] make install
@@ -52,7 +52,7 @@ python3 -m unittest pygoslin.tests.ParserTest
 
 ### Using pygoslin
 
-The two major function within pygoslin are the parsing and printing of lipid names. You have several options, to access these functions. This example will demonstrate both functions the easiest way. Open a Python shell and type in:
+The two major functions within pygoslin are the parsing and printing of lipid names. You have several options, to access these functions. This example will demonstrate both functions the easiest way. Open a Python shell and type in:
 
 
 ```
@@ -68,14 +68,14 @@ if lipid != None:
 
 ```
 
-Be aware, that this method is subsequencially using all available parsers until the first parser hits a lipid name. Currently, three parsers are available, namely:
+Be aware, that this method is subsequencially using all available grammars until a lipid name can be described by the first grammar. Currently, three grammars are available, namely:
 ```
-GoslinParser
-GoslinFragmentParser
-LipidMapsParser
+Goslin
+GoslinFragment
+LipidMaps
 ```
 
-To use a specific parser, you can use the following code:
+To use a specific grammar / parser, you can use the following code:
 
 
 ```
