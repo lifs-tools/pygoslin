@@ -1,6 +1,6 @@
 # Python3 implementation for Goslin
 
-This is the Goslin reference implementation  for Python 3.
+This is the Goslin reference implementation for Python 3.
 
 > **_NOTE:_**  This is an *early* development version, please use at your own risk and report issues to help improve it!
 
