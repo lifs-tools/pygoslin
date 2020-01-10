@@ -97,27 +97,6 @@ class ParserTest(unittest.TestCase):
         lipid_name = "LPE O-16:1p/12:0"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid == None
-
-
-
-
-    
-    def test_tree_node(self):
-        goslin_parser = GoslinParser()
-        
-        lipid_name = "PE 16:1-12:0"
-        lipid = goslin_parser.parse(lipid_name)
-        
-        assert lipid != None
-        assert lipid_name == goslin_parser.parse_tree.get_text()
-        
-        
-        lipid_name = "Cer 18:1;2/12:0"
-        lipid = goslin_parser.parse(lipid_name)
-        
-        assert lipid != None
-        assert lipid_name == lipid.get_lipid_string()
-        
         
         
         
