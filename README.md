@@ -60,8 +60,7 @@ from pygoslin.parser.Parser import LipidParser
 lipid_parser = LipidParser()
 
 lipid_name = "PE 16:1-12:0"
-lipid_parser.parse(lipid_name)
-lipid = lipid_parser.lipid
+lipid = lipid_parser.parse(lipid_name)
 
 if lipid != None:
     print(lipid.get_lipid_string())
