@@ -109,5 +109,4 @@ lipid = lipid_maps_parser.parse(lipid_name)
 if lipid != None:
     print(lipid.get_lipid_string())
 ```
-
-Be aware, that with this method you retrieve the lipid not from the parser class, but from the event according handler class. To be as generic as possible, no treatment of validation of the fragment is conducted within the GoslinFragmentParser.
+To be as generic as possible, no treatment of validation of the fragment is conducted within the GoslinFragmentParser.
