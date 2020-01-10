@@ -132,9 +132,7 @@ class ParserTest(unittest.TestCase):
     
     @unittest.expectedFailure
     def test_lipid_fragment_fail(self):
-    
-        goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
+        goslin_parser = Parser(GoslinParserEventHandler(), "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         
         lipid_name = "PE 16:1-12:0 - -(H20)"
@@ -147,9 +145,7 @@ class ParserTest(unittest.TestCase):
         
         
     def test_lipid_fragment_success(self):
-    
-        goslin_fragment_parser_event_handler = GoslinFragmentParserEventHandler()
-        goslin_fragment_parser = Parser(goslin_fragment_parser_event_handler, "pygoslin/data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)
+        goslin_fragment_parser = Parser(GoslinFragmentParserEventHandler(), "pygoslin/data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)
         
         
         lipid_name = "PE 16:1-12:0 - -(H20)"
@@ -164,8 +160,7 @@ class ParserTest(unittest.TestCase):
         
         
     def test_lipid_names(self):
-        goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
+        goslin_parser = Parser(GoslinParserEventHandler(), "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         ## glycerophospholipid
         lipid_name = "PE 16:1/12:0"
