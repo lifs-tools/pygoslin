@@ -4,6 +4,8 @@ from os import path
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
+from itertools import product as iter_product
+from itertools import combinations as iter_combinations
 import pygoslin
 
 class Context(Enum):
@@ -24,11 +26,13 @@ class MatchWords(Enum):
 # DP stands for dynamic programming
 class DPNode:
     
-    def __init__(self, _rule1, _rule2, _left, _right):
-        self.rule_index_1 = _rule1
-        self.rule_index_2 = _rule2
-        self.left = _left
-        self.right = _right
+    def __init__(self, _rule1, _rule2):
+        #self.rule_index_1 = _rule1
+        #self.rule_index_2 = _rule2
+        #self.left = _left
+        #self.right = _right
+        self.rule_index_1, self.left = _rule1
+        self.rule_index_2, self.right = _rule2
         
         
         
@@ -53,10 +57,10 @@ class TreeNode:
         
         
         
-def ulong(num): return num & ((1 << 64) - 1)
         
-        
-        
+     
+def compute_rule_key(rule_index_1, rule_index_2):
+    return ((rule_index_1 << Parser.SHIFT) | rule_index_2) & 18446744073709551615
         
         
         
@@ -161,7 +165,7 @@ class Parser:
                         rule_index_2 = non_terminal_rules.pop()
                         rule_index_1 = non_terminal_rules.pop()
                         
-                        key = Parser.compute_rule_key(rule_index_1, rule_index_2)
+                        key = compute_rule_key(rule_index_1, rule_index_2)
                         next_index = self.get_next_free_rule_index()
                         if key not in self.NTtoNT: self.NTtoNT[key] = set()
                         self.NTtoNT[key].add(next_index)
@@ -172,7 +176,7 @@ class Parser:
                     if len(non_terminal_rules) == 2:
                         rule_index_2 = non_terminal_rules[1]
                         rule_index_1 = non_terminal_rules[0]
-                        key = Parser.compute_rule_key(rule_index_1, rule_index_2)
+                        key = compute_rule_key(rule_index_1, rule_index_2)
                         if key not in self.NTtoNT: self.NTtoNT[key] = set()
                         self.NTtoNT[key].add(new_rule_index)
                     
@@ -204,7 +208,7 @@ class Parser:
             for rule in rules:
                 for p in self.collect_one_backwards(rule):
                     
-                    key = Parser.compute_rule_key(p, rule)
+                    key = compute_rule_key(p, rule)
                     self.TtoNT[c].add(key)
         
         self.originalNTtoNT = {k: set(v) for k, v in self.NTtoNT.items()}
@@ -306,8 +310,6 @@ class Parser:
     
     
     
-    def compute_rule_key(rule_index_1, rule_index_2):
-        return ulong((rule_index_1 << Parser.SHIFT) | rule_index_2)
     
     
     
@@ -387,7 +389,7 @@ class Parser:
             
             next_index = self.get_next_free_rule_index()
             
-            key = Parser.compute_rule_key(rule_index_1, rule_index_2)
+            key = compute_rule_key(rule_index_1, rule_index_2)
             if key not in self.NTtoNT: self.NTtoNT[key] = set()
             self.NTtoNT[key].add(next_index)
             terminal_rules.append(next_index)
@@ -450,7 +452,7 @@ class Parser:
     # filling the syntax tree including events
     def fill_tree(self, node, dp_node):
         # checking and extending nodes for single rule chains
-        key = Parser.compute_rule_key(dp_node.rule_index_1, dp_node.rule_index_2) if dp_node.left != None else dp_node.rule_index_2
+        key = compute_rule_key(dp_node.rule_index_1, dp_node.rule_index_2) if dp_node.left != None else dp_node.rule_index_2
         
         merged_rules = self.collect_backwards(key, node.rule_index)
         if merged_rules != None:
@@ -508,10 +510,12 @@ class Parser:
             for rule_index in sorted(self.TtoNT[c]):
                 new_key = rule_index >> Parser.SHIFT
                 old_key = rule_index & Parser.MASK
-                dp_node = DPNode(c, old_key, None, None)
+                #dp_node = DPNode(c, old_key, None, None)
+                dp_node = DPNode([c, None], [old_key, None])
                 dp_table[i][0][new_key] = dp_node
-                #Ks[i].set(0)
                 Ks[i].add(0)
+                
+                
                 
         
         for i in range (1, n):
@@ -521,22 +525,22 @@ class Parser:
                 Di = D[i]
                 jp1 = j + 1
                 
-                for k in list(Ks[j]):
-                    if k >= i: break
-                    if im1 - k not in Ks[jp1 + k]: continue
+                adding = False
                 
+                for k in Ks[j]:
+                    jpok = jp1 + k
+                    D1, D2 = D[k], dp_table[jpok][im1 - k]
+                    if im1 - k not in Ks[jpok]: continue
                 
+                    for index_pair_1, index_pair_2 in iter_product(D1, D2):
+                        key = compute_rule_key(index_pair_1, index_pair_2)
+                        
+                        if key not in self.NTtoNT: continue
+                        
+                        content = DPNode([index_pair_1, D1[index_pair_1]], [index_pair_2, D2[index_pair_2]])
+                        for rule_index in self.NTtoNT[key]: Di[rule_index] = content
                 
-                    for index_pair_1 in D[k].items():
-                        for index_pair_2 in dp_table[jp1 + k][im1 - k].items():
-                            key = Parser.compute_rule_key(index_pair_1[0], index_pair_2[0])
-                            
-                            if key not in self.NTtoNT: continue
-                            
-                            content = DPNode(index_pair_1[0], index_pair_2[0], index_pair_1[1], index_pair_2[1])
-                            Ks[j].add(i)
-                            for rule_index in self.NTtoNT[key]:
-                                Di[rule_index] = content
+                if len(D[i]) > 0: Ks[j].add(i)
         
         for i in range(n - 1, 0, -1):
             if Parser.START_RULE in dp_table[0][i]:
