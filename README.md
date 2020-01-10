@@ -62,8 +62,7 @@ lipid_parser = LipidParser()
 lipid_name = "PE 16:1-12:0"
 lipid = lipid_parser.parse(lipid_name)
 
-if lipid != None:
-    print(lipid.get_lipid_string())
+if lipid != None: print(lipid.get_lipid_string())
 
 ```
 
