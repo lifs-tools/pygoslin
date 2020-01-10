@@ -179,5 +179,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
     
         self.lipid = LipidAdduct()
         self.lipid.lipid = lipid
+        self.content = self.lipid
         
         

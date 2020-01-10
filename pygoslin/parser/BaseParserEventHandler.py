@@ -5,6 +5,7 @@ class BaseParserEventHandler:
         self.registered_events = {}
         self.rule_names = set()
         self.parser = None
+        self.content = None
     
     
     

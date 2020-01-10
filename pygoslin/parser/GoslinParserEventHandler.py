@@ -144,6 +144,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.lipid = LipidAdduct()
         self.lipid.lipid = lipid
         self.lipid.adduct = self.adduct
+        self.content = self.lipid
         
         
     def add_ether(self, node):

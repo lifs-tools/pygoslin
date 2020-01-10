@@ -548,13 +548,15 @@ class Parser:
         if self.used_eof: text_to_parse += Parser.EOF_SIGN
         
         self.parse_regular(text_to_parse)
-        
+        return self.parser_event_handler.content
         
         
         
     def parse_regular(self, text_to_parse):
         self.word_in_grammar = False
         self.parse_tree = None
+        self.parser_event_handler.content = None
+        
         n = len(text_to_parse)
         # dp stands for dynamic programming, nothing else
         dp_table = [None for x in range(n)]
@@ -580,6 +582,7 @@ class Parser:
                 dp_node = DPNode(c, old_key, None, None)
                 dp_table[i][0][new_key] = dp_node
                 Ks[i].set(0)
+                
         
         for i in range (1, n):
             im1 = i - 1
@@ -639,21 +642,13 @@ class LipidMapsParser(Parser):
         
 class LipidParser:
     def __init__(self):
-        self.parser = None
-        self.lipid = None
-        self.event_handler = None
-        
         self.parser_list = [GoslinParser(), GoslinFragmentParser(), LipidMapsParser()]
         
     def parse(self, lipid_name):
-        self.parser = None
-        self.lipid = None
-        self.event_handler = None
         
         for parser in self.parser_list:
-            parser.parse(lipid_name)
-            if parser.word_in_grammar:
-                self.parser = parser
-                self.event_handler = parser.event_handler
-                self.lipid = self.event_handler.lipid
-                break
+            lipid = parser.parse(lipid_name)
+            if lipid != None:
+                return lipid
+            
+        return None

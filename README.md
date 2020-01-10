@@ -82,11 +82,9 @@ To use a specific grammar / parser, you can use the following code:
 # using solely the Goslin parser
 from pygoslin.parser.Parser import GoslinParser
 goslin_parser = GoslinParser()
-goslin_parser_event_handler = goslin_parser.event_handler
 
 lipid_name = "Cer 18:1;2/12:0"
-goslin_parser.parse(lipid_name)
-lipid = goslin_parser_event_handler.lipid
+lipid = goslin_parser.parse(lipid_name)
 if lipid != None:
     print(lipid.get_lipid_string())
     
@@ -95,11 +93,9 @@ if lipid != None:
 # using solely the Goslin Fragment parser
 from pygoslin.parser.Parser import GoslinFragmentParser
 goslin_fragment_parser = GoslinFragmentParser()
-goslin_fragment_parser_event_handler = goslin_fragment_parser.event_handler
 
 lipid_name = "DAG 18:1-12:0 - -(H2O)"
-goslin_fragment_parser.parse(lipid_name)
-lipid = goslin_fragment_parser_event_handler.lipid
+lipid = goslin_fragment_parser.parse(lipid_name)
 if lipid != None:
     print(lipid.get_lipid_string())
     print(lipid.get_lipid_fragment_string())
@@ -109,11 +105,9 @@ if lipid != None:
 # using solely the LipidMaps parser
 from pygoslin.parser.Parser import LipidMapsParser
 lipid_maps_parser = LipidMapsParser()
-lipid_maps_parser_event_handler = lipid_maps_parser.event_handler
 
 lipid_name = "Cer(d18:1/12:0)"
-lipid_maps_parser.parse(lipid_name)
-lipid = lipid_maps_parser_event_handler.lipid
+lipid = lipid_maps_parser.parse(lipid_name)
 if lipid != None:
     print(lipid.get_lipid_string())
 ```
