@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from pygoslin.parser.Parser import Parser, Bitfield, GoslinParser, LipidParser, LipidMapsParser
+from pygoslin.parser.Parser import Parser, GoslinParser, LipidParser, LipidMapsParser
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
@@ -11,21 +11,6 @@ from random import randint
 class ParserTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
-    
-    def test_bitfield(self):
-        n = randint(5000, 20000)
-        m = randint(500, 2000)
-        s = set([randint(1, n - 2) for x in range(m)])
-        b = Bitfield(n)
-        for i in s:
-            b.set(i)
-        
-        i = 0
-        for bb, st in zip(b.get_bit_positions(), sorted(s)):
-            assert bb == st
-            i += 1
-    
-        assert i == len(s)
         
     
     

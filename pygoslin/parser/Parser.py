@@ -53,70 +53,8 @@ class TreeNode:
         
         
         
+def ulong(num): return num & ((1 << 64) - 1)
         
-
-# this class is dedicated to have an efficient sorted set class storing
-# values within 0..n-1 and fast sequencial iterator
-class Bitfield:
-    
-    multiplicator = 0x022fdd63cc95386d
-    positions = [0, 1,  2, 53,  3,  7, 54, 27, 4, 38, 41,  8, 34, 55, 48, 28,
-        62,  5, 39, 46, 44, 42, 22,  9, 24, 35, 59, 56, 49, 18, 29, 11,
-        63, 52,  6, 26, 37, 40, 33, 47, 61, 45, 43, 21, 23, 58, 17, 10,
-        51, 25, 36, 32, 60, 20, 57, 16, 50, 31, 19, 15, 30, 14, 13, 12]
-    
-    def __init__(self, length):
-        l = 1 + ((length + 1) >> 6)
-        s = 1 + ((l + 1) >> 6)
-        self.field = [0] * l
-        self.superfield = [0] * s
-
-    
-    
-    def ulong(num):
-        return num & ((1 << 64) - 1)
-    
-    
-    def set(self, pos):
-        self.field[pos >> 6] |= Bitfield.ulong(1 << (pos & 63))
-        self.superfield[pos >> 12] |= Bitfield.ulong(1 << ((pos >> 6) & 63))
-    
-    
-    
-    def is_set(self, pos):
-        return ((self.field[pos >> 6] >> (pos & 63)) & 1) == 1
-    
-    
-    def is_not_set(self, pos):
-        return ((self.field[pos >> 6] >> (pos & 63)) & 1) == 0
-    
-    
-    def get_bit_positions(self):
-        spre = 0
-        for cell in self.superfield:
-            sv = cell
-            while sv != 0:
-                # algorithm for getting least significant bit position
-                sv1 = Bitfield.ulong(sv & -sv)
-                pos = spre + Bitfield.positions[Bitfield.ulong(sv1 * Bitfield.multiplicator) >> 58];
-                
-                v = self.field[pos]
-                while v != 0:
-                    # algorithm for getting least significant bit position
-                    v1 = Bitfield.ulong(v & -v)
-                    yield (pos << 6) + Bitfield.positions[Bitfield.ulong(Bitfield.ulong(v1 * Bitfield.multiplicator) >> 58)]
-                    v &= v - 1
-                
-                sv &= sv - 1
-            spre += 64
-    
-    
-    def get_positions(self, x):
-        while x != 0:
-            # algorithm for getting least significant bit position
-            v1 = Bitfield.ulong(x & -x)
-            yield positions[Bitfield.ulong(Bitfield.ulong(v1 * multiplicator) >> 58)]
-            x &= x - 1
         
         
         
@@ -369,7 +307,7 @@ class Parser:
     
     
     def compute_rule_key(rule_index_1, rule_index_2):
-        return Bitfield.ulong((rule_index_1 << Parser.SHIFT) | rule_index_2)
+        return ulong((rule_index_1 << Parser.SHIFT) | rule_index_2)
     
     
     
@@ -552,7 +490,8 @@ class Parser:
         # dp stands for dynamic programming, nothing else
         dp_table = [None for x in range(n)]
         # Ks is a lookup, which fields in the dp_table are filled
-        Ks = [None for x in range(n)]
+        Ks = [set() for x in range(n)]
+
         
         
         
@@ -560,7 +499,6 @@ class Parser:
         
         for i in range(n):
             dp_table[i] = [None for x in range(n - i)]
-            Ks[i] = Bitfield(n - 1)
             for j in range(n - i): dp_table[i][j] = {}
         
         for i in range(n):
@@ -572,7 +510,8 @@ class Parser:
                 old_key = rule_index & Parser.MASK
                 dp_node = DPNode(c, old_key, None, None)
                 dp_table[i][0][new_key] = dp_node
-                Ks[i].set(0)
+                #Ks[i].set(0)
+                Ks[i].add(0)
                 
         
         for i in range (1, n):
@@ -582,9 +521,9 @@ class Parser:
                 Di = D[i]
                 jp1 = j + 1
                 
-                for k in Ks[j].get_bit_positions():
+                for k in list(Ks[j]):
                     if k >= i: break
-                    if Ks[jp1 + k].is_not_set(im1 - k): continue
+                    if im1 - k not in Ks[jp1 + k]: continue
                 
                 
                 
@@ -595,7 +534,7 @@ class Parser:
                             if key not in self.NTtoNT: continue
                             
                             content = DPNode(index_pair_1[0], index_pair_2[0], index_pair_1[1], index_pair_2[1])
-                            Ks[j].set(i)
+                            Ks[j].add(i)
                             for rule_index in self.NTtoNT[key]:
                                 Di[rule_index] = content
         
