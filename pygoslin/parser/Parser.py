@@ -157,7 +157,6 @@ class Parser:
         self.originalNTtoNT = {}
         self.quote = _quote
         self.parser_event_handler = _parserEventHandler
-        self.parse_tree = None
         self.word_in_grammar = False
         self.grammar_name = ""
         self.used_eof = False
@@ -282,7 +281,8 @@ class Parser:
     
     
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
-        grammar = ""
+        grammar, sb,current_position = "", [], 0
+        
         with open(grammar_filename, mode = "rt") as infile:
             grammar = infile.read() + "\n";
         grammar_length = len(grammar)
@@ -292,9 +292,7 @@ class Parser:
         # within a quote, within a line comment, within a long comment.
         # As long as we are in one context, key words for starting / ending
         # the other contexts have to be ignored.
-        sb = []
         current_context = Context.NoContext
-        current_position = 0
         last_escaped_backslash = -1
         for i in range (grammar_length - 1):
             match = MatchWords.NoMatch
@@ -379,18 +377,13 @@ class Parser:
     
     
     def split_string(text, separator, quote = DEFAULT_QUOTE):
-        in_quote = False
-        tokens = []
-        sb = []
-        last_char = '\0'
-        last_escaped_backslash = False
+        in_quote, tokens, sb, last_char, last_escaped_backslash = False, [], [], '\0', False
         
         for c in text:
             escaped_backslash = False
             if not in_quote:
                 if c == separator:
-                    if len(sb) > 0:
-                        tokens.append("".join(sb))
+                    if len(sb) > 0: tokens.append("".join(sb))
                     sb = []
                 else:
                     if c == quote: in_quote = not in_quote
@@ -423,8 +416,7 @@ class Parser:
     
     def de_escape(text, quote):
         # remove the escape chars
-        sb = []
-        last_escape_char = False
+        sb, last_escape_char = [], False
         for c in text:
             escape_char = False
             
@@ -554,7 +546,6 @@ class Parser:
         
     def parse_regular(self, text_to_parse):
         self.word_in_grammar = False
-        self.parse_tree = None
         self.parser_event_handler.content = None
         
         n = len(text_to_parse)
@@ -611,9 +602,9 @@ class Parser:
         for i in range(n - 1, 0, -1):
             if Parser.START_RULE in dp_table[0][i]:
                 self.word_in_grammar = True
-                self.parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
-                self.fill_tree(self.parse_tree, dp_table[0][i][Parser.START_RULE])
-                self.raise_events(self.parse_tree)
+                parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
+                self.fill_tree(parse_tree, dp_table[0][i][Parser.START_RULE])
+                self.raise_events(parse_tree)
                 break
         
     
