@@ -115,16 +115,37 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 
 ### Supported lipids
 <table>
-<thead>
-<tr>
-<th>foo</th>
-<th>bar</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>baz</td>
-<td>bim</td>
-</tr>
-</tbody>
+    <tr><th>Lipid category</th><th>Lipid class</th><th>Abbreviation</th></tr>
+
+    <tr><td rowspan="30">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP</td></tr>
+    <tr><td>CDP-diacylglycerol</td><td>CDP-DAG</td></tr>
+    <tr><td>Cardiolipin</td><td>CL</td></tr>
+    <tr><td>Dimethylphosphatidylethanolamine</td><td>DMPE</td></tr>
+    <tr><td>Lysophosphatidic acid</td><td>LPA</td></tr>
+    <tr><td>Lysophophatidylcholine</td><td>LPC</td></tr>
+    <tr><td rowspan="2">Ether lysophosphatidic acid</td><td>LPC O-a</td></tr>
+    <tr><td>LPC O-p</td></tr>
+    <tr><td>Lysophosphatidylethanolamine</td><td>LPE</td></tr>
+    <tr><td rowspan="2">Ether lysophosphatidylethanolamine</td><td>LPE O-a</td></tr>
+    <tr><td>LPE O-p</td></tr>
+    <tr><td>Lysophosphatidylglycerol</td><td>LPG</td></tr>
+    <tr><td>Lysophosphatidylinositol</td><td>LPI</td></tr>
+    <tr><td>Lysophosphatidylserine</td><td>LPS</td></tr>
+    <tr><td>Monolysocardiolipin</td><td>MLCL</td></tr>
+    <tr><td>Monomethylphosphatidylethanolamine</td><td>MMPE</td></tr>
+    <tr><td>Phosphatidic acid</td><td>PA</td></tr>
+    <tr><td>Phosphatidylcholine</td><td>PC</td></tr>
+    <tr><td rowspan="2">Ether phosphatidylcholine</td><td>PC O-a</td></tr>
+    <tr><td>PC O-p</td></tr>
+    <tr><td>Phosphatidylethanolamine</td><td>PE</td></tr>
+    <tr><td rowspan="2">Ether phosphatidylethanolamine</td><td>PE O-a</td></tr>
+    <tr><td>PE O-p</td></tr>
+    <tr><td>Phosphatidylethanol</td><td>PEt</td></tr>
+    <tr><td>Phosphatidylglycerol</td><td>PG</td></tr>
+    <tr><td>Phosphatidylinositol</td><td>PI</td></tr>
+    <tr><td>Phosphatidylinositolphosphate</td><td>PIP</td></tr>
+    <tr><td>Phosphatidylinositolbisphosphate</td><td>PIP2</td></tr>
+    <tr><td>Phosphatidylinositoltrisphosphate</td><td>PIP3</td></tr>
+    <tr><td>Phosphatidylserine</td><td>PS</td></tr>
+
 </table>
