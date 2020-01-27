@@ -116,6 +116,7 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 ### Supported lipids
 <table>
 <tr><th>Lipid category</th><th>Lipid class</th><th>Abbreviation</th></tr>
+
 <tr><td rowspan="30">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP</td></tr>
 <tr><td>CDP-diacylglycerol</td><td>CDP-DAG</td></tr>
 <tr><td>Cardiolipin</td><td>CL</td></tr>
@@ -146,4 +147,101 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Phosphatidylinositolbisphosphate</td><td>PIP2</td></tr>
 <tr><td>Phosphatidylinositoltrisphosphate</td><td>PIP3</td></tr>
 <tr><td>Phosphatidylserine</td><td>PS</td></tr>
+
+
+<tr><td rowspan="19">Sphingolipids (SP)</td><td>Ceramide</td><td>Cer</td></tr>
+<tr><td>Ceramide phosphate</td><td>CerP</td></tr>
+<tr><td>Ethanolaminephosphoceramide</td><td>EPC</td></tr>
+<tr><td>Ganglioside GB3</td><td>GB3</td></tr>
+<tr><td>Ganglioside GB4</td><td>GB4</td></tr>
+<tr><td>Ganglioside GD3</td><td>GD3</td></tr>
+<tr><td>Ganglioside GM3</td><td>GM3</td></tr>
+<tr><td>Ganglioside GM4</td><td>GM4</td></tr>
+<tr><td>Dihexosylceramide</td><td>Hex2Cer</td></tr>
+<tr><td>Hexosylceramide</td><td>HexCer</td></tr>
+<tr><td>Inositolphosphoceramide</td><td>IPC</td></tr>
+<tr><td>Long-chain base</td><td>LCB</td></tr>
+<tr><td>Long-chain base phosphate</td><td>LCBP</td></tr>
+<tr><td>Lysomonohexosylceramide</td><td>LHexCer</td></tr>
+<tr><td>Lysosphingomyelin</td><td>LSM</td></tr>
+<tr><td>Mannosyldiinositolphosphoceramide</td><td>M(IP)2C</td></tr>
+<tr><td>Mannosylinositolphosphoceramide</td><td>MIPC</td></tr>
+<tr><td>Sulfatide</td><td>SHexCer</td></tr>
+<tr><td>Sphingomyelin</td><td>SM</td></tr>
+
+<tr><td rowspan="19">Sterol lipids (ST)</td><td>Cholesterol</td><td>Ch</td></tr>
+<tr><td>Cholesteryl ester</td><td>ChE</td></tr>
+
+<tr><td rowspan="19">Glycerolipids (GL)</td><td>Diacylglycerol</td><td>DAG</td></tr>
+<tr><td>Digalactosyldiacylglycerol</td><td>DGDG</td></tr>
+<tr><td>Monoacylglycerol</td><td>MAG</td></tr>
+<tr><td>Monogalactosyldiacylglycerol</td><td>MGDG</td></tr>
+<tr><td>Sulfoquinovosyl</td><td>diacylglycerol</td><td>SQDG</td></tr>
+<tr><td>Triacylglycerol</td><td>TAG</td></tr>
+
+<tr><td rowspan="61">Mediator (LM)</td><td rowspan="9">Docosanoids</td><td>10-HDoHE</td></tr>
+<tr><td>11-HDoHE</td></tr>
+<tr><td>16-HDoHE</td></tr>
+<tr><td>8-HDoHE</td></tr>
+<tr><td>Maresin 1</td></tr>
+<tr><td>Resolvin D1</td></tr>
+<tr><td>Resolvin D2</td></tr>
+<tr><td>Resolvin D3</td></tr>
+<tr><td>Resolvin D5</td></tr>
+
+<tr><td rowspan="39">Docosanoids</td><td>11(12)-EET</td></tr>
+<tr><td>11,12-DHET</td></tr>
+<tr><td>11-HETE</td></tr>
+<tr><td>12-HEPE</td></tr>
+<tr><td>12-HETE</td></tr>
+<tr><td>12-HHTrE</td></tr>
+<tr><td>12-OxoETE</td></tr>
+<tr><td>14(15)-EET</td></tr>
+<tr><td>14(15)-EpETE</td></tr>
+<tr><td>14,15-DHET</td></tr>
+<tr><td>15d-PGJ2</td></tr>
+<tr><td>15-HEPE</td></tr>
+<tr><td>15-HETE}</td></tr>
+<tr><td>16-HETE</td></tr>
+<tr><td>18-HEPE</td></tr>
+<tr><td>5(6)-EET</td></tr>
+<tr><td>5,12-DiHETE</td></tr>
+<tr><td>5,6,15-LXA4</td></tr>
+<tr><td>5,6-DiHETE</td></tr>
+<tr><td>5-HEPE</td></tr>
+<tr><td>5-HETE</td></tr>
+<tr><td>5-HpETE</td></tr>
+<tr><td>5-OxoETE</td></tr>
+<tr><td>8(9)-EET</td></tr>
+<tr><td>8,9-DHET</td></tr>
+<tr><td>8-HETE</td></tr>
+<tr><td>9-HEPE</td></tr>
+<tr><td>9-HETE</td></tr>
+<tr><td>LTB4</td></tr>
+<tr><td>LTC4</td></tr>
+<tr><td>LTD4</td></tr>
+<tr><td>PGB2</td></tr>
+<tr><td>PGD2</td></tr>
+<tr><td>PGE2</td></tr>
+<tr><td>PGF2alpha</td></tr>
+<tr><td>PGI2</td></tr>
+<tr><td>TXB1</td></tr>
+<tr><td>TXB2</td></tr>
+<tr><td>TXB3</td></tr>
+
+<tr><td rowspan="6">Octadecanoids</td><td>12(13)-EpOME</td></tr>
+<tr><td>13-HODE</td></tr>
+<tr><td>13-HOTrE</td></tr>
+<tr><td>9(10)-EpOME</td></tr>
+<tr><td>9-HODE</td></tr>
+<tr><td>9-HOTrE</td></tr>
+
+<tr><td rowspan="7">Fatty Acids and Conjugates</td><td>AA (Arachidonic acid)</td></tr>
+<tr><td>ALA (α-Linolenic acid)</td></tr>
+<tr><td>DHA (Docosahexaenoic acid)</td></tr>
+<tr><td>EPA (Eicosapentaenoic acid)</td></tr>
+<tr><td>Linoleic acid</td></tr>
+<tr><td>Palmitic acid</td></tr>
+<tr><td>Tetranor-12-HETE</td></tr>
+
 </table>
