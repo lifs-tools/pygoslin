@@ -172,7 +172,7 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td rowspan="2">Sterol lipids (ST)</td><td>Cholesterol</td><td>Ch</td></tr>
 <tr><td>Cholesteryl ester</td><td>ChE</td></tr>
 
-<tr><td rowspan="19">Glycerolipids (GL)</td><td>Diacylglycerol</td><td>DAG</td></tr>
+<tr><td rowspan="6">Glycerolipids (GL)</td><td>Diacylglycerol</td><td>DAG</td></tr>
 <tr><td>Digalactosyldiacylglycerol</td><td>DGDG</td></tr>
 <tr><td>Monoacylglycerol</td><td>MAG</td></tr>
 <tr><td>Monogalactosyldiacylglycerol</td><td>MGDG</td></tr>
