@@ -446,9 +446,9 @@ class Parser:
     
 
     # filling the syntax tree including events
-    def fill_tree(self, node, dp_node):
+    def fill_tree(self, node, parse_content):
         # checking and extending nodes for single rule chains
-        key = compute_rule_key(dp_node.rule_index_1, dp_node.rule_index_2) if dp_node.left != None else dp_node.rule_index_2
+        key = compute_rule_key(parse_content[0], parse_content[2]) if parse_content[1] != None else parse_content[2]
         
         merged_rules = self.collect_backwards(key, node.rule_index)
         if merged_rules != None:
@@ -457,16 +457,16 @@ class Parser:
                 node = node.left
         
         
-        if dp_node.left != None: # None => leaf
-            node.left = TreeNode(dp_node.rule_index_1, dp_node.rule_index_1 in self.NTtoRule)
-            node.right = TreeNode(dp_node.rule_index_2, dp_node.rule_index_2 in self.NTtoRule)
-            self.fill_tree(node.left, dp_node.left)
-            self.fill_tree(node.right, dp_node.right)
+        if parse_content[1] != None: # None => leaf
+            node.left = TreeNode(parse_content[0], parse_content[0] in self.NTtoRule)
+            node.right = TreeNode(parse_content[2], parse_content[2] in self.NTtoRule)
+            self.fill_tree(node.left, parse_content[1])
+            self.fill_tree(node.right, parse_content[3])
             
         else:
             # I know, it is not 100% clean to store the character in an integer
             # especially when it is not the dedicated attribute for, but the heck with it!
-            node.terminal = dp_node.rule_index_1
+            node.terminal = parse_content[0]
     
     
     
@@ -506,8 +506,7 @@ class Parser:
             for rule_index in sorted(self.TtoNT[c]):
                 new_key = rule_index >> Parser.SHIFT
                 old_key = rule_index & Parser.MASK
-                #dp_node = DPNode(c, old_key, None, None)
-                dp_node = DPNode([c, None], [old_key, None])
+                dp_node = [c, None, old_key, None]
                 dp_table[i][0][new_key] = dp_node
                 Ks[i].add(0)
                 
@@ -521,20 +520,19 @@ class Parser:
                 D, jp1 = dp_table[j], j + 1
                 Di = D[i]
                 
-                adding = False
-                
                 for k in Ks[j]:
                     jpok = jp1 + k
-                    D1, D2 = D[k], dp_table[jpok][im1 - k]
                     if im1 - k not in Ks[jpok]: continue
+                
+                    D1, D2 = D[k], dp_table[jpok][im1 - k]
                 
                     for index_pair_1, index_pair_2 in iter_product(D1, D2):
                         key = (index_pair_1 << sft) | index_pair_2
                         
                         if key not in nt: continue
-                        
-                        content = DPNode([index_pair_1, D1[index_pair_1]], [index_pair_2, D2[index_pair_2]])
-                        for rule_index in nt[key]: Di[rule_index] = content
+                    
+                        parse_content = [index_pair_1, D1[index_pair_1], index_pair_2, D2[index_pair_2]]
+                        for rule_index in nt[key]: Di[rule_index] = parse_content
                 
                 if len(D[i]) > 0: Ks[j].add(i)
         
