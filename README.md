@@ -176,7 +176,7 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Digalactosyldiacylglycerol</td><td>DGDG</td></tr>
 <tr><td>Monoacylglycerol</td><td>MAG</td></tr>
 <tr><td>Monogalactosyldiacylglycerol</td><td>MGDG</td></tr>
-<tr><td>Sulfoquinovosyl</td><td>diacylglycerol</td><td>SQDG</td></tr>
+<tr><td>Sulfoquinovosyl diacylglycerol</td><td>SQDG</td></tr>
 <tr><td>Triacylglycerol</td><td>TAG</td></tr>
 
 <tr><td rowspan="61">Mediator (LM)</td><td rowspan="9">Docosanoids</td><td>10-HDoHE</td></tr>
