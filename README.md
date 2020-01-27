@@ -114,11 +114,17 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 
 
 ### Supported lipids
-
-| column 1 | column 2 |
-|----------|----------|
-| value    | * value 1|
-|          | * value 2|
-|----------|----------|
-| value    | * value 1|
-|          | * value 2|
+<table>
+<thead>
+<tr>
+<th>foo</th>
+<th>bar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>baz</td>
+<td>bim</td>
+</tr>
+</tbody>
+</table>
