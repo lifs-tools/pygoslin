@@ -8,6 +8,7 @@ from itertools import product as iter_product
 from itertools import combinations as iter_combinations
 import pygoslin
 
+
 class Context(Enum):
     NoContext = 1
     InLineComment = 2
@@ -25,12 +26,7 @@ class MatchWords(Enum):
     
 # DP stands for dynamic programming
 class DPNode:
-    
     def __init__(self, _rule1, _rule2):
-        #self.rule_index_1 = _rule1
-        #self.rule_index_2 = _rule2
-        #self.left = _left
-        #self.right = _right
         self.rule_index_1, self.left = _rule1
         self.rule_index_2, self.right = _rule2
         
@@ -60,7 +56,7 @@ class TreeNode:
         
      
 def compute_rule_key(rule_index_1, rule_index_2):
-    return ((rule_index_1 << Parser.SHIFT) | rule_index_2) & 18446744073709551615
+    return (rule_index_1 << Parser.SHIFT) | rule_index_2
         
         
         
@@ -516,14 +512,14 @@ class Parser:
                 Ks[i].add(0)
                 
                 
-                
+        sft = Parser.SHIFT
+        nt = self.NTtoNT
         
         for i in range (1, n):
             im1 = i - 1
             for j in range(n - i):
-                D = dp_table[j]
+                D, jp1 = dp_table[j], j + 1
                 Di = D[i]
-                jp1 = j + 1
                 
                 adding = False
                 
@@ -533,12 +529,12 @@ class Parser:
                     if im1 - k not in Ks[jpok]: continue
                 
                     for index_pair_1, index_pair_2 in iter_product(D1, D2):
-                        key = compute_rule_key(index_pair_1, index_pair_2)
+                        key = (index_pair_1 << sft) | index_pair_2
                         
-                        if key not in self.NTtoNT: continue
+                        if key not in nt: continue
                         
                         content = DPNode([index_pair_1, D1[index_pair_1]], [index_pair_2, D2[index_pair_2]])
-                        for rule_index in self.NTtoNT[key]: Di[rule_index] = content
+                        for rule_index in nt[key]: Di[rule_index] = content
                 
                 if len(D[i]) > 0: Ks[j].add(i)
         
