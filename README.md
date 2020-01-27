@@ -110,3 +110,15 @@ if lipid != None:
     print(lipid.get_lipid_string())
 ```
 To be as generic as possible, no treatment of validation of the fragment is conducted within the GoslinFragmentParser.
+
+
+
+### Supported lipids
+
+| column 1 | column 2 |
+|----------|----------|
+| value    | * value 1|
+|          | * value 2|
+|----------|----------|
+| value    | * value 1|
+|          | * value 2|
