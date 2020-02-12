@@ -17,6 +17,7 @@ The pygoslin package uses pip to create an isolated and defined build environmen
 
 ```
 python3-pip
+cython (module for Python 3)
 make (optional)
 ```
 
