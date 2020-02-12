@@ -1,6 +1,12 @@
 import unittest
 import os
 
+
+import pyximport
+pyximport.install(setup_args = {"script_args" : ["--force"]}, language_level=3)
+
+import pygoslin
+from pygoslin.parser.Parser import LipidParser
 from pygoslin.parser.Parser import Parser, GoslinParser, LipidParser, LipidMapsParser
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
