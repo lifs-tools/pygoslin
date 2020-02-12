@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from Cython.Build import cythonize
 import setuptools
  
 setup(
@@ -17,6 +18,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    ext_modules=cythonize("pygoslin/parser/ParserCore.pyx"),
     setup_requires = ["pytest-runner"],
     tests_require = ["pytest"],
     python_requires='>=3.5',

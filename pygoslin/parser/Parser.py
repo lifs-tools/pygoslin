@@ -4,9 +4,10 @@ from os import path
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
-from itertools import product as iter_product
+from pygoslin.parser.ParserCore import parser_core
 from itertools import combinations as iter_combinations
 import pygoslin
+from numba import njit
 
 
 class Context(Enum):
@@ -479,64 +480,16 @@ class Parser:
         return self.parser_event_handler.content
         
         
-        
     def parse_regular(self, text_to_parse):
         self.word_in_grammar = False
         self.parser_event_handler.content = None
         
-        n = len(text_to_parse)
-        # dp stands for dynamic programming, nothing else
-        dp_table = [None for x in range(n)]
-        # Ks is a lookup, which fields in the dp_table are filled
-        Ks = [set() for x in range(n)]
-
+        # call parser core function written in cython for performance boost     
+        dp_table = parser_core(text_to_parse, self.NTtoNT, self.TtoNT)
+        if dp_table == None: return
         
         
-        
-        
-        
-        for i in range(n):
-            dp_table[i] = [None for x in range(n - i)]
-            for j in range(n - i): dp_table[i][j] = {}
-        
-        for i in range(n):
-            c = text_to_parse[i]
-            if c not in self.TtoNT: return
-            
-            for rule_index in sorted(self.TtoNT[c]):
-                new_key = rule_index >> Parser.SHIFT
-                old_key = rule_index & Parser.MASK
-                dp_node = [c, None, old_key, None]
-                dp_table[i][0][new_key] = dp_node
-                Ks[i].add(0)
-                
-                
-        sft = Parser.SHIFT
-        nt = self.NTtoNT
-        
-        for i in range (1, n):
-            im1 = i - 1
-            for j in range(n - i):
-                D, jp1 = dp_table[j], j + 1
-                Di = D[i]
-                
-                for k in Ks[j]:
-                    jpok = jp1 + k
-                    if im1 - k not in Ks[jpok]: continue
-                
-                    D1, D2 = D[k], dp_table[jpok][im1 - k]
-                
-                    for index_pair_1, index_pair_2 in iter_product(D1, D2):
-                        key = (index_pair_1 << sft) | index_pair_2
-                        
-                        if key not in nt: continue
-                    
-                        parse_content = [index_pair_1, D1[index_pair_1], index_pair_2, D2[index_pair_2]]
-                        for rule_index in nt[key]: Di[rule_index] = parse_content
-                
-                if len(D[i]) > 0: Ks[j].add(i)
-        
-        for i in range(n - 1, 0, -1):
+        for i in range(len(text_to_parse) - 1, 0, -1):
             if Parser.START_RULE in dp_table[0][i]:
                 self.word_in_grammar = True
                 parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
