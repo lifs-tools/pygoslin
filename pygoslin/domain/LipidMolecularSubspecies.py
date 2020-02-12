@@ -57,6 +57,7 @@ class LipidMolecularSubspecies(LipidSpecies):
             fa_strings.append("%s%i:%i%s%s" % ("O-" if special_case and len(suffix) > 0 else "", num_carbon, num_double_bonds, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", suffix))
         
         fa_string = " " + fa_separator.join(fa_strings) if len(fa_strings) > 0 else ""
+        
             
         return (self.lipid_class.value[2] if not self.use_head_group else self.head_group) + fa_string
     
