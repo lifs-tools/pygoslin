@@ -1,5 +1,6 @@
 from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.MolecularFattyAcid import MolecularFattyAcid
 from pygoslin.domain.StructuralFattyAcid import StructuralFattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies

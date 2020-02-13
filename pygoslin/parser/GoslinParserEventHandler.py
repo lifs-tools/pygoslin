@@ -35,12 +35,10 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_sgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_tgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dlcl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_pip_m_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_pip_d_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_pip_t_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_tpl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_sac_di_pre_event"] = self.set_head_group_name
         self.registered_events["hg_sac_f_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_dlcl_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_tpl_pre_event"] = self.set_head_group_name
         
         self.registered_events["gl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
