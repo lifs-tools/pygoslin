@@ -118,7 +118,7 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <table>
 <tr><th>Lipid category</th><th>Lipid class</th><th>Abbreviation</th></tr>
 
-<tr><td rowspan="39">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP</td></tr>
+<tr><td rowspan="41">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP</td></tr>
 <tr><td>CDP-diacylglycerol</td><td>CDP-DAG</td></tr>
 <tr><td>Cardiolipin</td><td>CL</td></tr>
 <tr><td>Dimethylphosphatidylethanolamine</td><td>DMPE</td></tr>
@@ -157,6 +157,8 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Diacylglycerophosphonocholine</td><td>PnC</td></tr>
 <tr><td>Diacylglycerophosphonoethanolamine</td><td>PnE</td></tr>
 <tr><td>Diacylglycerophosphoethanolamine</td><td>PE-NMe / PE-NMe2</td></tr>
+<tr><td>Diacylglycerophosphomonoradylglycerol</td><td>SLBPA</td></tr>
+<tr><td>Diacylglycerophosphoethanolamine</td><td>NAPE</td></tr>
 
 
 <tr><td rowspan="19">Sphingolipids (SP)</td><td>Ceramide</td><td>Cer</td></tr>
@@ -189,6 +191,12 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Sulfoquinovosyl monoacylglycerols</td><td>SQMG</td></tr>
 <tr><td>Sulfoquinovosyl diacylglycerol</td><td>SQDG</td></tr>
 <tr><td>Triacylglycerol</td><td>TAG</td></tr>
+
+
+<tr><td rowspan="3">Saccharo lipids (SL)</td><td></td><td>DAT</td></tr>
+<tr><td></td><td>AC2SGL</td></tr>
+<tr><td></td><td>PAT16 / PAT18</td></tr>
+
 
 <tr><td rowspan="61">Mediator (LM)</td><td rowspan="9">Docosanoids</td><td>10-HDoHE</td></tr>
 <tr><td>11-HDoHE</td></tr>
