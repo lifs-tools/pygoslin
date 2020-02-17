@@ -144,9 +144,9 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Phosphatidylethanol</td><td>PEt</td></tr>
 <tr><td>Phosphatidylglycerol</td><td>PG</td></tr>
 <tr><td>Phosphatidylinositol</td><td>PI</td></tr>
-<tr><td>Phosphatidylinositolphosphate</td><td>PIP</td></tr>
-<tr><td>Phosphatidylinositolbisphosphate</td><td>PIP2</td></tr>
-<tr><td>Phosphatidylinositoltrisphosphate</td><td>PIP3</td></tr>
+<tr><td>Phosphatidylinositolphosphate</td><td>PIP / PIP[3'] / PIP[4'] / PIP[5']</td></tr>
+<tr><td>Phosphatidylinositolbisphosphate</td><td>PIP2 / PIP2[3',4'] / PIP2[3',5'] / PIP2[4',5']</td></tr>
+<tr><td>Phosphatidylinositoltrisphosphate</td><td>PIP3 / PIP3[3',4',5']</td></tr>
 <tr><td>Phosphatidylserine</td><td>PS</td></tr>
 
 
@@ -173,10 +173,11 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td rowspan="2">Sterol lipids (ST)</td><td>Cholesterol</td><td>Ch</td></tr>
 <tr><td>Cholesteryl ester</td><td>ChE</td></tr>
 
-<tr><td rowspan="6">Glycerolipids (GL)</td><td>Diacylglycerol</td><td>DAG</td></tr>
+<tr><td rowspan="8">Glycerolipids (GL)</td><td>Diacylglycerol</td><td>DAG</td></tr>
 <tr><td>Digalactosyldiacylglycerol</td><td>DGDG</td></tr>
 <tr><td>Monoacylglycerol</td><td>MAG</td></tr>
 <tr><td>Monogalactosyldiacylglycerol</td><td>MGDG</td></tr>
+<tr><td>Sulfoquinovosyl monoacylglycerols</td><td>SQMG</td></tr>
 <tr><td>Sulfoquinovosyl diacylglycerol</td><td>SQDG</td></tr>
 <tr><td>Triacylglycerol</td><td>TAG</td></tr>
 
