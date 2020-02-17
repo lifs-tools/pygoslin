@@ -118,10 +118,17 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <table>
 <tr><th>Lipid category</th><th>Lipid class</th><th>Abbreviation</th></tr>
 
-<tr><td rowspan="41">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP</td></tr>
+<tr><td rowspan="49">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP / LBPA</td></tr>
 <tr><td>CDP-diacylglycerol</td><td>CDP-DAG</td></tr>
 <tr><td>Cardiolipin</td><td>CL</td></tr>
 <tr><td>Dimethylphosphatidylethanolamine</td><td>DMPE</td></tr>
+<tr><td>Monomethylphosphatidylethanolamine</td><td>MMPE</td></tr>
+<tr><td>Phosphatidylinositol mannoside inositol phosphate</td><td>PIMIP</td></tr>
+<tr><td>Lyso-CDP-diacylglycerol</td><td>LCDPDAG</td></tr>
+<tr><td>Lysodimethylphosphatidylethanolamine</td><td>LDMPE</td></tr>
+<tr><td>Lysomonomethylphosphatidylethanolamine</td><td>LMMPE</td></tr>
+<tr><td>Lysophosphatidylinositol- mannosideinositolphosphate</td><td>LPIMIP</td></tr>
+<tr><td>Lysophosphatidylinositol-glucosamine</td><td>LPIN</td></tr>
 <tr><td>Lysophosphatidic acid</td><td>LPA</td></tr>
 <tr><td>Lysophophatidylcholine</td><td>LPC</td></tr>
 <tr><td rowspan="2">Ether lysophosphatidic acid</td><td>LPC O-a</td></tr>
@@ -132,6 +139,7 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Lysophosphatidylglycerol</td><td>LPG</td></tr>
 <tr><td>Lysophosphatidylinositol</td><td>LPI</td></tr>
 <tr><td>Lysophosphatidylserine</td><td>LPS</td></tr>
+<tr><td>Glycerophosphoglycerophosphoglycerols</td><td>DLCL</td></tr>
 <tr><td>Monolysocardiolipin</td><td>MLCL</td></tr>
 <tr><td>Monomethylphosphatidylethanolamine</td><td>MMPE</td></tr>
 <tr><td>Phosphatidic acid</td><td>PA</td></tr>
@@ -150,15 +158,14 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Phosphatidylserine</td><td>PS</td></tr>
 <tr><td>Phosphatidylinositol mannoside</td><td>PIM / PIM1 / PIM2 / PIM3<br>PIM4 / PIM5 / PIM6</td></tr>
 <tr><td>Lysophosphatidylinositol mannoside</td><td>LPIM / LPIM1 / LPIM2 / LPIM3<br>LPIM4 / LPIM5 / LPIM6</td></tr>
-<tr><td>Monoacylglycerophosphomonoradylglycerol</td><td>LBPA</td></tr>
-<tr><td>1-(1Z-alkenyl),2-acylglycerophosphoglycerol</td><td>PGP</td></tr>
+<tr><td>Phosphatidylglycerol phosphate</td><td>PGP</td></tr>
 <tr><td>Diacylglyceropyrophosphate</td><td>PPA</td></tr> 
 <tr><td>Diacylglycosylglycerophospholipid</td><td>Glc-GP / 6-Ac-Glc-GP</td></tr>
 <tr><td>Diacylglycerophosphonocholine</td><td>PnC</td></tr>
 <tr><td>Diacylglycerophosphonoethanolamine</td><td>PnE</td></tr>
 <tr><td>Diacylglycerophosphoethanolamine</td><td>PE-NMe / PE-NMe2</td></tr>
 <tr><td>Diacylglycerophosphomonoradylglycerol</td><td>SLBPA</td></tr>
-<tr><td>Diacylglycerophosphoethanolamine</td><td>NAPE</td></tr>
+<tr><td>N-acylphosphatidylethanolamine</td><td>NAPE</td></tr>
 
 
 <tr><td rowspan="19">Sphingolipids (SP)</td><td>Ceramide</td><td>Cer</td></tr>

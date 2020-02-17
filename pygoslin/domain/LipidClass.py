@@ -85,7 +85,15 @@ class LipidClass(Enum):
     # TODO: there are some newer categories in LipidMaps, like Glycosylmono/di-radylglycerols, SQMG and SQDG */
     ## Glycerophospholipids [GP]
     BMP = (LipidCategory.GP, "Monoacylglycerophosphomonoradylglycerols [GP0410]", "BMP", "LBPA")
-    CDPDAG = (LipidCategory.GP, "CDP-Glycerols [GP13]", "CDPDAG", "CDP-DG")
+    CDPDAG = (LipidCategory.GP, "CDP-Glycerols [GP13]", "CDP-DAG", "CDPDAG", "CDP-DG")
+    DMPE = (LipidCategory.GP, "Dimethylphosphatidylethanolamine", "DMPE")
+    MMPE = (LipidCategory.GP, "Monomethylphosphatidylethanolamine", "MMPE")
+    PIMIP = (LipidCategory.GP, "Phosphatidylinositol mannoside inositol phosphate", "PIMIP")
+    LCDPDAG = (LipidCategory.GP, "Lyso-CDP-diacylglycerol", "LCDPDAG")
+    LDMPE = (LipidCategory.GP, "Lysodimethylphosphatidylethanolamine", "LDMPE")
+    LMMPE = (LipidCategory.GP, "Lysomonomethylphosphatidylethanolamine", "LMMPE")
+    LPIMIP = (LipidCategory.GP, "Lysophosphatidylinositol- mannosideinositolphosphate", "LPIMIP")
+    LPIN = (LipidCategory.GP, "Lysophosphatidylinositol-glucosamine", "LPIN")
     CL = (LipidCategory.GP, "Glycerophosphoglycerophosphoglycerols [GP12]", "CL")
     MLCL = (LipidCategory.GP, "Glycerophosphoglycerophosphoglycerols [GP12]", "MLCL")
     DLCL = (LipidCategory.GP, "Glycerophosphoglycerophosphoglycerols [GP12]", "DLCL")
