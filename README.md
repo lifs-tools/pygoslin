@@ -118,7 +118,7 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <table>
 <tr><th>Lipid category</th><th>Lipid class</th><th>Abbreviation</th></tr>
 
-<tr><td rowspan="30">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP</td></tr>
+<tr><td rowspan="39">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP</td></tr>
 <tr><td>CDP-diacylglycerol</td><td>CDP-DAG</td></tr>
 <tr><td>Cardiolipin</td><td>CL</td></tr>
 <tr><td>Dimethylphosphatidylethanolamine</td><td>DMPE</td></tr>
@@ -148,6 +148,15 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Phosphatidylinositolbisphosphate</td><td>PIP2 / PIP2[3',4'] / PIP2[3',5'] / PIP2[4',5']</td></tr>
 <tr><td>Phosphatidylinositoltrisphosphate</td><td>PIP3 / PIP3[3',4',5']</td></tr>
 <tr><td>Phosphatidylserine</td><td>PS</td></tr>
+<tr><td>Phosphatidylinositol mannoside</td><td>PIM / PIM1 / PIM2 / PIM3<br>PIM4 / PIM5 / PIM6</td></tr>
+<tr><td>Lysophosphatidylinositol mannoside</td><td>LPIM / LPIM1 / LPIM2 / LPIM3<br>LPIM4 / LPIM5 / LPIM6</td></tr>
+<tr><td>Monoacylglycerophosphomonoradylglycerol</td><td>LBPA</td></tr>
+<tr><td>1-(1Z-alkenyl),2-acylglycerophosphoglycerol</td><td>PGP</td></tr>
+<tr><td>Diacylglyceropyrophosphate</td><td>PPA</td></tr> 
+<tr><td>Diacylglycosylglycerophospholipid</td><td>Glc-GP / 6-Ac-Glc-GP</td></tr>
+<tr><td>Diacylglycerophosphonocholine</td><td>PnC</td></tr>
+<tr><td>Diacylglycerophosphonoethanolamine</td><td>PnE</td></tr>
+<tr><td>Diacylglycerophosphoethanolamine</td><td>PE-NMe / PE-NMe2</td></tr>
 
 
 <tr><td rowspan="19">Sphingolipids (SP)</td><td>Ceramide</td><td>Cer</td></tr>
