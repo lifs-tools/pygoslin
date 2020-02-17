@@ -78,7 +78,20 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         assert lipid.get_lipid_string() == "PIP[3'] 17:0/20:4"
         
+        lipid_name = "AC2SGL 12:0-14:1"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "AC2SGL 12:0_14:1"
         
+        lipid_name = "NAPE 16:1/12:0/14:1"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "NAPE 16:1/12:0/14:1"
+        
+        lipid_name = "PE-NMe 12:1/10:0"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "PE-NMe 12:1/10:0"
         
         
         

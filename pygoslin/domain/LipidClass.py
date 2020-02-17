@@ -121,7 +121,6 @@ class LipidClass(Enum):
     PIM6 = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PIM6")
     GLCDG = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "Glc-DG")
     PENME2 = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PE-NMe2")
-    AC2SGL = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "AC2SGL")
     PENME = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PE-NMe")
     PT = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PT")
     GLCGP = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "Glc-GP")
