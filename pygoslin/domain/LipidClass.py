@@ -134,6 +134,9 @@ class LipidClass(Enum):
     LPIM6 = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "LPIM6")
     CPA = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "CPA")
     SLBPA = (LipidCategory.GP, "Glycerophosphoglycerols [GP04]", "SLBPA")
+    GL_6_AC_GlC_GP = (LipidCategory.GP, "Glycosylglycerophospholipids [GP14]", "6-Ac-Glc-GP")
+    PNC = (LipidCategory.GP, "Glycerophosphonocholines [GP16]", "PnC")
+    PNE = (LipidCategory.GP, "Glycerophosphoinositolglycans [GP15]", "PnE")
     
     ## Sphingolipids
     CER = (LipidCategory.SP, "Ceramides [SP02]", "Cer")
@@ -170,6 +173,7 @@ class LipidClass(Enum):
     
     ## 	Saccharolipids
     DAT = (LipidCategory.SL, "Acyltrehaloses [SL03]", "DAT")
+    AC2SGL = (LipidCategory.SL, "Acyltrehaloses [SL03]", "AC2SGL")
     PAT16 = (LipidCategory.SL, "Acyltrehaloses [SL03]", "PAT16")
     PAT18 = (LipidCategory.SL, "Acyltrehaloses [SL03]", "PAT18")
     
