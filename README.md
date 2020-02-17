@@ -118,9 +118,8 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <table>
 <tr><th>Lipid category</th><th>Lipid class</th><th>Abbreviation</th></tr>
 
-<tr><td rowspan="49">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP / LBPA</td></tr>
+<tr><td rowspan="48">Glycerophospholipids (GP)</td><td>Bismonoacylglycerophosphate</td><td>BMP / LBPA</td></tr>
 <tr><td>CDP-diacylglycerol</td><td>CDP-DAG</td></tr>
-<tr><td>Cardiolipin</td><td>CL</td></tr>
 <tr><td>Dimethylphosphatidylethanolamine</td><td>DMPE</td></tr>
 <tr><td>Monomethylphosphatidylethanolamine</td><td>MMPE</td></tr>
 <tr><td>Phosphatidylinositol mannoside inositol phosphate</td><td>PIMIP</td></tr>
@@ -139,9 +138,9 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Lysophosphatidylglycerol</td><td>LPG</td></tr>
 <tr><td>Lysophosphatidylinositol</td><td>LPI</td></tr>
 <tr><td>Lysophosphatidylserine</td><td>LPS</td></tr>
+<tr><td>Cardiolipin</td><td>CL</td></tr>
 <tr><td>Glycerophosphoglycerophosphoglycerols</td><td>DLCL</td></tr>
 <tr><td>Monolysocardiolipin</td><td>MLCL</td></tr>
-<tr><td>Monomethylphosphatidylethanolamine</td><td>MMPE</td></tr>
 <tr><td>Phosphatidic acid</td><td>PA</td></tr>
 <tr><td>Phosphatidylcholine</td><td>PC</td></tr>
 <tr><td rowspan="2">Ether phosphatidylcholine</td><td>PC O-a</td></tr>
@@ -166,6 +165,7 @@ To be as generic as possible, no treatment of validation of the fragment is cond
 <tr><td>Diacylglycerophosphoethanolamine</td><td>PE-NMe / PE-NMe2</td></tr>
 <tr><td>Diacylglycerophosphomonoradylglycerol</td><td>SLBPA</td></tr>
 <tr><td>N-acylphosphatidylethanolamine</td><td>NAPE</td></tr>
+<tr><td></td><td>CPA</td></tr>
 
 
 <tr><td rowspan="19">Sphingolipids (SP)</td><td>Ceramide</td><td>Cer</td></tr>
