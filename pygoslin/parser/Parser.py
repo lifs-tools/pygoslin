@@ -155,8 +155,15 @@ class Parser:
                                 
                     else:
                         c = NTFirst[1]
-                        if c not in self.TtoNT: self.TtoNT[c] = set()
-                        self.TtoNT[c].add(new_rule_index)
+                        t_rule = 0
+                        if c not in self.TtoNT: 
+                            t_rule = self.get_next_free_rule_index()
+                            self.TtoNT[c] = set([t_rule])
+                        else:
+                            t_rule = list(self.TtoNT[c])[0]
+                            
+                        if t_rule not in self.NTtoNT: self.NTtoNT[t_rule] = set()
+                        self.NTtoNT[t_rule].add(new_rule_index)
                     	
                     
                     # more than two rules, insert intermediate rule indexes
@@ -377,10 +384,13 @@ class Parser:
         terminal_rules = []
         for i in range(1, len(text) - 1):
             c = text[i]
-            if c not in self.TtoNT: self.TtoNT[c] = set()
-            next_index = self.get_next_free_rule_index()
-            self.TtoNT[c].add(next_index)
-            terminal_rules.append(next_index)
+            t_rule = 0
+            if c not in self.TtoNT:
+                t_rule = self.get_next_free_rule_index()
+                self.TtoNT[c] = set([t_rule])
+            else:
+                t_rule = list(self.TtoNT[c])[0]
+            terminal_rules.append(t_rule)
         
         while len(terminal_rules) > 1:
             rule_index_2 = terminal_rules.pop()
