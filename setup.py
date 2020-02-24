@@ -1,7 +1,18 @@
 from setuptools import setup, find_packages
-from Cython.Build import cythonize
 import setuptools
- 
+
+pyx_support = True
+try:
+    from Cython.Build import cythonize
+except:
+    pyx_support = False
+    print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
+
+
+import os
+
+os.environ["CFLAGS"] = "-O3 -Wall -std=c++11" 
+
 setup(
     name = 'pygoslin',
     version = '1.0',
@@ -12,13 +23,12 @@ setup(
     description = 'Python implementation for Goslin',
     long_description = open('README.md').read(),
     packages = setuptools.find_packages(),
-#      packages = find_packages(exclude = ['tests']),
     classifiers = [
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    ext_modules=cythonize("pygoslin/parser/ParserCore.pyx"),
+    ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language="c++") if pyx_support else None,
     setup_requires = ["pytest-runner"],
     tests_require = ["pytest"],
     python_requires='>=3.5',

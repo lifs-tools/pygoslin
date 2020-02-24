@@ -5,12 +5,13 @@ from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
-from pygoslin.parser.ParserCore import parser_core
 from itertools import combinations as iter_combinations
 import pygoslin
 
 pyx_support = True
-try: import pyximport
+try:
+    import pyximport
+    from pygoslin.parser.ParserCore import parser_core
 except: pyx_support = False
 
 

@@ -1,9 +1,11 @@
 import unittest
 import os
 
-
-import pyximport
-pyximport.install(setup_args = {"script_args" : ["--force"]}, language_level=3)
+try:
+    import pyximport
+    pyximport.install(setup_args = {"script_args" : ["--force"]}, language_level = 3)
+except:
+    print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
 import pygoslin
 from pygoslin.parser.Parser import LipidParser
