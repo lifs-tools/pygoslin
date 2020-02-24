@@ -23,7 +23,7 @@ def parser_core(text_to_parse, dict nt, dict t):
         c = text_to_parse[i]
         if c not in t: return None
         
-        for rule_index in sorted(t[c]):
+        for rule_index in t[c]:
             new_key = rule_index >> 32
             old_key = rule_index & mask
             dp_node = [c, None, old_key, None]

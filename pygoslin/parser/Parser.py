@@ -1,8 +1,6 @@
 from enum import Enum
 from os import path
 
-
-
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
@@ -10,7 +8,10 @@ from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEvent
 from pygoslin.parser.ParserCore import parser_core
 from itertools import combinations as iter_combinations
 import pygoslin
-from numba import njit
+
+pyx_support = True
+try: import pyximport
+except: pyx_support = False
 
 
 class Context(Enum):
@@ -497,8 +498,9 @@ class Parser:
         self.word_in_grammar = False
         self.parser_event_handler.content = None
         
-        # call parser core function written in cython for performance boost     
-        dp_table = parser_core(text_to_parse, self.NTtoNT, self.TtoNT)
+        # call parser core function written in cython for performance boost
+        dp_table = parser_core(text_to_parse, self.NTtoNT, self.TtoNT) if pyx_support else self.parser_pure(text_to_parse)
+        #dp_table = self.parser_pure(text_to_parse)
         if dp_table == None: return
         
         
@@ -509,6 +511,58 @@ class Parser:
                 self.fill_tree(parse_tree, dp_table[0][i][Parser.START_RULE])
                 self.raise_events(parse_tree)
                 break
+            
+            
+            
+            
+
+    def parser_pure(self, text_to_parse):
+        n = len(text_to_parse)
+        dp_table = [[{} for j in range(n - i)] for i in range(n)]
+        Ks = [set([0]) for i in range(n)]
+        
+        t, nt, mask = self.TtoNT, self.NTtoNT, (1 << 32) - 1
+            
+        for i in range(n):
+            c = text_to_parse[i]
+            if c not in t: return None
+            
+            for rule_index in t[c]:
+                new_key = rule_index >> 32
+                old_key = rule_index & mask
+                dp_node = [c, None, old_key, None]
+                dp_table[i][0][new_key] = dp_node
+        
+        
+        for i in range (1, n):
+            im1 = i - 1
+            for j in range(n - i):
+                
+                D, jp1 = dp_table[j], j + 1
+                Di = D[i]
+                Ksj = Ks[j]
+                
+                for k in Ksj:
+                    jpok = jp1 + k
+                    if im1 - k in Ks[jpok]:                
+                        D1, D2 = D[k], dp_table[jpok][im1 - k]
+                    
+                        for index_pair_1 in D1:
+                            
+                            i_shift = index_pair_1 * 4294967296
+                            for index_pair_2 in D2:
+                                key = i_shift + index_pair_2
+                                
+                                if key in nt:
+                                    parse_content = [index_pair_1, D1[index_pair_1], index_pair_2, D2[index_pair_2]]
+                                    for rule_index in nt[key]: Di[rule_index] = parse_content
+                
+                if len(D[i]) > 0: Ks[j].add(i)
+                
+                
+        return dp_table
+            
+            
         
     
     
