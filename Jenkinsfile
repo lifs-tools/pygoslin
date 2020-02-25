@@ -46,7 +46,7 @@ node {
                         env.GIT_BRANCH = scmVars.GIT_BRANCH
                     }
                     stage 'Build'
-                    sh 'make install'
+                    sh 'sudo make install'
                     stage 'Test'
                     sh 'make test'
 //                    stage('Publish') {
