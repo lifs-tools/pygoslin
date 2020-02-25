@@ -41,7 +41,7 @@ node {
                     def scmVars = checkout([$class: 'GitSCM', branches: [[name: '*/master']], 
                         userRemoteConfigs: [[credentialsId: gitUserCredentialsId, url: gitUrl]]])
                     stage 'Build'
-                    sh 'makei install'
+                    sh 'make install'
                     stage 'Test'
                     sh 'make test'
 //                    stage('Publish') {
