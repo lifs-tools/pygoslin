@@ -38,7 +38,8 @@ node {
             docker.image(dockerBuildImage).inside {
                 try {
                     stage 'Checkout'
-                    def scmVars = checkout([$class: 'GitSCM', branches: [[name: '*/master']], 
+                    def scmVars = checkout([$class: 'GitSCM', branches: [[name: '*/master']],
+			extensions: scm.extensions + [[$class: 'WipeWorkspace']],
                         userRemoteConfigs: [[credentialsId: gitUserCredentialsId, url: gitUrl]]])
                     stage 'Build'
                     sh 'make install'
