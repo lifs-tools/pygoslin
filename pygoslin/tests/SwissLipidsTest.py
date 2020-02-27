@@ -20,6 +20,7 @@ class ParserTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
     
+    
     def test_parser(self):
         lipidnames = []
         with open("pygoslin/tests/swiss-lipids-test.csv", mode = "rt") as infile:

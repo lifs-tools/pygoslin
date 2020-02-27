@@ -1,24 +1,19 @@
 
-def parser_core(text_to_parse, dict nt, dict t):
+def parser_core(text_to_parse, dict nt, dict t, list lft, list rgt):
     
     cdef:
-        list dp_table, ld, Ks
+        list DP, ld, Ks, DL, DR
         dict lld
         set s
         long rule_index, mask, new_key, old_key, i_shift, index_pair_1, index_pair_2, key
-        int n = len(text_to_parse), i, j, k, jpok, im1
-    dp_table = list()
-    Ks = list()
+        int n = len(text_to_parse), i, j, k, jpok, im1, shift
     
-    mask = (1 << 32) - 1
-    for i in range(n):
-        ld = []
-        for j in range(n - i):
-            lld = dict()
-            ld.append(lld)
-        dp_table.append(ld)
-        
-        
+    Ks = [set([0]) for i in range(n)]
+    DP = [[{} for j in range(n - i)] for i in range(n)]
+    DL = [[set() for j in range(n - i)] for i in range(n)]
+    DR = [[set() for j in range(n - i)] for i in range(n)]
+    
+    shift, mask = 32, (1 << 32) - 1    
     for i in range(n):
         c = text_to_parse[i]
         if c not in t: return None
@@ -27,37 +22,35 @@ def parser_core(text_to_parse, dict nt, dict t):
             new_key = rule_index >> 32
             old_key = rule_index & mask
             dp_node = [c, None, old_key, None]
-            dp_table[i][0][new_key] = dp_node
-        s = set()
-        s.add(0)
-        Ks.append(s)
+            DP[i][0][new_key] = dp_node
+            DL[i][0] |= lft[new_key]
+            DR[i][0] |= rgt[new_key]
     
     
     for i in range (1, n):
         im1 = i - 1
         for j in range(n - i):
             
-            D, jp1 = dp_table[j], j + 1
-            Di = D[i]
+            DPj, jp1 = DP[j], j + 1
+            DPji = DPj[i]
             Ksj = Ks[j]
             
             for k in Ksj:
                 jpok = jp1 + k
-                if im1 - k in Ks[jpok]:                
-                    D1, D2 = D[k], dp_table[jpok][im1 - k]
+                if im1 - k not in Ks[jpok]: continue
+            
+                D1, D2 = DPj[k], DP[jpok][im1 - k]
                 
-                    for index_pair_1 in D1:
-                        
-                        i_shift = index_pair_1 * 4294967296
-                        for index_pair_2 in D2:
-                            key = i_shift + index_pair_2
-                            
-                            if key in nt:
-                                parse_content = [index_pair_1, D1[index_pair_1], index_pair_2, D2[index_pair_2]]
-                                for rule_index in nt[key]:
-                                    Di[rule_index] = parse_content
-            
-            if len(D[i]) > 0: Ks[j].add(i)
+                for key in DR[j][k] & DL[jpok][im1 - k]:
+                    index_pair_1 = key >> shift
+                    index_pair_2 = key & mask
+                    parse_content = [index_pair_1, D1[index_pair_1], index_pair_2, D2[index_pair_2]]
+                    for rule_index in nt[key]:
+                        DPji[rule_index] = parse_content
+                        DL[j][i] |= lft[rule_index]
+                        DR[j][i] |= rgt[rule_index]
+                                    
+            if DPji: Ksj.add(i)
             
             
-    return dp_table
+    return DP
