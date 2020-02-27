@@ -21,7 +21,7 @@ setup(
     author = 'Dominik Kopczynski',
     author_email = 'dominik.kopczynski@isas.de',
     description = 'Python implementation for Goslin',
-    long_description = open('README.md').read(),
+    long_description = open('README.md', encoding='utf-8').read(),
     packages = setuptools.find_packages(),
     classifiers = [
         "Programming Language :: Python :: 3",
