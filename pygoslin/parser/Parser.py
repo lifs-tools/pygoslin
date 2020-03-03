@@ -7,7 +7,6 @@ from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHand
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
 from itertools import combinations as iter_combinations
 import pygoslin
-from functools import reduce
 
 
 pyx_support = True
@@ -54,8 +53,7 @@ class TreeNode:
         
         
      
-def compute_rule_key(rule_index_1, rule_index_2):
-    return (rule_index_1 << Parser.SHIFT) | rule_index_2
+compute_rule_key = lambda rule_index_1, rule_index_2: (rule_index_1 << Parser.SHIFT) | rule_index_2
         
         
         
@@ -105,7 +103,7 @@ class Parser:
             self.grammar_name = Parser.split_string(rules[0], ' ', self.quote)[1]
             del rules[0]
             ruleToNT = {Parser.EOF_RULE_NAME: Parser.EOF_RULE}
-            self.TtoNT[Parser.EOF_SIGN] = Parser.EOF_RULE
+            self.TtoNT[Parser.EOF_SIGN] = set([Parser.EOF_RULE])
             for rule_line in rules:
                 
                 tokens_level_1 = []
@@ -155,9 +153,9 @@ class Parser:
                         t_rule = 0
                         if c not in self.TtoNT: 
                             t_rule = self.get_next_free_rule_index()
-                            self.TtoNT[c] = t_rule
+                            self.TtoNT[c] = set([t_rule])
                         else:
-                            t_rule = self.TtoNT[c]
+                            t_rule = list(self.TtoNT[c])[0]
                             
                         if t_rule not in self.NTtoNT: self.NTtoNT[t_rule] = set()
                         self.NTtoNT[t_rule].add(new_rule_index)
@@ -204,28 +202,49 @@ class Parser:
         else:
             raise Exception("Error: file '%s' does not exist or can not be opened." % grammar_filename)
         
-    
+        def top_nodes( rule_index):
+            collection, collection_top = [rule_index], []
+            i = 0
+            while i < len(collection):
+                current_index = collection[i]
+                if current_index in self.NTtoNT:
+                    for previous_index in self.NTtoNT[current_index]: collection.append(previous_index)
+                else:
+                    collection_top.append(current_index)
+                i += 1
+            return collection_top
+        
+        
+        
+        self.substitution = {}
+        for rule_index, values in self.NTtoNT.items():
+            for rule in values:
+                for rule_top in top_nodes(rule):
+                    chain = self.collect_backwards(rule, rule_top)
+                    if chain == None: continue
+                    self.substitution[(rule_index, rule_top)] = chain + [rule]
+        
+        
+        
+        for dictionary in [self.TtoNT, self.NTtoNT]:
+            for rules in dictionary.values():
+                new_rules = set()
+                for rule in rules:
+                    new_rules |= set([p for p in self.collect_one_backwards(rule)])
+                rules |= new_rules
+                
+            
     
         self.right_pair = [set() for i in range(self.next_free_rule_index)]
         self.left_pair = [set() for i in range(self.next_free_rule_index)]
         for key in self.NTtoNT:
-            if key > self.MASK:
-                l = key >> self.SHIFT
-                r = key & self.MASK
-                self.right_pair[l].add(key)
-                self.left_pair[r].add(key)
+            if key <= self.MASK: continue
+            self.right_pair[key >> self.SHIFT].add(key)
+            self.left_pair[key & self.MASK].add(key)
                 
                 
                 
-        self.substitution = {}
-        for rule in range(self.next_free_rule_index):
-            subst_rules = set(self.collect_one_backwards(rule))
-            subst_rules.remove(rule)
-            if len(subst_rules) > 0:
-                self.substitution[rule] = subst_rules
-    
-    
-    
+                
     
     
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
@@ -354,8 +373,7 @@ class Parser:
     
     
     # checking if string is terminal
-    def is_terminal(product_token, quote):
-        return product_token[0] == quote and product_token[-1] == quote and len(product_token) > 2
+    is_terminal = lambda product_token, quote: product_token[0] == quote and product_token[-1] == quote and len(product_token) > 2
     
     
     
@@ -387,9 +405,9 @@ class Parser:
             t_rule = 0
             if c not in self.TtoNT:
                 t_rule = self.get_next_free_rule_index()
-                self.TtoNT[c] = t_rule
+                self.TtoNT[c] = set([t_rule])
             else:
-                t_rule = self.TtoNT[c]
+                t_rule = list(self.TtoNT[c])[0]
             terminal_rules.append(t_rule)
         
         while len(terminal_rules) > 1:
@@ -464,9 +482,8 @@ class Parser:
         # checking and extending nodes for single rule chains
         key = compute_rule_key(parse_content[0], parse_content[2]) if parse_content[1] != None else parse_content[2]
         
-        merged_rules = self.collect_backwards(key, node.rule_index)
-        if merged_rules != None:
-            for rule_index in merged_rules:
+        if key != node.rule_index and (key, node.rule_index) in self.substitution:
+            for rule_index in self.substitution[(key, node.rule_index)]:
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
                 node = node.left
         
@@ -478,8 +495,6 @@ class Parser:
             self.fill_tree(node.right, parse_content[3])
             
         else:
-            # I know, it is not 100% clean to store the character in an integer
-            # especially when it is not the dedicated attribute for, but the heck with it!
             node.terminal = parse_content[0]
     
     
@@ -498,15 +513,15 @@ class Parser:
         self.parser_event_handler.content = None
         
         # call parser core function written in cython for performance boost
-        dp_table = parser_core(text_to_parse, self.NTtoNT, self.TtoNT, self.left_pair, self.right_pair, self.substitution) if pyx_support else self.parser_pure(text_to_parse)
+        dp_table = parser_core(text_to_parse, self.NTtoNT, self.TtoNT, self.left_pair, self.right_pair) if pyx_support else self.parser_pure(text_to_parse)
         if dp_table == None: return
         
         
         for i in range(len(text_to_parse) - 1, 0, -1):
-            if Parser.START_RULE in dp_table[0][i]:
+            if Parser.START_RULE in dp_table[i][0]:
                 self.word_in_grammar = True
                 parse_tree = TreeNode(Parser.START_RULE, Parser.START_RULE in self.NTtoRule)
-                self.fill_tree(parse_tree, dp_table[0][i][Parser.START_RULE])
+                self.fill_tree(parse_tree, dp_table[i][0][Parser.START_RULE])
                 self.raise_events(parse_tree)
                 break
             if self.used_eof: break
@@ -518,54 +533,45 @@ class Parser:
         rgt = self.right_pair
         lft = self.left_pair
         
+        
         DP = [[{} for j in range(n - i)] for i in range(n)]
         DL = [[set() for j in range(n - i)] for i in range(n)]
         DR = [[set() for j in range(n - i)] for i in range(n)]
         Ks = [set([0]) for i in range(n)]
         
         t, nt, mask, shift = self.TtoNT, self.NTtoNT, (1 << 32) - 1, 32
-        
+            
         for i in range(n):
             c = text_to_parse[i]
             if c not in t: return None
             
-            rule = t[c]
-            dp_node = [c, None, rule, None]
-            DP[i][0][rule] = dp_node
-            DL[i][0] |= lft[rule]
-            DR[i][0] |= rgt[rule]
-    
-            if rule in self.substitution:
-                for s in self.substitution[rule]:
-                    DP[i][0][s] = dp_node
-                    DL[i][0] |= lft[s]
-                    DR[i][0] |= rgt[s]
+            for rule_index in t[c]:
+                dp_node = [c, None, rule_index, None]
+                DP[0][i][rule_index] = dp_node
+                DL[0][i] |= lft[rule_index]
+                DR[0][i] |= rgt[rule_index]
         
         
         for i in range (1, n):
-            im1 = i - 1
+            im1, DPi = i - 1, DP[i]
             for j in range(n - i):
-                jp1 = j + 1
-                for k in Ks[j]:
-                    jpok = jp1 + k
-                    if im1 - k not in Ks[jpok]: continue
+                jp1, DPij, Ksj = j + 1, DPi[j], Ks[j]
+                
+                for k in Ksj:
+                    jpok, im1mk = jp1 + k, im1 - k
+                    if im1mk not in Ks[jpok]: continue
                     
-                    for key in DR[j][k] & DL[jpok][im1 - k]:
+                    for key in DR[k][j] & DL[im1mk][jpok]:
                         index_pair_1 = key >> shift
                         index_pair_2 = key & mask
-                        parse_content = [index_pair_1, DP[j][k][index_pair_1], index_pair_2, DP[jpok][im1 - k][index_pair_2]]
+                        parse_content = [index_pair_1, DP[k][j][index_pair_1], index_pair_2, DP[im1mk][jpok][index_pair_2]]
                         for rule_index in nt[key]:
-                            DP[j][i][rule_index] = parse_content
-                            DL[j][i] |= lft[rule_index]
-                            DR[j][i] |= rgt[rule_index]
-                            if rule_index in self.substitution:
-                                for s in self.substitution[rule_index]:
-                                    DP[j][i][s] = parse_content
-                                    DL[j][i] |= lft[s]
-                                    DR[j][i] |= rgt[s]
-                            
-                    
-                if DP[j][i]: Ks[j].add(i)
+                            DPij[rule_index] = parse_content
+                            DL[i][j] |= lft[rule_index]
+                            DR[i][j] |= rgt[rule_index]
+                                    
+                if DPij: Ksj.add(i)
+
         return DP
            
 
@@ -603,7 +609,7 @@ class SwissLipidsParser(Parser):
         
 class LipidParser:
     def __init__(self):
-        self.parser_list = [GoslinParser(), GoslinFragmentParser(), LipidMapsParser()]
+        self.parser_list = [GoslinParser(), GoslinFragmentParser(), LipidMapsParser(), SwissLipidsParser()]
         
     def parse(self, lipid_name):
         
