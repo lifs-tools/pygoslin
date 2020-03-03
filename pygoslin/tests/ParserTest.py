@@ -7,6 +7,7 @@ try:
 except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
+
 import pygoslin
 from pygoslin.parser.Parser import LipidParser
 from pygoslin.parser.Parser import Parser, GoslinParser, LipidParser, LipidMapsParser

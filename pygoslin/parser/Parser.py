@@ -105,7 +105,7 @@ class Parser:
             self.grammar_name = Parser.split_string(rules[0], ' ', self.quote)[1]
             del rules[0]
             ruleToNT = {Parser.EOF_RULE_NAME: Parser.EOF_RULE}
-            self.TtoNT[Parser.EOF_SIGN] = set([Parser.EOF_RULE])
+            self.TtoNT[Parser.EOF_SIGN] = Parser.EOF_RULE
             for rule_line in rules:
                 
                 tokens_level_1 = []
@@ -155,9 +155,9 @@ class Parser:
                         t_rule = 0
                         if c not in self.TtoNT: 
                             t_rule = self.get_next_free_rule_index()
-                            self.TtoNT[c] = set([t_rule])
+                            self.TtoNT[c] = t_rule
                         else:
-                            t_rule = list(self.TtoNT[c])[0]
+                            t_rule = self.TtoNT[c]
                             
                         if t_rule not in self.NTtoNT: self.NTtoNT[t_rule] = set()
                         self.NTtoNT[t_rule].add(new_rule_index)
@@ -204,26 +204,6 @@ class Parser:
         else:
             raise Exception("Error: file '%s' does not exist or can not be opened." % grammar_filename)
         
-        
-        keys = set(self.TtoNT.keys())
-        for c in keys:
-            rules = set(self.TtoNT[c])
-            self.TtoNT[c].clear()
-            for rule in rules:
-                for p in self.collect_one_backwards(rule):
-                    
-                    key = compute_rule_key(p, rule)
-                    self.TtoNT[c].add(key)
-                    
-        
-        self.originalNTtoNT = {k: set(v) for k, v in self.NTtoNT.items()}
-        
-        keysNT = set(self.NTtoNT.keys())
-        for r in keysNT:
-            rules = set(self.NTtoNT[r])
-            for rule in rules:
-                for p in self.collect_one_backwards(rule): self.NTtoNT[r].add(p)
-            
     
     
         self.right_pair = [set() for i in range(self.next_free_rule_index)]
@@ -234,6 +214,17 @@ class Parser:
                 r = key & self.MASK
                 self.right_pair[l].add(key)
                 self.left_pair[r].add(key)
+                
+                
+                
+        self.substitution = {}
+        for rule in range(self.next_free_rule_index):
+            subst_rules = set(self.collect_one_backwards(rule))
+            subst_rules.remove(rule)
+            if len(subst_rules) > 0:
+                self.substitution[rule] = subst_rules
+    
+    
     
     
     
@@ -396,9 +387,9 @@ class Parser:
             t_rule = 0
             if c not in self.TtoNT:
                 t_rule = self.get_next_free_rule_index()
-                self.TtoNT[c] = set([t_rule])
+                self.TtoNT[c] = t_rule
             else:
-                t_rule = list(self.TtoNT[c])[0]
+                t_rule = self.TtoNT[c]
             terminal_rules.append(t_rule)
         
         while len(terminal_rules) > 1:
@@ -435,13 +426,13 @@ class Parser:
     
     
     def collect_backwards(self, child_rule_index, parent_rule_index):
-        if child_rule_index not in self.originalNTtoNT: return None
+        if child_rule_index not in self.NTtoNT: return None
         
-        for previous_index in self.originalNTtoNT[child_rule_index]:
+        for previous_index in self.NTtoNT[child_rule_index]:
             if previous_index == parent_rule_index:
                 return []
             
-            elif previous_index in self.originalNTtoNT:
+            elif previous_index in self.NTtoNT:
                 collection = self.collect_backwards(previous_index, parent_rule_index)
                 if collection != None:
                     collection.append(previous_index)
@@ -507,7 +498,7 @@ class Parser:
         self.parser_event_handler.content = None
         
         # call parser core function written in cython for performance boost
-        dp_table = parser_core(text_to_parse, self.NTtoNT, self.TtoNT, self.left_pair, self.right_pair) if pyx_support else self.parser_pure(text_to_parse)
+        dp_table = parser_core(text_to_parse, self.NTtoNT, self.TtoNT, self.left_pair, self.right_pair, self.substitution) if pyx_support else self.parser_pure(text_to_parse)
         if dp_table == None: return
         
         
@@ -533,24 +524,28 @@ class Parser:
         Ks = [set([0]) for i in range(n)]
         
         t, nt, mask, shift = self.TtoNT, self.NTtoNT, (1 << 32) - 1, 32
-            
+        
         for i in range(n):
             c = text_to_parse[i]
             if c not in t: return None
             
-            for rule_index in t[c]:
-                new_key, old_key = rule_index >> 32, rule_index & mask
-                dp_node = [c, None, old_key, None]
-                DP[i][0][new_key] = dp_node
-                DL[i][0] |= lft[new_key]
-                DR[i][0] |= rgt[new_key]
+            rule = t[c]
+            dp_node = [c, None, rule, None]
+            DP[i][0][rule] = dp_node
+            DL[i][0] |= lft[rule]
+            DR[i][0] |= rgt[rule]
+    
+            if rule in self.substitution:
+                for s in self.substitution[rule]:
+                    DP[i][0][s] = dp_node
+                    DL[i][0] |= lft[s]
+                    DR[i][0] |= rgt[s]
         
         
         for i in range (1, n):
             im1 = i - 1
             for j in range(n - i):
                 jp1 = j + 1
-                
                 for k in Ks[j]:
                     jpok = jp1 + k
                     if im1 - k not in Ks[jpok]: continue
@@ -563,9 +558,14 @@ class Parser:
                             DP[j][i][rule_index] = parse_content
                             DL[j][i] |= lft[rule_index]
                             DR[j][i] |= rgt[rule_index]
-                                    
+                            if rule_index in self.substitution:
+                                for s in self.substitution[rule_index]:
+                                    DP[j][i][s] = parse_content
+                                    DL[j][i] |= lft[s]
+                                    DR[j][i] |= rgt[s]
+                            
+                    
                 if DP[j][i]: Ks[j].add(i)
-
         return DP
            
 
