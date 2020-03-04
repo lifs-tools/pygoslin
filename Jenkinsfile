@@ -39,7 +39,7 @@ node {
                 try {
                     stage 'Checkout'
                     def scmVars = checkout([$class: 'GitSCM', branches: [[name: '*/master']],
-			extensions: scm.extensions + [[$class: 'WipeWorkspace']],
+			extensions: scm.extensions,// + [[$class: 'WipeWorkspace']],
                         userRemoteConfigs: [[credentialsId: gitUserCredentialsId, url: gitUrl]]])
                     script {
                         env.GIT_COMMIT = scmVars.GIT_COMMIT
