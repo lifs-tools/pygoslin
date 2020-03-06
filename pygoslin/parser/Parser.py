@@ -222,14 +222,9 @@ class Parser:
                 for rule_top in top_nodes(rule):
                     chain = self.collect_backwards(rule, rule_top)
                     if chain == None: continue
-                    self.substitution[(rule_index, rule_top)] = chain + [rule]
+                    self.substitution[rule_index + (rule_top << 16)] = chain + [rule]
         
         
-        for k in sorted(self.substitution.keys()):
-            
-            print(k, (k[0] + (k[1] << 16)), self.substitution[k])
-            
-        exit()
         
         
         for dictionary in [self.TtoNT, self.NTtoNT]:
@@ -248,9 +243,7 @@ class Parser:
             self.right_pair[key >> self.SHIFT].add(key)
             self.left_pair[key & self.MASK].add(key)
                 
-                
-                
-                
+
     
     
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
@@ -488,8 +481,9 @@ class Parser:
         # checking and extending nodes for single rule chains
         key = compute_rule_key(parse_content[0], parse_content[2]) if parse_content[1] != None else parse_content[2]
         
-        if key != node.rule_index and (key, node.rule_index) in self.substitution:
-            for rule_index in self.substitution[(key, node.rule_index)]:
+        s_key = key + (node.rule_index << 16)
+        if key != node.rule_index and s_key in self.substitution:
+            for rule_index in self.substitution[s_key]:
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
                 node = node.left
         
