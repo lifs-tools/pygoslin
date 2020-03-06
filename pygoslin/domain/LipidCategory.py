@@ -11,3 +11,12 @@ class LipidCategory(Enum):
     ST = 4 # SLM:000500463 Steroids and derivatives
     FA = 5 # SLM:000390054 Fatty acyls and derivatives
     SL = 6 # Saccharolipids
+    
+category_string_to_category = {"GL": LipidCategory.GL,
+                      "GP": LipidCategory.GP,
+                      "SP": LipidCategory.SP,
+                      "ST": LipidCategory.ST,
+                      "FA": LipidCategory.FA,
+                      "SL": LipidCategory.SL,
+                      }
+    

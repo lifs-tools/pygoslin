@@ -31,9 +31,9 @@ setup(
     ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language="c++") if pyx_support else None,
     setup_requires = ["pytest-runner"],
     tests_require = ["pytest"],
-    python_requires='>=3.5',
-    include_package_data=True,
-    package_data={
-        '': ['data/goslin/*.g4', 'data/goslin/*.G4'], # If any package contains *.G4 files, include them
+    python_requires = '>=3.5',
+    include_package_data = True,
+    package_data = {
+        '': ['data/goslin/*.g4', 'data/goslin/*.G4', 'data/goslin/lipid-list.csv'], # If any package contains *.G4 files, include them
     }
 )

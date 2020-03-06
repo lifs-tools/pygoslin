@@ -3,7 +3,7 @@ from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidExceptions import ConstraintViolationException
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidLevel import LipidLevel
-from pygoslin.domain.LipidClass import LipidClass
+from pygoslin.domain.LipidClass import *
 
 class LipidMolecularSubspecies(LipidSpecies):
 
@@ -48,7 +48,7 @@ class LipidMolecularSubspecies(LipidSpecies):
 
     def build_lipid_subspecies_name(self, fa_separator):
         fa_strings = []
-        special_case = self.lipid_class in [LipidClass.PC, LipidClass.LPC, LipidClass.PE, LipidClass.LPE]
+        special_case = self.lipid_class in [class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]]
         for fatty_acid in self.fa_list:
             num_double_bonds = fatty_acid.num_double_bonds
             num_carbon = fatty_acid.num_carbon
@@ -58,8 +58,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         
         fa_string = " " + fa_separator.join(fa_strings) if len(fa_strings) > 0 else ""
         
-            
-        return (self.lipid_class.value[2] if not self.use_head_group else self.head_group) + fa_string
+        return (all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group) + fa_string
     
     
     

@@ -136,7 +136,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         if ether == "O-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "O-P": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+        elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         
         
     def add_hydroxyl(self, node):
