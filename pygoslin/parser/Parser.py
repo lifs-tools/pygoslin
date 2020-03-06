@@ -225,6 +225,12 @@ class Parser:
                     self.substitution[(rule_index, rule_top)] = chain + [rule]
         
         
+        for k in sorted(self.substitution.keys()):
+            
+            print(k, (k[0] + (k[1] << 16)), self.substitution[k])
+            
+        exit()
+        
         
         for dictionary in [self.TtoNT, self.NTtoNT]:
             for rules in dictionary.values():
