@@ -28,7 +28,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language="c++") if pyx_support else None,
+    ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language_level = 3) if pyx_support else None,
     setup_requires = ["pytest-runner"],
     tests_require = ["pytest"],
     python_requires = '>=3.5',

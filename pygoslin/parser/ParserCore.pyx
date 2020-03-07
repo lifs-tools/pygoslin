@@ -1,5 +1,7 @@
+# distutils: language=c++
 
 cimport cython
+
 @cython.boundscheck(False)  # Deactivate bounds checking
 @cython.wraparound(False)
 def parser_core(unicode text_to_parse, dict nt, dict t, list lft, list rgt):
@@ -15,6 +17,7 @@ def parser_core(unicode text_to_parse, dict nt, dict t, list lft, list rgt):
     DP = [[{} for j in range(n - i)] for i in range(n)]
     DL = [[set() for j in range(n - i)] for i in range(n)]
     DR = [[set() for j in range(n - i)] for i in range(n)]
+    
     
     shift, mask = 32, (1 << 32) - 1
     for i, c in enumerate(text_to_parse):

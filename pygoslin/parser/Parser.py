@@ -13,7 +13,8 @@ pyx_support = True
 try:
     import pyximport
     from pygoslin.parser.ParserCore import parser_core
-except: pyx_support = False
+except:
+    pyx_support = False
 
 
 class Context(Enum):
@@ -223,17 +224,19 @@ class Parser:
                     chain = self.collect_backwards(rule, rule_top)
                     if chain == None: continue
                     self.substitution[rule_index + (rule_top << 16)] = chain + [rule]
+                    
+        self.OTtoNT = {}
+        for k, v in self.TtoNT.items():
+            self.OTtoNT[k] = list(v)[0]
         
         
-        
-        
-        for dictionary in [self.TtoNT, self.NTtoNT]:
-            for rules in dictionary.values():
+        for d in [self.TtoNT, self.NTtoNT]:
+            for rules in d.values():
                 new_rules = set()
                 for rule in rules:
                     new_rules |= set([p for p in self.collect_one_backwards(rule)])
                 rules |= new_rules
-                
+                    
             
     
         self.right_pair = [set() for i in range(self.next_free_rule_index)]
@@ -479,10 +482,18 @@ class Parser:
     # filling the syntax tree including events
     def fill_tree(self, node, parse_content):
         # checking and extending nodes for single rule chains
-        key = compute_rule_key(parse_content[0], parse_content[2]) if parse_content[1] != None else parse_content[2]
         
-        s_key = key + (node.rule_index << 16)
-        if key != node.rule_index and s_key in self.substitution:
+        if parse_content[1] != None:
+            bottom_rule = compute_rule_key(parse_content[0], parse_content[2])
+            top_rule = node.rule_index
+        else:
+            top_rule = parse_content[2]
+            bottom_rule = self.OTtoNT[parse_content[0]]
+        
+        
+        
+        s_key = bottom_rule + (top_rule << 16)
+        if bottom_rule != top_rule and s_key in self.substitution:
             for rule_index in self.substitution[s_key]:
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
                 node = node.left
