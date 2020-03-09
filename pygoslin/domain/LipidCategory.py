@@ -18,5 +18,6 @@ category_string_to_category = {"GL": LipidCategory.GL,
                       "ST": LipidCategory.ST,
                       "FA": LipidCategory.FA,
                       "SL": LipidCategory.SL,
+                      "UNDEFINED": LipidCategory.UNDEFINED
                       }
     

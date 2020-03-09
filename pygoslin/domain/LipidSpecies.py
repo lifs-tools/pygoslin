@@ -26,7 +26,7 @@ class LipidSpecies:
             return self.lipid_category.name
         
         elif level == LipidLevel.CLASS:
-            return all_lipids[self.lipid_class][0] if self.lipid_class != None else ""
+            return all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group
         
         elif level == LipidLevel.SPECIES:
             lipid_string = [all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group]

@@ -251,9 +251,8 @@ class Parser:
             self.right_pair[key >> self.SHIFT].add(key)
             self.left_pair[key & self.MASK].add(key)
            
-        for k, v in sorted(ruleToNT.items(), key = lambda a: a[1]):
-            print(k, v)
-        print()
+           
+           
     
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
         grammar, sb,current_position = "", [], 0
@@ -498,13 +497,11 @@ class Parser:
         
         l, r, name = bottom_rule >> 32, bottom_rule & ((1 << 32) - 1), self.NTtoRule[top_rule] if top_rule in self.NTtoRule else ""
         
-        print(l, r, "->", top_rule, name)
         
         s_key = bottom_rule + (top_rule << 16)
         if bottom_rule != top_rule and s_key in self.substitution:
             for rule_index in self.substitution[s_key]:
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
-                print("adding", rule_index, self.NTtoRule[rule_index] if rule_index in self.NTtoRule else "")
                 node = node.left
         
         

@@ -18,6 +18,8 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_post_event"] = self.build_lipid
         
         self.registered_events["mediator_post_event"] = self.mediator_event
+        self.registered_events["sphingoxine_pre_event"] = self.mediator_event
+        self.registered_events["fa_no_hg_pre_event"] = self.pure_fa
         
         self.registered_events["sgl_species_pre_event"] = self.set_species_level
         self.registered_events["tgl_species_pre_event"] = self.set_species_level
@@ -73,6 +75,11 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
     def mediator_event(self, node):
         self.use_head_group = True
+        self.head_group = node.get_text()
+        
+        
+    def pure_fa(self, node):
+        self.head_group = "FA"
         
         
     def set_head_group_name(self, node):
