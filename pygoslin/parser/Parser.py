@@ -219,11 +219,16 @@ class Parser:
         
         self.substitution = {}
         for rule_index, values in self.NTtoNT.items():
+            l, r = rule_index >> 32, rule_index & ((1 << 32) - 1)
             for rule in values:
                 for rule_top in top_nodes(rule):
                     chain = self.collect_backwards(rule, rule_top)
                     if chain == None: continue
-                    self.substitution[rule_index + (rule_top << 16)] = chain + [rule]
+                    chain = [rule_top] + chain + [rule]
+                    while len(chain) > 1:
+                        top = chain[0]
+                        chain = chain[1:]
+                        self.substitution[rule_index + (top << 16)] = chain
                     
         self.OTtoNT = {}
         for k, v in self.TtoNT.items():
@@ -245,9 +250,10 @@ class Parser:
             if key <= self.MASK: continue
             self.right_pair[key >> self.SHIFT].add(key)
             self.left_pair[key & self.MASK].add(key)
-                
-
-    
+           
+        for k, v in sorted(ruleToNT.items(), key = lambda a: a[1]):
+            print(k, v)
+        print()
     
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
         grammar, sb,current_position = "", [], 0
@@ -490,12 +496,15 @@ class Parser:
             top_rule = parse_content[2]
             bottom_rule = self.OTtoNT[parse_content[0]]
         
+        l, r, name = bottom_rule >> 32, bottom_rule & ((1 << 32) - 1), self.NTtoRule[top_rule] if top_rule in self.NTtoRule else ""
         
+        print(l, r, "->", top_rule, name)
         
         s_key = bottom_rule + (top_rule << 16)
         if bottom_rule != top_rule and s_key in self.substitution:
             for rule_index in self.substitution[s_key]:
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
+                print("adding", rule_index, self.NTtoRule[rule_index] if rule_index in self.NTtoRule else "")
                 node = node.left
         
         
