@@ -286,13 +286,12 @@ class ParserTest(unittest.TestCase):
         lipid_name = "PIP2[4,5](21:0/24:4(9Z,12Z,15Z,18Z))"
         lipid = swiss_lipids_parser.parse(lipid_name)
         assert lipid != None
-        print(lipid.get_lipid_string())
         assert lipid.get_lipid_string() == "PIP2[4',5'] 21:0/24:4(9Z,12Z,15Z,18Z)"
         
         lipid_name = "GalGb3Cer(d18:0/14:0)"
         lipid = swiss_lipids_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "GalGb3Cer 18:02/14:0"
+        assert lipid.get_lipid_string() == "GalGb3Cer 18:0;2/14:0"
         
         lipid_name = "PI(34:5(19Z,22Z,25Z,28Z,31Z)/18:1(6Z))"
         lipid = swiss_lipids_parser.parse(lipid_name)
@@ -308,6 +307,9 @@ class ParserTest(unittest.TestCase):
         lipid = swiss_lipids_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "NAPE 12:0/30:4(15Z,18Z,21Z,24Z)/12:0"
+      
+      
+      
       
     
     def test_parser_read(self):
