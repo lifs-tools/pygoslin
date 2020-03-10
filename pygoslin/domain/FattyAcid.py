@@ -19,3 +19,10 @@ class FattyAcid:
         if num_hydroxyl < 0:
             raise ConstraintViolationException("FattyAcid must have at least 0 hydroxy groups!")
         
+    def clone(self, fa):
+        self.name = fa.name
+        self.position = fa.position
+        self.num_carbon = fa.num_carbon
+        self.num_hydroxyl = fa.num_hydroxyl
+        self.lipid_FA_bond_type = fa.lipid_FA_bond_type
+        self.lcb = fa.lcb

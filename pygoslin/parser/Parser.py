@@ -219,7 +219,6 @@ class Parser:
         
         self.substitution = {}
         for rule_index, values in self.NTtoNT.items():
-            l, r = rule_index >> 32, rule_index & ((1 << 32) - 1)
             for rule in values:
                 for rule_top in top_nodes(rule):
                     chain = self.collect_backwards(rule, rule_top)
@@ -495,8 +494,6 @@ class Parser:
             top_rule = parse_content[2]
             bottom_rule = self.OTtoNT[parse_content[0]]
         
-        l, r, name = bottom_rule >> 32, bottom_rule & ((1 << 32) - 1), self.NTtoRule[top_rule] if top_rule in self.NTtoRule else ""
-        
         
         s_key = bottom_rule + (top_rule << 16)
         if bottom_rule != top_rule and s_key in self.substitution:
@@ -563,8 +560,7 @@ class Parser:
             if c not in t: return None
             
             for rule_index in t[c]:
-                dp_node = [c, None, rule_index, None]
-                DP[0][i][rule_index] = dp_node
+                DP[0][i][rule_index] = [c, None, rule_index, None]
                 DL[0][i] |= lft[rule_index]
                 DR[0][i] |= rgt[rule_index]
         

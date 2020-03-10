@@ -11,6 +11,14 @@ class LipidSpecies:
         self.lipid_class = lipid_class if lipid_class != None else get_class(self.head_group)
         self.info = lipid_species_info
         self.use_head_group = False
+        
+        
+    def clone(self, fa):
+        self.head_group = fa.head_group
+        self.lipid_category = fa.lipid_category
+        self.lipid_class = fa.lipid_class
+        self.info = LipidSpeciesInfo(fa)
+        self.use_head_group = fa.use_head_group
             
 
 

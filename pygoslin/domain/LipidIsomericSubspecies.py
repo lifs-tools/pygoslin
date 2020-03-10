@@ -1,4 +1,7 @@
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidLevel import LipidLevel
 
 class LipidIsomericSubspecies(LipidStructuralSubspecies):
 
@@ -9,7 +12,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
         num_hydroxyl = 0
         num_double_bonds = 0
         lipid_FA_bond_type = LipidFaBondType.UNDEFINED
-        if fa.length > 0:
+        if len(fa) > 0:
             lipid_FA_bond_type = LipidFaBondType.ESTER
         
         for fas in fa:
@@ -36,32 +39,12 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
         self.info.num_double_bonds = num_double_bonds
         self.info.lipid_FA_bond_type = lipid_FA_bond_type
     
-
-    def build_lipid_isomeric_substructure_name(self):
-        fa_strings = []
-        for fatty_acid in self.fa_list:
-            num_carbon = 0
-            num_hydroxyl = 0
-            num_double_bonds = fatty_acid.num_double_bonds
-            
-            db_pos = ""
-            db_positions = [key + fatty_acid.double_bond_positions[key] for key in fatty_acid.double_bond_positions]
-            
-            if len (fattyAcid.double_bond_positions) > 0:
-                db_pos = "(%s)" % ",".join(db_positions)
-                
-            num_carbon += fattyAcid.num_carbon
-            num_hydroxyl += fattyAcid.num_hydroxyl
-            fa_strings.append("%i:%i%s%s%s" % (num_carbon, num_double_bonds, db_pos, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", fatty_acid.lipid_FA_bond_type.suffix()))
-            
-        return (all_lipids[self.lipid_class][0] if not self.use_headgroup else self.head_group) + " " + "/".join(self.fa_strings)
     
 
     def get_lipid_string(self, level = None):
-        if level == None or level == LipidLevel.ISOMERIC_SUBSPECIES:
-            return build_lipid_isomeric_substructure_name()
         
-        elif level in (LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
+        if level == None or level in (LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)
+        
         else:
             raise Exception("LipidIsomericSubspecies does not know how to create a lipid string for level %s" % level)

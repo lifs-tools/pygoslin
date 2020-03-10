@@ -10,3 +10,6 @@ class MolecularFattyAcid(FattyAcid):
             
         self.num_double_bonds = num_double_bonds
     
+    def clone(self, fa):
+        self.num_double_bonds = fa.num_double_bonds
+        super().clone(fa)
