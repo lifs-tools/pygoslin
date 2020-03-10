@@ -58,8 +58,9 @@ class LipidMolecularSubspecies(LipidSpecies):
             
             db_pos = ""
             if hasattr(fatty_acid, 'double_bond_positions'):
-                db_positions = ["%i%s" % (k, v) for k, v in fatty_acid.double_bond_positions.items()]
-                if len (fatty_acid.double_bond_positions) > 0:
+                dbp = fatty_acid.double_bond_positions
+                db_positions = ["%i%s" % (k, dbp[k]) for k in sorted(dbp.keys())]
+                if len (dbp) > 0:
                     db_pos = "(%s)" % ",".join(db_positions)
             
             fa_strings.append("%s%i:%i%s%s%s" % ("O-" if special_case and len(suffix) > 0 else "", num_carbon, num_double_bonds, db_pos, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", suffix))

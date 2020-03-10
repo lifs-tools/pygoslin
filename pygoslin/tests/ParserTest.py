@@ -10,7 +10,7 @@ except:
 
 import pygoslin
 from pygoslin.parser.Parser import LipidParser
-from pygoslin.parser.Parser import Parser, GoslinParser, LipidParser, LipidMapsParser
+from pygoslin.parser.Parser import *
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
@@ -267,8 +267,6 @@ class ParserTest(unittest.TestCase):
         
         
     def test_adduct(self):
-        from pygoslin.parser.Parser import Parser
-        from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
         goslin_parser_event_handler = GoslinParserEventHandler()
         goslin_parser = Parser(goslin_parser_event_handler, "pygoslin/data/goslin/Goslin.g4")
 
@@ -277,7 +275,40 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         assert lipid.get_lipid_string() == "PE 16:1/12:0[M+H]1+"
         
+      
+    def test_swiss_lipids(self):
+        swiss_lipids_parser = SwissLipidsParser()
+        lipid_name = "TG(O-16:0/18:3(6Z,9Z,12Z)/18:1(11Z))"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "TAG 16:0a/18:3(6Z,9Z,12Z)/18:1(11Z)"
         
+        lipid_name = "PIP2[4,5](21:0/24:4(9Z,12Z,15Z,18Z))"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        print(lipid.get_lipid_string())
+        assert lipid.get_lipid_string() == "PIP2[4',5'] 21:0/24:4(9Z,12Z,15Z,18Z)"
+        
+        lipid_name = "GalGb3Cer(d18:0/14:0)"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "GalGb3Cer 18:02/14:0"
+        
+        lipid_name = "PI(34:5(19Z,22Z,25Z,28Z,31Z)/18:1(6Z))"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "PI 34:5(19Z,22Z,25Z,28Z,31Z)/18:1(6Z)"
+        
+        lipid_name = "PIP(22:6/20:4)"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "PIP 22:6/20:4"
+        
+        lipid_name = "NAPE (12:0/30:4(15Z,18Z,21Z,24Z)/12:0)"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "NAPE 12:0/30:4(15Z,18Z,21Z,24Z)/12:0"
+      
     
     def test_parser_read(self):
         lipidnames = []

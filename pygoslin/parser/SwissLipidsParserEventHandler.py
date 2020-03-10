@@ -19,10 +19,11 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
-        
         self.registered_events["fa_hg_pre_event"] = self.set_head_group_name
         self.registered_events["gl_hg_pre_event"] = self.set_head_group_name
         self.registered_events["gl_mono_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["gl_molecular_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["mediator_pre_event"] = self.mediator_event
         self.registered_events["pl_hg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_three_hg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_four_hg_pre_event"] = self.set_head_group_name
@@ -30,20 +31,16 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["st_species_hg_pre_event"] = self.set_head_group_name
         self.registered_events["st_sub1_hg_pre_event"] = self.set_head_group_name
         self.registered_events["st_sub2_hg_pre_event"] = self.set_head_group_name
-        
         self.registered_events["fa_species_pre_event"] = self.set_species_level
-        
         self.registered_events["gl_molecular_pre_event"] = self.set_molecular_level
         self.registered_events["unsorted_fa_separator_pre_event"] = self.set_molecular_level
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_level
-        
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
         self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
-        
         self.registered_events["lcb_pre_event"] = self.new_lcb
         self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
@@ -64,6 +61,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.current_fa = None
         self.db_position = 0
         self.db_cistrans = ""
+        self.use_head_group = False
         
 
     def add_db_position(self, node):
@@ -94,6 +92,11 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
     def set_molecular_level(self, node):
         self.level = LipidLevel.MOLECULAR_SUBSPECIES
+        
+        
+    def mediator_event(self, node):
+        self.use_head_group = True
+        self.head_group = node.get_text()
         
         
     def new_fa(self, node):
@@ -171,6 +174,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         elif self.level == LipidLevel.ISOMERIC_SUBSPECIES:
             lipid = LipidIsomericSubspecies(self.head_group, self.fa_list)
     
+        lipid.use_head_group = self.use_head_group
         self.lipid = LipidAdduct()
         self.lipid.lipid = lipid
         self.content = self.lipid
