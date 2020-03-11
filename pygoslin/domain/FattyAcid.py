@@ -2,10 +2,11 @@ from pygoslin.domain.LipidExceptions import *
 
 class FattyAcid:
 
-    def __init__(self, name, num_carbon, num_hydroxyl, lipid_FA_bond_type, lcb, position):
+    def __init__(self, name, num_carbon, num_double_bonds, num_hydroxyl, lipid_FA_bond_type, lcb, position):
         self.name = name
         self.position = position
         self.num_carbon = num_carbon
+        self.num_double_bonds = num_double_bonds
         self.num_hydroxyl = num_hydroxyl
         self.lipid_FA_bond_type = lipid_FA_bond_type
         self.lcb = lcb
@@ -23,6 +24,7 @@ class FattyAcid:
         self.name = fa.name
         self.position = fa.position
         self.num_carbon = fa.num_carbon
+        self.num_double_bonds = fa.num_double_bonds
         self.num_hydroxyl = fa.num_hydroxyl
         self.lipid_FA_bond_type = fa.lipid_FA_bond_type
         self.lcb = fa.lcb

@@ -13,9 +13,6 @@ from pygoslin.parser.Parser import *
 from pygoslin.domain.LipidLevel import *
 
 class ParserTest(unittest.TestCase):
-    PARSER_QUOTE = '\''
-    
-    
     
     def test_parser(self):
         lipidnames = []
@@ -25,7 +22,7 @@ class ParserTest(unittest.TestCase):
                 lipidnames.append(row)
         
         
-        lipid_parser, lipid_classes = LipidMapsParser(), {}
+        lipid_parser = LipidMapsParser()
         
         for i, lipid_name in enumerate(lipidnames):
             lipid = lipid_parser.parse(lipid_name[0])
@@ -36,11 +33,6 @@ class ParserTest(unittest.TestCase):
             if lipid == None: continue
             
             lipid_class = lipid.get_lipid_string(LipidLevel.CLASS)
-            assert lipid_class != "Undefined lipid class"
+            assert lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}
             
-            if lipid_class not in lipid_classes: lipid_classes[lipid_class] = 0
-            lipid_classes[lipid_class] += 1
-            
-        for k, v in lipid_classes.items():
-            print(k, v)
                 
