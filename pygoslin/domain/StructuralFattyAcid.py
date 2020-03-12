@@ -7,3 +7,5 @@ class StructuralFattyAcid(MolecularFattyAcid):
     def clone(self, fa):
         super().clone(fa)
         
+    def to_string(self, special_case = False):
+        return super().to_string(special_case)

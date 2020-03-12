@@ -12,6 +12,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         super().__init__(head_group)
         self.fa = {}
         self.fa_list = []
+        self.special_cases = {class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]}
         num_carbon = 0
         num_hydroxyl = 0
         num_double_bonds = 0
@@ -47,25 +48,10 @@ class LipidMolecularSubspecies(LipidSpecies):
     
 
     def build_lipid_subspecies_name(self, fa_separator):
-        fa_strings = []
-        special_case = self.lipid_class in [class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]]
-        for fatty_acid in self.fa_list:
-            num_double_bonds = fatty_acid.num_double_bonds
-            num_carbon = fatty_acid.num_carbon
-            num_hydroxyl = fatty_acid.num_hydroxyl
-            suffix = fatty_acid.lipid_FA_bond_type.suffix()
-            
-            
-            db_pos = ""
-            if hasattr(fatty_acid, 'double_bond_positions'):
-                dbp = fatty_acid.double_bond_positions
-                db_positions = ["%i%s" % (k, dbp[k]) for k in sorted(dbp.keys())]
-                if len (dbp) > 0:
-                    db_pos = "(%s)" % ",".join(db_positions)
-            
-            fa_strings.append("%s%i:%i%s%s%s" % ("O-" if special_case and len(suffix) > 0 else "", num_carbon, num_double_bonds, db_pos, ";" + str(num_hydroxyl) if num_hydroxyl > 0 else "", suffix))
+        special_case = self.lipid_class in self.special_cases
         
-        fa_string = " " + fa_separator.join(fa_strings) if len(fa_strings) > 0 else ""
+        fa_string = " " + fa_separator.join(fatty_acid.to_string(special_case) for fatty_acid in self.fa_list)
+        if fa_string == " ": fa_string = ""
         
         return (all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group) + fa_string
     
