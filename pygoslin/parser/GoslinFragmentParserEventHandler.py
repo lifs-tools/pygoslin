@@ -2,13 +2,17 @@ from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.Adduct import Adduct
-from pygoslin.domain.MolecularFattyAcid import MolecularFattyAcid
+
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.MolecularFattyAcid import MolecularFattyAcid
+from pygoslin.domain.StructuralFattyAcid import StructuralFattyAcid
+from pygoslin.domain.IsomericFattyAcid import IsomericFattyAcid
+
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from pygoslin.domain.StructuralFattyAcid import StructuralFattyAcid
+from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 from pygoslin.domain.Fragment import Fragment
 
 class GoslinFragmentParserEventHandler(BaseParserEventHandler):
@@ -53,6 +57,11 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
         
+        self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
+        self.registered_events["db_single_position_post_event"] = self.add_db_position
+        self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
+        self.registered_events["cistrans_pre_event"] = self.add_cistrans
+        
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["old_hydroxyl_pre_event"] = self.add_old_hydroxyl
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
@@ -77,6 +86,8 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.current_fa = None
         self.adduct = None
         self.fragment = None
+        self.db_position = 0
+        self.db_cistrans = ""
         
 
     def set_head_group_name(self, node):
@@ -91,42 +102,72 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.level = LipidLevel.MOLECULAR_SUBSPECIES
         
         
+        
+    def set_isomeric_level(self, node):
+        self.level = LipidLevel.ISOMERIC_SUBSPECIES
+        self.db_position = 0
+        self.db_cistrans = ""
+        
+
+    def add_db_position(self, node):
+        if self.current_fa != None: self.current_fa.double_bond_positions[self.db_position] = self.db_cistrans
+        
+
+    def add_db_position_number(self, node):
+        self.db_position = int(node.get_text())
+        
+
+    def add_cistrans(self, node):
+        self.db_cistrans = node.get_text()
+        
+        
     def new_fa(self, node):
+        self.current_fa = IsomericFattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, -1, {})
+       
+       
+       
+    def append_fa(self, node):
+        
+        current_fa = self.current_fa
         if self.level == LipidLevel.SPECIES:
-            self.current_fa = LipidSpeciesInfo()
-            self.current_fa.level = None
-            self.current_fa.num_carbon = None
-            self.current_fa.num_hydroxyl = None
-            self.current_fa.num_double_bonds = None
-            self.current_fa.lipid_FA_bond_type = None
+            self.current_fa = LipidSpeciesInfo(current_fa)
             
         elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
             self.current_fa = MolecularFattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, -1)
+            self.current_fa.clone(current_fa)
             
         elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
             self.current_fa = StructuralFattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, 0)
+            self.current_fa.clone(current_fa)
+            self.current_fa.position = len(self.fa_list) + 1
+            
+        elif self.level == LipidLevel.ISOMERIC_SUBSPECIES:
+            self.current_fa.position = len(self.fa_list) + 1
+            
+            
+        self.fa_list.append(self.current_fa)
+        self.current_fa = None
+        
         
         
     def new_lcb(self, node):
-        if self.level == LipidLevel.SPECIES:
-            self.lcb = StructuralFattyAcid()
-            
-        elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            self.lcb = StructuralFattyAcid("LCB", 2, 0, 1, LipidFaBondType.ESTER, True, 1)
-            
+        self.lcb = IsomericFattyAcid("LCB", 2, 0, 0, LipidFaBondType.ESTER, True, 1, {})
         self.current_fa = self.lcb
             
             
     def clean_lcb(self, node):
+        lcb = self.lcb
+        if self.level == LipidLevel.SPECIES:
+            self.lcb = LipidSpeciesInfo(lcb)
+            self.lcb.lipid_FA_bond_type = LipidFaBondType.ESTER
+            
+        elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
+            self.lcb = StructuralFattyAcid("LCB", 2, 0, 1, LipidFaBondType.ESTER, True, 1)
+            self.lcb.clone(lcb)
+        
         self.current_fa = None
             
-            
-    def append_fa(self, node):
-        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            self.current_fa.position = len(self.fa_list) + 1
-            
-        self.fa_list.append(self.current_fa)
-        self.current_fa = None
+           
         
         
     def build_lipid(self, node):

@@ -24,6 +24,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["gl_mono_hg_pre_event"] = self.set_head_group_name
         self.registered_events["gl_molecular_hg_pre_event"] = self.set_head_group_name
         self.registered_events["mediator_pre_event"] = self.mediator_event
+        
         self.registered_events["pl_hg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_three_hg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_four_hg_pre_event"] = self.set_head_group_name
@@ -37,14 +38,17 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_level
+        
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
         self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
+        
         self.registered_events["lcb_pre_event"] = self.new_lcb
         self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
+        
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
@@ -148,7 +152,6 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
-        
         if self.lcb != None:
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
