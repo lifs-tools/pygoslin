@@ -29,14 +29,15 @@ with open(all_lipids_dir_name + "/data/goslin/lipid-list.csv", mode = "rt") as i
     lipid_reader = csv.reader(infile, delimiter=',', quotechar='"')
     i = 1
     for row in lipid_reader:
-        all_lipids.append(tuple(r for r in row if len(r) > 0))
-        class_string_to_class[row[0]] = i
-        class_string_to_category[row[0]] = category_string_to_category[row[1]]
-        for class_name in row[3:]:
-            if len(class_name) > 0:
-                class_string_to_class[class_name] = i
-                class_string_to_category[class_name] = category_string_to_category[row[1]]
-        i += 1
+        if len(row) > 0 and len(row[0]) > 0:
+            all_lipids.append(tuple(r for r in row if len(r) > 0))
+            class_string_to_class[row[0]] = i
+            class_string_to_category[row[0]] = category_string_to_category[row[1]]
+            for class_name in row[3:]:
+                if len(class_name) > 0:
+                    class_string_to_class[class_name] = i
+                    class_string_to_category[class_name] = category_string_to_category[row[1]]
+            i += 1
         
 
         

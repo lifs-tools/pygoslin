@@ -10,6 +10,7 @@ class LipidCategory(Enum):
     ST = 4 # SLM:000500463 Steroids and derivatives
     FA = 5 # SLM:000390054 Fatty acyls and derivatives
     SL = 6 # Saccharolipids
+    PK = 7 # Polyketides
     
 category_string_to_category = {"GL": LipidCategory.GL,
                       "GP": LipidCategory.GP,
@@ -17,6 +18,7 @@ category_string_to_category = {"GL": LipidCategory.GL,
                       "ST": LipidCategory.ST,
                       "FA": LipidCategory.FA,
                       "SL": LipidCategory.SL,
+                      "PK": LipidCategory.PK,
                       "UNDEFINED": LipidCategory.UNDEFINED
                       }
     

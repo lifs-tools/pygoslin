@@ -8,6 +8,8 @@ from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 from pygoslin.domain.LipidAdduct import LipidAdduct
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidSpecies import LipidSpecies
 
 class LipidMapsParserEventHandler(BaseParserEventHandler):
     def __init__(self):
@@ -40,6 +42,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["sphinganine_name_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
         self.registered_events["ch_pre_event"] = self.set_head_group_name
+        self.registered_events["pk_hg_pre_event"] = self.set_head_group_name
         self.registered_events["hg_che_pre_event"] = self.set_head_group_name
         self.registered_events["mediator_pre_event"] = self.set_head_group_name
         
