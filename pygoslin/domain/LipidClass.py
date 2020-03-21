@@ -4,7 +4,7 @@ from os import path
 import pygoslin
 import csv
 
-UNDEFINED_LIPID_CLASS = -1
+UNDEFINED_LIPID_CLASS = 0
 
 def get_category(name):
     global class_string_to_category

@@ -11,6 +11,7 @@ except:
 import pygoslin
 from pygoslin.parser.Parser import *
 from pygoslin.domain.LipidLevel import *
+from pygoslin.domain.LipidClass import *
 
 class ParserTest(unittest.TestCase):
     
