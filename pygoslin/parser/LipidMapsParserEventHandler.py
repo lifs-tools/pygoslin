@@ -41,8 +41,10 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["sphingosine_name_pre_event"] = self.set_head_group_name
         self.registered_events["sphinganine_name_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
         self.registered_events["ch_pre_event"] = self.set_head_group_name
         self.registered_events["pk_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_fa_pre_event"] = self.set_head_group_name
         self.registered_events["hg_che_pre_event"] = self.set_head_group_name
         self.registered_events["mediator_pre_event"] = self.set_head_group_name
         
