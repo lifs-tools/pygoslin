@@ -32,8 +32,6 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_pl_o_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
-        self.registered_events["ch_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_che_pre_event"] = self.set_head_group_name
         self.registered_events["mediator_pre_event"] = self.set_head_group_name
         self.registered_events["hg_mgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dgl_pre_event"] = self.set_head_group_name
@@ -43,10 +41,12 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_sac_di_pre_event"] = self.set_head_group_name
         self.registered_events["hg_sac_f_pre_event"] = self.set_head_group_name
         self.registered_events["hg_tpl_pre_event"] = self.set_head_group_name
+        self.registered_events["st_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_ste_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_stes_pre_event"] = self.set_head_group_name
         
         self.registered_events["gl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
-        self.registered_events["chc_pre_event"] = self.set_species_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_subspecies_level
