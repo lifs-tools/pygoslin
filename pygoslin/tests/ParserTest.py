@@ -259,10 +259,21 @@ class ParserTest(unittest.TestCase):
         lipid = goslin_parser.parse(lipid_name)
         assert lipid != None
         
-        assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "ChE 16:1"
-        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "ChE 16:1"
-        assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "ChE 16:1"
-        assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "ChE"
+        assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "SE 27:1/16:1"
+        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "SE 27:1/16:1"
+        assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "SE 27:1/16:1"
+        assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "SE 27:1"
+        assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "ST"
+        
+        ## sterol
+        lipid_name = "SE 27:1/16:1"
+        lipid = goslin_parser.parse(lipid_name)
+        assert lipid != None
+        
+        assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "SE 27:1/16:1"
+        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "SE 27:1/16:1"
+        assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "SE 27:1/16:1"
+        assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "SE 27:1"
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "ST"
         
         

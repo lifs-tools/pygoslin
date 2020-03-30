@@ -47,11 +47,16 @@ class LipidMolecularSubspecies(LipidSpecies):
         self.info.lipid_FA_bond_type = lipid_FA_bond_type
     
 
+
+
     def build_lipid_subspecies_name(self, fa_separator):
         special_case = self.lipid_class in self.special_cases
         
-        fa_string = " " + fa_separator.join(fatty_acid.to_string(special_case) for fatty_acid in self.fa_list)
-        if fa_string == " ": fa_string = ""
+        fa_headgroup_separator = " " if all_lipids[self.lipid_class][1] != LipidCategory.ST else "/"
+        
+        fa_string = fa_separator.join(fatty_acid.to_string(special_case) for fatty_acid in self.fa_list)
+        if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
+        
         
         return (all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group) + fa_string
     

@@ -39,10 +39,9 @@ class LipidSpecies:
         elif level == LipidLevel.SPECIES:
             lipid_string = [all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group]
             if self.info != None and self.info.num_carbon > 0:
-                lipid_string += " %i" % self.info.num_carbon
-                lipid_string += ":%i" % self.info.num_double_bonds
-                if self.info.num_hydroxyl > 0: lipid_string += ";%i" % self.info.num_hydroxyl
-                if self.info.lipid_FA_bond_type != None: lipid_string += self.info.lipid_FA_bond_type.suffix()
+                
+                lipid_string += " " if all_lipids[self.lipid_class][1] != LipidCategory.ST else "/"
+                lipid_string += self.info.to_string()
             return "".join(lipid_string)
         
         else:
