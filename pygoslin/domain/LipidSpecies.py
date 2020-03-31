@@ -21,6 +21,9 @@ class LipidSpecies:
         self.info = LipidSpeciesInfo(fa)
         self.use_head_group = fa.use_head_group
             
+            
+    def validate(self):
+        return True
 
 
     def get_lipid_string(self, level = None):
