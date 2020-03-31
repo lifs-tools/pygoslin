@@ -11,6 +11,7 @@ class LipidSpecies:
         self.lipid_class = lipid_class if lipid_class != None else get_class(self.head_group)
         self.info = lipid_species_info
         self.use_head_group = False
+        self.special_cases = {class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]}
         
         
     def clone(self, fa):
@@ -39,9 +40,10 @@ class LipidSpecies:
         elif level == LipidLevel.SPECIES:
             lipid_string = [all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group]
             if self.info != None and self.info.num_carbon > 0:
+                special_case = self.lipid_class in self.special_cases
                 
                 lipid_string += " " if all_lipids[self.lipid_class][1] != LipidCategory.ST else "/"
-                lipid_string += self.info.to_string()
+                lipid_string += self.info.to_string(special_case)
             return "".join(lipid_string)
         
         else:

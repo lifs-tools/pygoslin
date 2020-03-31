@@ -254,6 +254,9 @@ class ParserTest(unittest.TestCase):
         assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "TAG"
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GL"
         
+        
+        
+        
         ## sterol
         lipid_name = "ChE 16:1"
         lipid = goslin_parser.parse(lipid_name)
@@ -278,6 +281,17 @@ class ParserTest(unittest.TestCase):
         
         
         
+        
+        ## PC
+        lipid_name = "PC O-18:1a/16:0"
+        lipid = goslin_parser.parse(lipid_name)
+        assert lipid != None
+        
+        assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "PC O-18:1a/16:0"
+        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PC O-18:1a_16:0"
+        assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "PC O-34:1a"
+        assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "PC"
+        assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"
         
         
     def test_adduct(self):

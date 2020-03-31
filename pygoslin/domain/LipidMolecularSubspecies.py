@@ -12,7 +12,6 @@ class LipidMolecularSubspecies(LipidSpecies):
         super().__init__(head_group)
         self.fa = {}
         self.fa_list = []
-        self.special_cases = {class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]}
         num_carbon = 0
         num_hydroxyl = 0
         num_double_bonds = 0
