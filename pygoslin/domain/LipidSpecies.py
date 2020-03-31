@@ -23,7 +23,7 @@ class LipidSpecies:
             
             
     def validate(self):
-        return True
+        return all_lipids[self.lipid_class][3] == 0 or (all_lipids[self.lipid_class][3] > 0 and self.info.num_carbon >= 2)
 
 
     def get_lipid_string(self, level = None):
@@ -41,6 +41,7 @@ class LipidSpecies:
             return all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group
         
         elif level == LipidLevel.SPECIES:
+            if not self.validate(): raise ConstraintViolationException("No fatty acly chain information present for lipid '%s'" % all_lipids[self.lipid_class][0])
             lipid_string = [all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group]
             if self.info != None and self.info.num_carbon > 0:
                 special_case = self.lipid_class in self.special_cases

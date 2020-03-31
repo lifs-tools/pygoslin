@@ -15,6 +15,9 @@ from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
+from pygoslin.domain.MolecularFattyAcid import MolecularFattyAcid
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from random import randint
 
 class ParserTest(unittest.TestCase):
@@ -29,13 +32,13 @@ class ParserTest(unittest.TestCase):
         lipid_name = "PE 16:1-12:0"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "PE 16:1_12:0"
+        assert lipid.get_lipid_string() == "PE 16:1-12:0"
         
         lipid_name = "PA 16:1-12:0 - fragment"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "PA 16:1_12:0"
-        assert lipid.get_lipid_fragment_string() == "PA 16:1_12:0 - fragment"
+        assert lipid.get_lipid_string() == "PA 16:1-12:0"
+        assert lipid.get_lipid_fragment_string() == "PA 16:1-12:0 - fragment"
         
         lipid_name = "PE O-16:1p/12:0"
         lipid = lipid_parser.parse(lipid_name)
@@ -84,7 +87,7 @@ class ParserTest(unittest.TestCase):
         lipid_name = "AC2SGL 12:0-14:1"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "AC2SGL 12:0_14:1"
+        assert lipid.get_lipid_string() == "AC2SGL 12:0-14:1"
         
         lipid_name = "NAPE 16:1(6Z)/12:0/14:1"
         lipid = lipid_parser.parse(lipid_name)
@@ -99,7 +102,7 @@ class ParserTest(unittest.TestCase):
         lipid_name = "PIMIP 12:0-14:1"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "PIMIP 12:0_14:1"
+        assert lipid.get_lipid_string() == "PIMIP 12:0-14:1"
         
         lipid_name = "LCDPDAG 24:1"
         lipid = lipid_parser.parse(lipid_name)
@@ -202,7 +205,16 @@ class ParserTest(unittest.TestCase):
         
         
         
-        
+    @unittest.expectedFailure
+    def test_failed_lipid_creation_no_FA(self):
+        lipid = LipidMolecularSubspecies("PA", [])
+        sn = lipid.get_lipid_string()
+    
+    
+    @unittest.expectedFailure
+    def test_failed_lipid_creation_to_many_FAs(self):
+        lipid = LipidMolecularSubspecies("PA", [MolecularFattyAcid("FA1", 2, 0, 0, LipidFaBondType.ESTER, False, -1), MolecularFattyAcid("FA2", 2, 0, 0, LipidFaBondType.ESTER, False, -1), MolecularFattyAcid("FA3", 2, 0, 0, LipidFaBondType.ESTER, False, -1)])
+        sn = lipid.get_lipid_string()
         
         
     def test_lipid_fragment_success(self):
@@ -228,7 +240,7 @@ class ParserTest(unittest.TestCase):
         lipid = goslin_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "PE 16:1/12:0"
-        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PE 16:1_12:0"
+        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PE 16:1-12:0"
         assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "PE 28:1"
         assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "PE"
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"
@@ -238,7 +250,7 @@ class ParserTest(unittest.TestCase):
         lipid = goslin_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "Cer 16:1;2/12:0"
-        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "Cer 16:1;2_12:0"
+        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "Cer 16:1;2-12:0"
         assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "Cer 28:1;2"
         assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "Cer"
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "SP"
@@ -249,7 +261,7 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         
         assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "TAG 16:1/12:0/20:2"
-        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "TAG 16:1_12:0_20:2"
+        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "TAG 16:1-12:0-20:2"
         assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "TAG 48:3"
         assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "TAG"
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GL"
@@ -288,7 +300,7 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         
         assert lipid.lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "PC O-18:1a/16:0"
-        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PC O-18:1a_16:0"
+        assert lipid.lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PC O-18:1a-16:0"
         assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "PC O-34:1a"
         assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "PC"
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"

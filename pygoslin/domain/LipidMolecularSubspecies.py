@@ -49,6 +49,8 @@ class LipidMolecularSubspecies(LipidSpecies):
 
 
     def build_lipid_subspecies_name(self, fa_separator):
+        
+        
         special_case = self.lipid_class in self.special_cases
         
         fa_headgroup_separator = " " if all_lipids[self.lipid_class][1] != LipidCategory.ST else "/"
@@ -63,7 +65,9 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
-            return self.build_lipid_subspecies_name("_")
+            if not self.validate():
+                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class][0], ", ".join(str(p) for p in all_lipids[self.lipid_class][4]), len(self.fa)))
+            return self.build_lipid_subspecies_name("-")
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)
@@ -71,3 +75,9 @@ class LipidMolecularSubspecies(LipidSpecies):
             raise Exception("LipidMolecularSubspecies does not know how to create a lipid string for level %s" % level)
     
     
+    def validate(self):
+        if all_lipids[self.lipid_class][3] == 0: return True
+        if len(self.fa_list) > all_lipids[self.lipid_class][3]: return False
+        if not len(self.fa_list) in all_lipids[self.lipid_class][4]: return False
+        if self.lipid_category == LipidCategory.SP and len([fa_key for fa_key in self.fa if len(fa_key) >= 3 and fa_key[:3] == "LCB"]) != 1: return False
+        return True
