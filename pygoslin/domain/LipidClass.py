@@ -32,10 +32,11 @@ with open(all_lipids_dir_name + "/data/goslin/lipid-list.csv", mode = "rt") as i
         if len(row) > 0 and len(row[0]) > 0:
             lipid_data = list(r for r in row if len(r) > 0)
             lipid_data[1] = category_string_to_category[lipid_data[1]]
+            lipid_data[3] = int(lipid_data[3])
             all_lipids.append(tuple(lipid_data))
             class_string_to_class[lipid_data[0]] = i
             class_string_to_category[lipid_data[0]] = lipid_data[1]
-            for class_name in lipid_data[3:]:
+            for class_name in lipid_data[4:]:
                 if len(class_name) > 0:
                     class_string_to_class[class_name] = i
                     class_string_to_category[class_name] = lipid_data[1]
