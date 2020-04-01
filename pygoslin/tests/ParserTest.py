@@ -52,7 +52,7 @@ class ParserTest(unittest.TestCase):
         
     
     
-    def teest_lipid_parser(self):
+    def test_lipid_parser(self):
         lipid_parser = LipidParser()
         
         lipid_name = "PE 16:1-12:0"
@@ -142,7 +142,7 @@ class ParserTest(unittest.TestCase):
         
         
         
-    def teest_lipid_maps(self):
+    def test_lipid_maps(self):
         lipid_maps_parser = LipidMapsParser()
         
         for lipid_name_input, lipid_name_output in [["PA(16:1/12:0)", "PA 16:1/12:0"],
@@ -166,7 +166,7 @@ class ParserTest(unittest.TestCase):
         
 
 
-    def teest_lyso(self):
+    def test_lyso(self):
         lipid_parser = LipidParser()
         
         lipid_name = "LPA 16:1a"
@@ -194,7 +194,7 @@ class ParserTest(unittest.TestCase):
         
         
         
-    def teest_species_level(self):
+    def test_species_level(self):
         goslin_parser = GoslinParser()
         
         lipid_name = "Cer 28:1;2"
@@ -210,7 +210,7 @@ class ParserTest(unittest.TestCase):
         
         
         
-    def teest_mediators(self):
+    def test_mediators(self):
         goslin_parser = GoslinParser()
         
         for lipid_name in ["10-HDoHE","11-HDoHE","11-HETE","11,12-DHET","11(12)-EET", "12-HEPE","12-HETE","12-HHTrE","12-OxoETE","12(13)-EpOME","13-HODE","13-HOTrE","14,15-DHET","14(15)-EET","14(15)-EpETE","15-HEPE","15-HETE","15d-PGJ2","16-HDoHE","16-HETE","18-HEPE","5-HEPE","5-HETE","5-HpETE","5-OxoETE","5,12-DiHETE","5,6-DiHETE","5,6,15-LXA4","5(6)-EET","8-HDoHE","8-HETE","8,9-DHET","8(9)-EET","9-HEPE","9-HETE","9-HODE","9-HOTrE","9(10)-EpOME","AA","alpha-LA","DHA","EPA","Linoleic acid","LTB4","LTC4","LTD4","Maresin 1","Palmitic acid","PGB2","PGD2","PGE2","PGF2alpha","PGI2","Resolvin D1","Resolvin D2","Resolvin D3","Resolvin D5","tetranor-12-HETE","TXB1","TXB2","TXB3"]:
@@ -221,7 +221,7 @@ class ParserTest(unittest.TestCase):
             assert lipid.get_lipid_string() == lipid_name
     
     @unittest.expectedFailure
-    def teest_lipid_fragment_fail(self):
+    def test_lipid_fragment_fail(self):
         goslin_parser = Parser(GoslinParserEventHandler(), "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         
@@ -232,18 +232,18 @@ class ParserTest(unittest.TestCase):
         
         
     @unittest.expectedFailure
-    def teest_failed_lipid_creation_no_FA(self):
+    def test_failed_lipid_creation_no_FA(self):
         lipid = LipidMolecularSubspecies("PA", [])
         sn = lipid.get_lipid_string()
     
     
     @unittest.expectedFailure
-    def teest_failed_lipid_creation_to_many_FAs(self):
+    def test_failed_lipid_creation_to_many_FAs(self):
         lipid = LipidMolecularSubspecies("PA", [MolecularFattyAcid("FA1", 2, 0, 0, LipidFaBondType.ESTER, False, -1), MolecularFattyAcid("FA2", 2, 0, 0, LipidFaBondType.ESTER, False, -1), MolecularFattyAcid("FA3", 2, 0, 0, LipidFaBondType.ESTER, False, -1)])
         sn = lipid.get_lipid_string()
         
         
-    def teest_lipid_fragment_success(self):
+    def test_lipid_fragment_success(self):
         goslin_fragment_parser = Parser(GoslinFragmentParserEventHandler(), "pygoslin/data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)
         
         
@@ -258,7 +258,7 @@ class ParserTest(unittest.TestCase):
         
         
         
-    def teest_lipid_names(self):
+    def test_lipid_names(self):
         goslin_parser = Parser(GoslinParserEventHandler(), "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
         
         ## glycerophospholipid
@@ -332,7 +332,7 @@ class ParserTest(unittest.TestCase):
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"
         
         
-    def teest_adduct(self):
+    def test_adduct(self):
         goslin_parser_event_handler = GoslinParserEventHandler()
         goslin_parser = Parser(goslin_parser_event_handler, "pygoslin/data/goslin/Goslin.g4")
 
@@ -381,7 +381,7 @@ class ParserTest(unittest.TestCase):
       
       
     
-    def teest_parser_read(self):
+    def test_parser_read(self):
         lipidnames = []
         with open("pygoslin/tests/lipidnames.txt", mode = "rt") as infile:
             for line in infile:
