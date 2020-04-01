@@ -102,6 +102,9 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     
     def validate(self):
+        
+        if self.use_head_group: return True
+        if len(all_lipids) <= self.lipid_class: return False
         if all_lipids[self.lipid_class][3] == 0: return True
         if len(self.fa_list) > all_lipids[self.lipid_class][3]: return False
         if not len(self.fa_list) in all_lipids[self.lipid_class][4]: return False

@@ -27,6 +27,7 @@ SOFTWARE.
 from pygoslin.domain.LipidExceptions import RuntimeException
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
+from pygoslin.domain.LipidExceptions import ConstraintViolationException
 from pygoslin.domain.LipidClass import *
 
 class LipidSpecies:
@@ -49,6 +50,8 @@ class LipidSpecies:
             
             
     def validate(self):
+        if self.use_head_group: return True
+        if len(all_lipids) <= self.lipid_class: return False
         return all_lipids[self.lipid_class][3] == 0 or (all_lipids[self.lipid_class][3] > 0 and self.info.num_carbon >= 2)
 
 

@@ -27,7 +27,9 @@ SOFTWARE.
 from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidExceptions import ConstraintViolationException
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidClass import *
 
 class LipidStructuralSubspecies(LipidMolecularSubspecies):
 
@@ -64,6 +66,8 @@ class LipidStructuralSubspecies(LipidMolecularSubspecies):
     
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.STRUCTURAL_SUBSPECIES:
+            if not super().validate():
+                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class][0], ", ".join(str(p) for p in all_lipids[self.lipid_class][4]), len(self.fa)))
             return super().build_lipid_subspecies_name("/")
         
         elif level in (LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
