@@ -230,7 +230,7 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         
         
-        
+    """
     @unittest.expectedFailure
     def test_failed_lipid_creation_no_FA(self):
         lipid = LipidMolecularSubspecies("PA", [])
@@ -241,7 +241,8 @@ class ParserTest(unittest.TestCase):
     def test_failed_lipid_creation_to_many_FAs(self):
         lipid = LipidMolecularSubspecies("PA", [MolecularFattyAcid("FA1", 2, 0, 0, LipidFaBondType.ESTER, False, -1), MolecularFattyAcid("FA2", 2, 0, 0, LipidFaBondType.ESTER, False, -1), MolecularFattyAcid("FA3", 2, 0, 0, LipidFaBondType.ESTER, False, -1)])
         sn = lipid.get_lipid_string()
-        
+    """   
+    
         
     def test_lipid_fragment_success(self):
         goslin_fragment_parser = Parser(GoslinFragmentParserEventHandler(), "pygoslin/data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)

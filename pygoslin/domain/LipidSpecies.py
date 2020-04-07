@@ -50,9 +50,13 @@ class LipidSpecies:
             
             
     def validate(self):
+        return True
+    
+        """
         if self.use_head_group: return True
         if len(all_lipids) <= self.lipid_class: return False
         return all_lipids[self.lipid_class][3] == 0 or (all_lipids[self.lipid_class][3] > 0 and self.info.num_carbon >= 2)
+        """
 
 
     def get_lipid_string(self, level = None):
