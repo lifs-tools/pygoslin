@@ -28,7 +28,7 @@ from pygoslin.domain.LipidExceptions import *
 
 class FattyAcid:
 
-    def __init__(self, name, num_carbon, num_double_bonds, num_hydroxyl, lipid_FA_bond_type, lcb, position):
+    def __init__(self, name, num_carbon, num_double_bonds, num_hydroxyl, lipid_FA_bond_type, lcb, position, double_bond_positions = None):
         self.name = name
         self.position = position
         self.num_carbon = num_carbon
@@ -36,15 +36,20 @@ class FattyAcid:
         self.num_hydroxyl = num_hydroxyl
         self.lipid_FA_bond_type = lipid_FA_bond_type
         self.lcb = lcb
+        self.double_bond_positions = {key: double_bond_positions[key] for key in double_bond_positions} if double_bond_positions != None else {}
         
         if num_carbon < 2:
             raise ConstraintViolationException("FattyAcid must have at least 2 carbons!")
         
-        if position < -1:
-            raise ConstraintViolationException("FattyAcid position must be greater or equal to -1 (undefined) or greater or equal to 0 (0 = first position)!")
+        if num_double_bonds < 0:
+            raise ConstraintViolationException("FattyAcid must have at least 0 double bonds!")
         
         if num_hydroxyl < 0:
             raise ConstraintViolationException("FattyAcid must have at least 0 hydroxy groups!")
+        
+        if position < 0:
+            raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
+        
         
     def clone(self, fa):
         self.name = fa.name
@@ -54,7 +59,14 @@ class FattyAcid:
         self.num_hydroxyl = fa.num_hydroxyl
         self.lipid_FA_bond_type = fa.lipid_FA_bond_type
         self.lcb = fa.lcb
+        self.double_bond_positions = {key: value for key, value in fa.double_bond_positions.items()}
+        
         
     def to_string(self, special_case = False):
+        
         suffix = self.lipid_FA_bond_type.suffix()
-        return "%s%i:%i%s%s" % ("O-" if special_case and len(suffix) > 0 else "", self.num_carbon, self.num_double_bonds, ";" + str(self.num_hydroxyl) if self.num_hydroxyl > 0 else "", suffix)
+        dbp = self.double_bond_positions
+        db_positions = ["%i%s" % (k, dbp[k]) for k in sorted(dbp.keys())]
+        db_pos = "(%s)" % ",".join(db_positions) if len (dbp) > 0 else ""
+        
+        return "%s%i:%i%s%s%s" % ("O-" if special_case and len(suffix) > 0 else "", self.num_carbon, self.num_double_bonds, db_pos, ";" + str(self.num_hydroxyl) if self.num_hydroxyl > 0 else "", suffix)

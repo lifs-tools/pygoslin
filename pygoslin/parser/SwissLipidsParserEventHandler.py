@@ -157,6 +157,17 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         if self.level == LipidLevel.SPECIES:
             self.current_fa = LipidSpeciesInfo(current_fa)
             
+        elif current_fa.num_double_bonds == len(current_fa.double_bond_positions):
+            self.current_fa.position = len(self.fa_list) + 1
+            
+        else:
+            self.current_fa = StructuralFattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, 0)
+            self.current_fa.clone(current_fa)
+            self.current_fa.position = len(self.fa_list) + 1
+            
+        
+        
+        """
         elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
             self.current_fa = MolecularFattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, -1)
             self.current_fa.clone(current_fa)
@@ -168,6 +179,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
             
         elif self.level == LipidLevel.ISOMERIC_SUBSPECIES:
             self.current_fa.position = len(self.fa_list) + 1
+        """
             
             
         self.fa_list.append(self.current_fa)
