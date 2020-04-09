@@ -43,9 +43,6 @@ class LipidMolecularSubspecies(LipidSpecies):
         num_double_bonds = 0
         lipid_FA_bond_type = LipidFaBondType.ESTER;
         for fas in fa:
-            if fas.position != -1:
-                raise ConstraintViolationException("MolecularFattyAcid %s must have position set to -1! Was: %i"  % (fas.name, fas.position))
-            
             if fas.name in self.fa:
                 raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fas.name)
             
