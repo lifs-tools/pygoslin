@@ -34,7 +34,7 @@ grammar GoslinFragments;
 lipid : lipid_eof EOF;
 lipid_eof : just_lipid | just_lipid FRAGMENT_SEPARATOR fragment_name;
 just_lipid : lipid_pure | lipid_pure adduct_info;
-lipid_pure : gl | pl | sl | cholesterol | mediatorc | saccharolipid;
+lipid_pure : gl | pl | sl | sterol | mediatorc | saccharolipid;
 
 /* rules for fragments */
 fragment_name : frag_char;
@@ -148,13 +148,16 @@ hg_dsl : 'Cer' | 'CerP' | 'EPC' | 'GB4' | 'GD3' | 'GB3' | 'GM3' | 'GM4' | 'Hex3C
 
 
 
-/* cholesterol lipids */
-cholesterol : chc | che;
-chc : ch | ch heavy_hg;
-ch : 'Ch' | 'Cholesterol';
-che : hg_chec headgroup_separator fa;
-hg_chec : hg_che | hg_che heavy_hg;
-hg_che : 'ChE' | 'CE';
+/* sterol lipids */
+sterol : stc | ste | stes;
+stc : st | st heavy_hg;
+st : 'Ch' | 'Cholesterol' | 'ST 27:1;1' | 'ST 27:2;1' | 'ST 28:3;1' | 'ST 30:2;1' | 'ST 29:2;1' | 'ST 28:2;1';
+ste : hg_stc sorted_fa_separator fa;
+stes : hg_stcs headgroup_separator fa;
+hg_stc : hg_ste | hg_ste heavy_hg;
+hg_ste : 'SE 27:1' | 'SE 27:2' | 'SE 28:3' | 'SE 30:2' | 'SE 29:2' | 'SE 28:2';
+hg_stcs : hg_stes | hg_ste heavy_hg;
+hg_stes : 'ChE' | 'CE';
 
 
 /* mediator lipids */

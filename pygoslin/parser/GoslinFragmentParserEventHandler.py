@@ -1,3 +1,29 @@
+"""
+MIT License
+
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
+                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
+
 from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
@@ -32,8 +58,6 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_pl_o_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
-        self.registered_events["ch_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_che_pre_event"] = self.set_head_group_name
         self.registered_events["mediator_pre_event"] = self.set_head_group_name
         self.registered_events["hg_mgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dgl_pre_event"] = self.set_head_group_name
@@ -43,10 +67,12 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_sac_di_pre_event"] = self.set_head_group_name
         self.registered_events["hg_sac_f_pre_event"] = self.set_head_group_name
         self.registered_events["hg_tpl_pre_event"] = self.set_head_group_name
+        self.registered_events["st_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_ste_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_stes_pre_event"] = self.set_head_group_name
         
         self.registered_events["gl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
-        self.registered_events["chc_pre_event"] = self.set_species_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_subspecies_level

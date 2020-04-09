@@ -1,3 +1,29 @@
+"""
+MIT License
+
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
+                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
+
 from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidExceptions import ConstraintViolationException
@@ -12,7 +38,6 @@ class LipidMolecularSubspecies(LipidSpecies):
         super().__init__(head_group)
         self.fa = {}
         self.fa_list = []
-        self.special_cases = {class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]}
         num_carbon = 0
         num_hydroxyl = 0
         num_double_bonds = 0
@@ -47,11 +72,18 @@ class LipidMolecularSubspecies(LipidSpecies):
         self.info.lipid_FA_bond_type = lipid_FA_bond_type
     
 
+
+
     def build_lipid_subspecies_name(self, fa_separator):
+        
+        
         special_case = self.lipid_class in self.special_cases
         
-        fa_string = " " + fa_separator.join(fatty_acid.to_string(special_case) for fatty_acid in self.fa_list)
-        if fa_string == " ": fa_string = ""
+        fa_headgroup_separator = " " if all_lipids[self.lipid_class][1] != LipidCategory.ST else "/"
+        
+        fa_string = fa_separator.join(fatty_acid.to_string(special_case) for fatty_acid in self.fa_list)
+        if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
+        
         
         return (all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group) + fa_string
     
@@ -59,7 +91,9 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
-            return self.build_lipid_subspecies_name("_")
+            if not self.validate():
+                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class][0], ", ".join(str(p) for p in all_lipids[self.lipid_class][4]), len(self.fa)))
+            return self.build_lipid_subspecies_name("-")
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)
@@ -67,3 +101,15 @@ class LipidMolecularSubspecies(LipidSpecies):
             raise Exception("LipidMolecularSubspecies does not know how to create a lipid string for level %s" % level)
     
     
+    def validate(self):
+        return True
+    
+        """
+        if self.use_head_group: return True
+        if len(all_lipids) <= self.lipid_class: return False
+        if all_lipids[self.lipid_class][3] == 0: return True
+        if len(self.fa_list) > all_lipids[self.lipid_class][3]: return False
+        if not len(self.fa_list) in all_lipids[self.lipid_class][4]: return False
+        if self.lipid_category == LipidCategory.SP and len([fa_key for fa_key in self.fa if len(fa_key) >= 3 and fa_key[:3] == "LCB"]) != 1: return False
+        return True
+        """
