@@ -31,6 +31,7 @@ from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
+from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
 from itertools import combinations as iter_combinations
 import pygoslin
 
@@ -646,9 +647,16 @@ class SwissLipidsParser(Parser):
         super().__init__(self.event_handler, dir_name + "/data/goslin/SwissLipids.g4", Parser.DEFAULT_QUOTE)
         
         
+class HmdbParser(Parser):
+    def __init__(self):
+        self.event_handler = HmdbParserEventHandler()
+        dir_name = path.dirname(pygoslin.__file__)
+        super().__init__(self.event_handler, dir_name + "/data/goslin/HMDB.g4", Parser.DEFAULT_QUOTE)
+        
+        
 class LipidParser:
     def __init__(self):
-        self.parser_list = [GoslinParser(), GoslinFragmentParser(), LipidMapsParser(), SwissLipidsParser()]
+        self.parser_list = [GoslinParser(), GoslinFragmentParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
         
     def parse(self, lipid_name):
         
