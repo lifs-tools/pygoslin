@@ -32,6 +32,7 @@ from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParse
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
+from pygoslin.domain.LipidExceptions import LipidParsingException
 from itertools import combinations as iter_combinations
 import pygoslin
 
@@ -542,10 +543,14 @@ class Parser:
     
     
     # re-implementation of Cocke-Younger-Kasami algorithm
-    def parse(self, text_to_parse):
+    def parse(self, text_to_parse, raise_error = True):
+        old_lipid = text_to_parse
         if self.used_eof: text_to_parse += Parser.EOF_SIGN
         
         self.parse_regular(text_to_parse)
+        if raise_error and not self.word_in_grammar:
+            raise LipidParsingException("Lipid '%s' can not be parsed by grammar '%s'" % (old_lipid, self.grammar_name))
+        
         return self.parser_event_handler.content
         
         
@@ -659,9 +664,8 @@ class LipidParser:
         self.parser_list = [GoslinParser(), GoslinFragmentParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
         
     def parse(self, lipid_name):
-        
         for parser in self.parser_list:
-            lipid = parser.parse(lipid_name)
+            lipid = parser.parse(lipid_name, False)
             if lipid != None:
                 return lipid
             

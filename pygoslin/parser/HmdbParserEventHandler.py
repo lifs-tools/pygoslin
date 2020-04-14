@@ -193,6 +193,9 @@ class HmdbParserEventHandler(BaseParserEventHandler):
             
         elif self.level == LipidLevel.ISOMERIC_SUBSPECIES:
             lipid = LipidIsomericSubspecies(self.head_group, self.fa_list)
+            
+        else:
+            raise UnsupportedLipidException("Lipid level not supported")
     
         lipid.use_head_group = self.use_head_group
         self.lipid = LipidAdduct()

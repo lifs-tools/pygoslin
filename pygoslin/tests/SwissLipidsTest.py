@@ -36,18 +36,14 @@ except:
 
 import pygoslin
 from pygoslin.parser.Parser import SwissLipidsParser
-from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
-from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
-from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.domain.LipidLevel import LipidLevel
-from random import randint
 
-class ParserTest(unittest.TestCase):
+class SwissLipidsParserTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
     
     
-    def test_parser(self):
+    def test_swiss_lipids_parser(self):
         lipidnames = []
         with open("pygoslin/tests/swiss-lipids-test.csv", mode = "rt") as infile:
             for line in infile:
@@ -58,6 +54,11 @@ class ParserTest(unittest.TestCase):
         lipid_parser = SwissLipidsParser()
         
         for i, lipid_name in enumerate(lipidnames):
-            lipid = lipid_parser.parse(lipid_name)
-            if lipid == None: print("hier: '%s' -> %i" % (lipid_name, i))
-            assert lipid != None
+            try:
+                lipid = lipid_parser.parse(lipid_name)
+                lipid_class = lipid.get_lipid_string(LipidLevel.CLASS)
+                assert lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}
+            except Exception as e:
+                print("hier: '%s' -> %i" % (lipid_name, i))
+                print(e)
+                assert (False)

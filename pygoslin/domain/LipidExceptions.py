@@ -33,3 +33,6 @@ class RuntimeException(Exception):
 
 class UnsupportedLipidException(Exception):
     pass
+
+class LipidParsingException(Exception):
+    pass

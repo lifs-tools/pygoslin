@@ -35,31 +35,33 @@ except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
 import pygoslin
-from pygoslin.parser.Parser import GoslinParser
-from pygoslin.domain.LipidLevel import *
+from pygoslin.parser.Parser import HmdbParser
+from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
+from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
+from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
+from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidExceptions import LipidParsingException
+from random import randint
 
-class GoslinTest(unittest.TestCase):
+class HMDBTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
     
     
     def test_parser(self):
         lipidnames = []
-        with open("pygoslin/tests/goslin-test.csv", mode = "rt") as infile:
+        with open("pygoslin/data/goslin/testfiles/hmdb-test.csv", mode = "rt") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
                 if len(line) > 0: lipidnames.append(line)
         
         
-        lipid_parser = GoslinParser()
+        lipid_parser = HmdbParser()
         
         for i, lipid_name in enumerate(lipidnames):
             try:
                 lipid = lipid_parser.parse(lipid_name)
-                lipid_class = lipid.get_lipid_string(LipidLevel.CLASS)
-                assert lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}
-                
             except Exception as e:
-                print("hier: '%s' -> %i" % (lipid_name, i))
-                print(e)
-                assert (False)
+                if type(e) == LipidParsingException: 
+                    print("hier: '%s' -> %i" % (lipid_name, i))
+                    assert(False)
