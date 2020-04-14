@@ -50,6 +50,7 @@ python3 -m unittest pygoslin.tests.ParserTest
 python3 -m unittest pygoslin.tests.SwissLipidsTest
 python3 -m unittest pygoslin.tests.GoslinTest
 python3 -m unittest pygoslin.tests.LipidMapsTest
+python3 -m unittest pygoslin.tests.HmdbTest
 
 ```
 
@@ -76,6 +77,8 @@ Be aware, that this method is subsequencially using all available grammars until
 Goslin
 GoslinFragment
 LipidMaps
+SwissLipids
+HMDB
 ```
 
 To use a specific grammar / parser, you can use the following code:
@@ -87,32 +90,66 @@ from pygoslin.parser.Parser import GoslinParser
 goslin_parser = GoslinParser()
 
 lipid_name = "Cer 18:1;2/12:0"
-lipid = goslin_parser.parse(lipid_name)
-if lipid != None:
+try:
+    lipid = goslin_parser.parse(lipid_name)
     print(lipid.get_lipid_string())
+except Exception as e:
+    print(e)
     
-    
-    
+
+
+
 # using solely the Goslin Fragment parser
 from pygoslin.parser.Parser import GoslinFragmentParser
 goslin_fragment_parser = GoslinFragmentParser()
 
-lipid_name = "DAG 18:1-12:0 - -(H2O)"
-lipid = goslin_fragment_parser.parse(lipid_name)
-if lipid != None:
+lipid_name = "Cer 18:1;2/12:0"
+try:
+    lipid = goslin_fragment_parser.parse(lipid_name)
     print(lipid.get_lipid_string())
-    print(lipid.get_lipid_fragment_string())
+except Exception as e:
+    print(e)
     
     
-    
+
+
 # using solely the LipidMaps parser
 from pygoslin.parser.Parser import LipidMapsParser
 lipid_maps_parser = LipidMapsParser()
 
 lipid_name = "Cer(d18:1/12:0)"
-lipid = lipid_maps_parser.parse(lipid_name)
-if lipid != None:
+try:
+    lipid = lipid_maps_parser.parse(lipid_name)
     print(lipid.get_lipid_string())
+except Exception as e:
+    print(e)
+
+
+
+
+# using solely the SwissLipids parser
+from pygoslin.parser.Parser import SwissLipidsParser
+swiss_lipids_parser = SwissLipidsParser()
+
+lipid_name = "Cer(d18:1/12:0)"
+try:
+    lipid = swiss_lipids_parser.parse(lipid_name)
+    print(lipid.get_lipid_string())
+except Exception as e:
+    print(e)
+    
+
+
+# using solely the HMDB parser
+from pygoslin.parser.Parser import HmdbParser
+hmdb_parser = HmdbParser()
+
+lipid_name = "Cer(d18:1/12:0)"
+try:
+    lipid = hmdb_parser.parse(lipid_name)
+    print(lipid.get_lipid_string())
+except Exception as e:
+    print(e)
 ```
 To be as generic as possible, no treatment of validation of the fragment is conducted within the GoslinFragmentParser.
 
