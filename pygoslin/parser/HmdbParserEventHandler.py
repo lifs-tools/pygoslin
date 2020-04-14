@@ -228,6 +228,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         
     def interlink_fa(self, node):
         raise UnsupportedLipidException("Interconnected fatty acyl chains are currently not supported")
-    
+
+
     def lipid_suffix(self, node):
         raise UnsupportedLipidException("Lipids with suffix '%s' are currently not supported" % node.get_text())
