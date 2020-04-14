@@ -183,14 +183,19 @@ class ParserTest(unittest.TestCase):
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "LPE O-16:1p"
-        
+            
+            
+            
+    @unittest.expectedFailure
+    def test_lpe_fail(self):
         lipid_name = "LPE O-16:1p/12:0"
         lipid = lipid_parser.parse(lipid_name)
-        assert lipid == None
         
         
-        
-        
+    @unittest.expectedFailure
+    def test_lipid_parser_fail(self):
+        lipid_name = "fail"
+        lipid = lipid_parser.parse(lipid_name)
         
         
         

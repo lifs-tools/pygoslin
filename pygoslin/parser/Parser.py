@@ -32,7 +32,7 @@ from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParse
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
-from pygoslin.domain.LipidExceptions import LipidParsingException
+from pygoslin.domain.LipidExceptions import LipidParsingException, LipidException
 from itertools import combinations as iter_combinations
 import pygoslin
 
@@ -669,4 +669,4 @@ class LipidParser:
             if lipid != None:
                 return lipid
             
-        return None
+        raise LipidException("Lipid not found")

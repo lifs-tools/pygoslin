@@ -25,14 +25,17 @@ SOFTWARE.
 
 
 
-class ConstraintViolationException(Exception):
+class LipidException(Exception):
     pass
 
-class RuntimeException(Exception):
+class ConstraintViolationException(LipidException):
     pass
 
-class UnsupportedLipidException(Exception):
+class RuntimeException(LipidException):
     pass
 
-class LipidParsingException(Exception):
+class UnsupportedLipidException(LipidException):
+    pass
+
+class LipidParsingException(LipidException):
     pass
