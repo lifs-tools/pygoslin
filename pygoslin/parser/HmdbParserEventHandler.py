@@ -35,6 +35,7 @@ from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
+from pygoslin.domain.LipidExceptions import UnsupportedLipidException
 
 class HmdbParserEventHandler(BaseParserEventHandler):
     
@@ -78,6 +79,9 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
         
+        self.registered_events["furan_fa_pre_event"] = self.furan_fa
+        self.registered_events["interlink_fa_pre_event"] = self.interlink_fa
+        self.registered_events["lipid_suffix_pre_event"] = self.lipid_suffix
         
         
     def reset_lipid(self, node):
@@ -200,7 +204,8 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         ether = node.get_text()
         if ether in {"o-", "O-"}: self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
         elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
-        
+        else: raise UnsupportedLipidException("Fatty acyl chain of type '%s' is currently not supported" % ether)
+            
         
     def add_hydroxyl(self, node):
         hydroxyl = node.get_text()
@@ -217,5 +222,12 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.current_fa.num_carbon = int(node.get_text())
         
         
+    def furan_fa(self, node):
+        raise UnsupportedLipidException("Furan fatty acyl chains are currently not supported")
         
         
+    def interlink_fa(self, node):
+        raise UnsupportedLipidException("Interconnected fatty acyl chains are currently not supported")
+    
+    def lipid_suffix(self, node):
+        raise UnsupportedLipidException("Lipids with suffix '%s' are currently not supported" % node.get_text())

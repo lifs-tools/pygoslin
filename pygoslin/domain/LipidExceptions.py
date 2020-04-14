@@ -30,3 +30,6 @@ class ConstraintViolationException(Exception):
 
 class RuntimeException(Exception):
     pass
+
+class UnsupportedLipidException(Exception):
+    pass
