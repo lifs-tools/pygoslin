@@ -59,7 +59,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
                     raise ConstraintViolationException("Only one FA can define an ether bond to the head group! Tried to add %s over existing %s" % (fas.lipid_FA_bond_type, lipid_FA_bond_type))
                 
         self.info = LipidSpeciesInfo()
-        self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES
+        self.info.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.info.num_carbon = num_carbon
         self.info.num_hydroxyl = num_hydroxyl
         self.info.num_double_bonds = num_double_bonds
