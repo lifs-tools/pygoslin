@@ -113,18 +113,22 @@ class Parser:
     
     
     
-    def __init__(self, _parserEventHandler, grammar_filename, _quote = DEFAULT_QUOTE):
+    def __init__(self, _parserEventHandler, grammar_filename = None, _quote = DEFAULT_QUOTE):
         self.next_free_rule_index = Parser.START_RULE
         self.TtoNT = {}
         self.NTtoNT = {}
         self.NTtoRule = {}
-        self.originalNTtoNT = {}
         self.quote = _quote
         self.parser_event_handler = _parserEventHandler
         self.word_in_grammar = False
         self.grammar_name = ""
         self.used_eof = False
-        self.double = set()
+        self.substitution = {}
+        self.OTtoNT = {}
+        self.right_pair = []
+        self.left_pair = []
+        
+        if grammar_filename == None: return
         
         if path.exists(grammar_filename):
             # interpret the rules and create the structure for parsing
@@ -200,8 +204,6 @@ class Parser:
                         if key not in self.NTtoNT: self.NTtoNT[key] = set()
                         self.NTtoNT[key].add(next_index)
                         non_terminal_rules.append(next_index)
-                        self.double.add(rule_index_1)
-                        self.double.add(rule_index_2)
                     
                         
                     # two product rules
@@ -245,7 +247,7 @@ class Parser:
         
         
         
-        self.substitution = {}
+        
         for rule_index, values in self.NTtoNT.items():
             for rule in values:
                 for rule_top in top_nodes(rule):
@@ -257,7 +259,6 @@ class Parser:
                         chain = chain[1:]
                         self.substitution[rule_index + (top << 16)] = chain
                     
-        self.OTtoNT = {}
         for k, v in self.TtoNT.items():
             self.OTtoNT[k] = list(v)[0]
         
@@ -367,11 +368,23 @@ class Parser:
     
     
     
-    
-    
-    
-    
-    
+    def dump_child(self, class_name, parser_event_handler_name):
+        with open("%s.py" % class_name, mode = "wt") as dumpfile:
+            dumpfile.write("from pygoslin.parser.Parser import Parser\n")
+            dumpfile.write("from pygoslin.parser.%s import %s\n\n" % (parser_event_handler_name, parser_event_handler_name))
+            dumpfile.write("class %s(Parser):\n" % class_name)
+            dumpfile.write("    def __init__(self):\n")
+            dumpfile.write("        super().__init__(%s(), None, Parser.DEFAULT_QUOTE)\n" % parser_event_handler_name)
+            dumpfile.write("        self.next_free_rule_index = %s\n" % str(self.next_free_rule_index))
+            dumpfile.write("        self.TtoNT = %s\n" % str(self.TtoNT))
+            dumpfile.write("        self.NTtoNT = %s\n" % str(self.NTtoNT))
+            dumpfile.write("        self.NTtoRule = %s\n" % str(self.NTtoRule))
+            dumpfile.write("        self.word_in_grammar = %s\n" % str(self.word_in_grammar))
+            dumpfile.write("        self.used_eof = %s\n" % str(self.used_eof))
+            dumpfile.write("        self.substitution = %s\n" % str(self.substitution))
+            dumpfile.write("        self.OTtoNT = %s\n" % str(self.OTtoNT))
+            dumpfile.write("        self.right_pair = %s\n" % str(self.right_pair))
+            dumpfile.write("        self.left_pair = %s\n" % str(self.left_pair))
     
     
     
@@ -447,9 +460,6 @@ class Parser:
         while len(terminal_rules) > 1:
             rule_index_2 = terminal_rules.pop()
             rule_index_1 = terminal_rules.pop()
-            
-            self.double.add(rule_index_1)
-            self.double.add(rule_index_2)
             
             next_index = self.get_next_free_rule_index()
             
@@ -542,7 +552,6 @@ class Parser:
     
     
     
-    # re-implementation of Cocke-Younger-Kasami algorithm
     def parse(self, text_to_parse, raise_error = True):
         old_lipid = text_to_parse
         if self.used_eof: text_to_parse += Parser.EOF_SIGN
@@ -552,6 +561,10 @@ class Parser:
             raise LipidParsingException("Lipid '%s' can not be parsed by grammar '%s'" % (old_lipid, self.grammar_name))
         
         return self.parser_event_handler.content
+        
+        
+        
+        
         
         
     def parse_regular(self, text_to_parse):
@@ -574,6 +587,9 @@ class Parser:
             
             
             
+            
+            
+    # re-implementation of Cocke-Younger-Kasami algorithm
     def parser_pure(self, text_to_parse):
         n = len(text_to_parse)
         rgt = self.right_pair
