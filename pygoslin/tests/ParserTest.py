@@ -168,6 +168,11 @@ class ParserTest(unittest.TestCase):
             assert lipid != None
             assert lipid.get_lipid_string() == lipid_name_output
         
+        
+    @unittest.expectedFailure
+    def test_LP(self):
+        global lipid_parser
+        lipid = lipid_parser.parse("LP 19:1p")
 
 
     def test_lyso(self):
