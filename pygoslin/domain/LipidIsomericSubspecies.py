@@ -25,8 +25,10 @@ SOFTWARE.
 
 
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
+from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidLevel import LipidLevel
 
 class LipidIsomericSubspecies(LipidStructuralSubspecies):
@@ -69,7 +71,10 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
 
     def get_lipid_string(self, level = None):
         
-        if level == None or level in (LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
+        if level == None or level == LipidLevel.ISOMERIC_SUBSPECIES:
+            return self.build_lipid_subspecies_name("/")
+        
+        elif level in (LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)
         
         else:

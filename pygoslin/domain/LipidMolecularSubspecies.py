@@ -26,7 +26,7 @@ SOFTWARE.
 
 from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
-from pygoslin.domain.LipidExceptions import ConstraintViolationException
+from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *

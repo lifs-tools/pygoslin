@@ -27,7 +27,7 @@ SOFTWARE.
 from pygoslin.domain.LipidExceptions import RuntimeException
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
-from pygoslin.domain.LipidExceptions import ConstraintViolationException
+from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
 
 class LipidSpecies:

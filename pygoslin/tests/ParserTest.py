@@ -208,6 +208,16 @@ class ParserTest(unittest.TestCase):
     def test_species_level(self):
         global goslin_parser
         
+        lipid_name = "PG 22:1(5Z)/12:0"
+        lipid = goslin_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string(LipidLevel.ISOMERIC_SUBSPECIES) == "PG 22:1(5Z)/12:0"
+        assert lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "PG 22:1(5Z)/12:0"
+        assert lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PG 22:1(5Z)-12:0"
+        assert lipid.get_lipid_string(LipidLevel.SPECIES) == "PG 34:1"
+        assert lipid.get_lipid_string(LipidLevel.CLASS) == "PG"
+        assert lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"
+        
         lipid_name = "Cer 28:1;2"
         lipid = goslin_parser.parse(lipid_name)
         assert lipid != None
@@ -223,6 +233,17 @@ class ParserTest(unittest.TestCase):
         
     def test_info_level(self):
         global swiss_lipids_parser
+        global lipid_maps_parser
+        
+        lipid_name = "PG(22:1(5Z)/12:0)"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string(LipidLevel.ISOMERIC_SUBSPECIES) == "PG 22:1(5Z)/12:0"
+        assert lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "PG 22:1(5Z)/12:0"
+        assert lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PG 22:1(5Z)-12:0"
+        assert lipid.get_lipid_string(LipidLevel.SPECIES) == "PG 34:1"
+        assert lipid.get_lipid_string(LipidLevel.CLASS) == "PG"
+        assert lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"
         
         lipid_name = "PG(22:1(5Z)/12:0)"
         lipid = swiss_lipids_parser.parse(lipid_name)
@@ -247,6 +268,17 @@ class ParserTest(unittest.TestCase):
         assert lipid
         assert lipid.lipid.info.level == LipidLevel.SPECIES
         assert lipid.get_lipid_string() == "LPG 22:1a"
+        
+        
+        lipid_name = "PG(22:1(5Z)/12:0)"
+        lipid = lipid_maps_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string(LipidLevel.ISOMERIC_SUBSPECIES) == "PG 22:1(5Z)/12:0"
+        assert lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES) == "PG 22:1(5Z)/12:0"
+        assert lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES) == "PG 22:1(5Z)-12:0"
+        assert lipid.get_lipid_string(LipidLevel.SPECIES) == "PG 34:1"
+        assert lipid.get_lipid_string(LipidLevel.CLASS) == "PG"
+        assert lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"
         
         
         
