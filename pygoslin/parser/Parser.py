@@ -27,14 +27,16 @@ SOFTWARE.
 from enum import Enum
 from os import path
 
+import pygoslin
+from pygoslin.domain.LipidClass import init_tables
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
+from pygoslin.parser.SumFormulaParserEventHandler import SumFormulaParserEventHandler
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
 from pygoslin.domain.LipidExceptions import LipidParsingException, LipidException
 from itertools import combinations as iter_combinations
-import pygoslin
 
 
 pyx_support = True
@@ -668,6 +670,13 @@ class SwissLipidsParser(Parser):
         super().__init__(self.event_handler, dir_name + "/data/goslin/SwissLipids.g4", Parser.DEFAULT_QUOTE)
         
         
+class SumFormulaParser(Parser):
+    def __init__(self):
+        self.event_handler = SumFormulaParserEventHandler()
+        dir_name = path.dirname(pygoslin.__file__)
+        super().__init__(self.event_handler, dir_name + "/data/goslin/sum-formula.g4", Parser.DEFAULT_QUOTE)
+        
+        
 class HmdbParser(Parser):
     def __init__(self):
         self.event_handler = HmdbParserEventHandler()
@@ -686,3 +695,5 @@ class LipidParser:
                 return lipid
             
         raise LipidException("Lipid not found")
+
+init_tables()

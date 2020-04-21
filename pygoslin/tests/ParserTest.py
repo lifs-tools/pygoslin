@@ -34,8 +34,6 @@ except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
 
-import pygoslin
-from pygoslin.parser.Parser import LipidParser
 from pygoslin.parser.Parser import *
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler

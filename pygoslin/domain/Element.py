@@ -41,3 +41,35 @@ class Element(Enum):
     S = 11
     S34 = 12
     S33 = 13
+    
+element_positions = {"C": Element.C,
+                    "H": Element.H,
+                    "N": Element.N,
+                    "O": Element.O,
+                    "P": Element.P,
+                    "P'": Element.P32,
+                    "S": Element.S,
+                    "S'": Element.S34,
+                    "S''": Element.S33,
+                    "H'": Element.H2,
+                    "C'": Element.C13,
+                    "N'": Element.N15,
+                    "O'": Element.O17,
+                    "O''": Element.O18,
+                    "2H": Element.H2,
+                    "13C": Element.C13,
+                    "15N": Element.N15,
+                    "17O": Element.O17,
+                    "18O": Element.O18,
+                    "32P": Element.P32,
+                    "34S": Element.S34,
+                    "33S": Element.S33,
+                    "H2": Element.H2,
+                    "C13": Element.C13,
+                    "N15": Element.N15,
+                    "O17": Element.O17,
+                    "O18": Element.O18,
+                    "P32": Element.P32,
+                    "S34": Element.S34,
+                    "S33": Element.S33
+                     }
