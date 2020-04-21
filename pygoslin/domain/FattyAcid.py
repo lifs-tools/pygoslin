@@ -25,6 +25,8 @@ SOFTWARE.
 
 
 from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.Element import Element
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
 
 class FattyAcid:
 
@@ -70,3 +72,37 @@ class FattyAcid:
         db_pos = "(%s)" % ",".join(db_positions) if len (dbp) > 0 else ""
         
         return "%s%i:%i%s%s%s" % ("O-" if special_case and len(suffix) > 0 else "", self.num_carbon, self.num_double_bonds, db_pos, ";" + str(self.num_hydroxyl) if self.num_hydroxyl > 0 else "", suffix)
+
+
+
+    def get_elements(self):
+        elements = {e: 0 for e in Element}
+        
+        if not self.lcb:
+        
+            if self.num_carbon > 0 or self.num_double_bonds > 0:
+                
+                elements[Element.C] = self.num_carbon # carbon
+                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
+                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * self.num_double_bonds) # hydrogen
+                    elements[Element.O] = (1 + self.num_hydroxyl) # oxygen
+                
+                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
+                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * self.num_double_bonds + 2) # hydrogen
+                    elements[Element.O] = self.num_hydroxyl # oxygen
+                
+                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
+                    elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * self.num_double_bonds) # hydrogen
+                    elements[Element.O] = self.num_hydroxyl # oxygen
+                    
+                else:
+                    raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
+                
+        else:
+            # long chain base
+            elements[Element.C] = self.num_carbon # carbon
+            elements[Element.H] = (2 * (self.num_carbon - self.num_double_bonds) + 2) # hydrogen
+            elements[Element.O] = self.num_hydroxyl # oxygen
+            elements[Element.N] = 1 # nitrogen
+            
+        return elements

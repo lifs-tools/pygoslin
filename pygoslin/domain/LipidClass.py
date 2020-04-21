@@ -55,6 +55,8 @@ all_lipids = [{"name": "UNDEFINED",
                 "synonyms": []}]
 
 
+
+
 def init_tables():
     global all_lipids
     global class_string_to_category

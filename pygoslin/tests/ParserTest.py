@@ -87,6 +87,7 @@ class ParserTest(unittest.TestCase):
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "MLCL 16:1/12:0/14:1"
+        assert lipid.get_sum_formula() == "C51H96O16P2"
         
         
         lipid_name = "DLCL 14:1/8:0"
@@ -105,6 +106,7 @@ class ParserTest(unittest.TestCase):
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "PE 12:1/10:0"
+        assert lipid.get_sum_formula() == "C27H52NO8P"
         
         
         lipid_name = "PIP[3'] 17:0/20:4(5Z,8Z,11Z,14Z)"
@@ -190,6 +192,7 @@ class ParserTest(unittest.TestCase):
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "LPE O-16:1p"
+        assert lipid.get_sum_formula() == "C21H44NO6P"
             
             
             
@@ -368,6 +371,8 @@ class ParserTest(unittest.TestCase):
         assert lipid.lipid.get_lipid_string(LipidLevel.SPECIES) == "SE 27:1/16:1"
         assert lipid.lipid.get_lipid_string(LipidLevel.CLASS) == "SE 27:1"
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "ST"
+        assert abs(lipid.get_mass() - 622.56888) < 0.001
+        assert lipid.get_sum_formula() == "C43H74O2"
         
         ## sterol
         lipid_name = "SE 27:1/16:1"

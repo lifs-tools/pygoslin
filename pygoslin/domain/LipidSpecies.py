@@ -29,6 +29,7 @@ from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
+from pygoslin.domain.Element import Element
 
 class LipidSpecies:
     def __init__(self, head_group, lipid_category = None, lipid_class = None, lipid_species_info = None):
@@ -85,3 +86,19 @@ class LipidSpecies:
         
         else:
             raise RuntimeException("LipidSpecies does not know how to create a lipid string for level %s" + level)
+        
+        
+    def get_elements(self):
+        hg_elements = all_lipids[self.lipid_class]["elements"]
+        try:
+            elements = {e: hg_elements[e] for e in Element}
+        except:
+            raise LipidException("Inconsistant element tables")
+        
+        for fa in self.fa_list:
+            fa_elements = fa.get_elements()
+            for e in Element:
+                elements[e] += fa_elements[e]
+        
+        return elements
+        

@@ -23,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from pygoslin.domain.Element import Element
 
 class Adduct:
     
@@ -42,3 +43,9 @@ class Adduct:
         if self.charge == 0: return "[M]"
         
         return "[M%s%s]%i%s" % (self.sum_formula, self.adduct_string, self.charge, "+" if self.charge_sign > 0 else "-")
+    
+    def get_elements(self):
+        return {e: 0 for e in Element}
+    
+    def get_charge(self):
+        return self.charge * self.charge_sign

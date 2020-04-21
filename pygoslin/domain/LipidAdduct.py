@@ -25,6 +25,7 @@ SOFTWARE.
 
 
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.Element import *
 
 class LipidAdduct:
 
@@ -33,6 +34,7 @@ class LipidAdduct:
         self.adduct = None
         self.fragment = None
         self.sum_formula = None
+        
         
         
     def get_lipid_string(self, level = None):
@@ -44,6 +46,7 @@ class LipidAdduct:
         if self.adduct != None: lipid_name.append(self.adduct.get_lipid_string())
         
         return "".join(lipid_name)
+        
         
         
     def get_lipid_fragment_string(self, level = None):
@@ -59,3 +62,46 @@ class LipidAdduct:
             lipid_name.append(self.fragment.get_lipid_string())
         
         return "".join(lipid_name)
+    
+    
+    
+    
+    def get_mass(self):
+        elements = {e: 0 for e in Element}
+        charge = 0
+        
+        if self.lipid != None:
+            lipid_elements = self.lipid.get_elements()
+            for e in Element:
+                elements[e] += lipid_elements[e]
+                
+        if self.adduct != None:
+            adduct_elements = self.adduct.get_elements()
+            charge = self.adduct.get_charge()
+            for e in Element:
+                elements[e] += adduct_elements[e]
+                
+        mass = sum([element_masses[e] * elements[e] for e in Element])
+        
+        if charge != 0:
+            mass = (mass - charge * electron_rest_mass) / abs(charge)
+            
+        return mass
+    
+    
+    
+    def get_sum_formula(self):
+        elements = {e: 0 for e in Element}
+        
+        if self.lipid != None:
+            lipid_elements = self.lipid.get_elements()
+            for e in Element:
+                elements[e] += lipid_elements[e]
+                
+        if self.adduct != None:
+            adduct_elements = self.adduct.get_elements()
+            for e in Element:
+                elements[e] += adduct_elements[e]
+                
+                
+        return "".join(["%s%s" % (element_shortcut[e] if elements[e] > 0 else "", str(elements[e]) if elements[e] > 1 else "") for e in element_order])
