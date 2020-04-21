@@ -67,7 +67,7 @@ class LipidStructuralSubspecies(LipidMolecularSubspecies):
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.STRUCTURAL_SUBSPECIES:
             if not super().validate():
-                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class][0], ", ".join(str(p) for p in all_lipids[self.lipid_class][4]), len(self.fa)))
+                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class]["name"], ", ".join(str(p) for p in all_lipids[self.lipid_class]["poss_fa"]), len(self.fa)))
             return self.build_lipid_subspecies_name("/")
         
         elif level in (LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):

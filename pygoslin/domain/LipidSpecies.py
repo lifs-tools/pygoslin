@@ -71,15 +71,15 @@ class LipidSpecies:
             return self.lipid_category.name
         
         elif level == LipidLevel.CLASS:
-            return all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group
+            return all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group
         
         elif level == LipidLevel.SPECIES:
-            if not self.validate(): raise ConstraintViolationException("No fatty acly chain information present for lipid '%s'" % all_lipids[self.lipid_class][0])
-            lipid_string = [all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group]
+            if not self.validate(): raise ConstraintViolationException("No fatty acly chain information present for lipid '%s'" % all_lipids[self.lipid_class]["name"])
+            lipid_string = [all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group]
             if self.info != None and self.info.num_carbon > 0:
                 special_case = self.lipid_class in self.special_cases
                 
-                lipid_string += " " if all_lipids[self.lipid_class][1] != LipidCategory.ST else "/"
+                lipid_string += " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
                 lipid_string += self.info.to_string(special_case)
             return "".join(lipid_string)
         
