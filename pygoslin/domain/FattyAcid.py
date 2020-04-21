@@ -98,7 +98,7 @@ class FattyAcid:
                 else:
                     raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
                 
-            else:
+            else: # if empty fatty acid (0:0)
                 elements[Element.H] = 1 # hydrogen
                 
                 
