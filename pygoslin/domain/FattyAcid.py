@@ -98,6 +98,10 @@ class FattyAcid:
                 else:
                     raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
                 
+            else:
+                elements[Element.H] = 1 # hydrogen
+                
+                
         else:
             # long chain base
             elements[Element.C] = self.num_carbon # carbon
