@@ -35,44 +35,40 @@ try:
 except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
-parser = SwissLipidsParser()
+parser = LipidMapsParser()
 
 class TestFormulas(unittest.TestCase):
 
     def test_formulas(self):
         global parser
         
-        """
-        lipid = parser.parse("HexCer(d18:1/24:0)")
-        print(lipid.get_sum_formula())
         
-        lipid = parser.parse("HexCer(d42:1)")
-        print(lipid.get_sum_formula())
-        
-        exit()
-        """
+        #lipid = parser.parse("DG(17:1(9Z)/18:1(9Z)/0:0)")
+        #print(lipid.get_sum_formula())
+        #exit()
         
         
-        with open('pygoslin/tests/formulas.csv', newline='') as csvfile:
+        
+        with open('pygoslin/tests/formulas2.csv', newline='') as csvfile:
             lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
             
             fail = 0
             for i, row in enumerate(lipidreader):
+                if i and i % 1000 == 0: print(i)
                 
-                if len(row) != 2: continue
-            
                 try:
                     lipid = parser.parse(row[0])
                 except LipidException as e:
-                    fail += 1
-                    print(row[0], e)
+                    #print(row[0], e)
                     continue
                     
                 try:
-                    if lipid.get_sum_formula() != row[1]:
-                        print("assert for %s: %s != %s" % (row[0], lipid.get_sum_formula(), row[1]))
+                    formula = lipid.get_sum_formula()
+                    if len(formula) == 0: continue
+                    if formula != row[1]:
+                        print("assert for %s: %s != %s" % (row[0], formula, row[1]))
                         assert False
-                except LipidException as e:
+                except Exception as e:
                     print(row[0], e)
                     
             print("fails: %i" % fail)

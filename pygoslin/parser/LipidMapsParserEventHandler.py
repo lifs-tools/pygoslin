@@ -197,7 +197,9 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         if ether == "O-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+        elif ether == "P-":
+            self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+            self.current_fa.num_double_bonds += 1
         
         
         
@@ -212,7 +214,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def add_double_bonds(self, node):
-        self.current_fa.num_double_bonds = int(node.get_text())
+        self.current_fa.num_double_bonds += int(node.get_text())
         
         
     def add_carbon(self, node):

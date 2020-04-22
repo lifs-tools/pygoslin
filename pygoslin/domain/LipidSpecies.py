@@ -89,6 +89,10 @@ class LipidSpecies:
         
         
     def get_elements(self):
+        if self.use_head_group:
+            return {e: 0 for e in Element}
+        
+        
         hg_elements = all_lipids[self.lipid_class]["elements"]
         try:
             elements = {e: hg_elements[e] for e in Element}
