@@ -96,15 +96,23 @@ class LipidSpecies:
             raise LipidException("Inconsistant element tables")
             
         if self.info.level in {LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+            num_true_fa = 0
             for fa in self.fa_list:
                 fa_elements = fa.get_elements()
+                #print("%s: %s" % (self.head_group, fa_elements))
+                if fa.num_carbon != 0 or fa.num_double_bonds != 0: num_true_fa += 1
                 for e in Element:
                     elements[e] += fa_elements[e]
+            if all_lipids[self.lipid_class]["max_fa"] < num_true_fa:
+                raise LipidException("Inconsistancy in number of fatty acyl chains for lipid '%s'" % self.head_group)
+            elements[Element.H] += all_lipids[self.lipid_class]["max_fa"] - num_true_fa # adding hydrogens for absent fatty acyl chains
+            
         
         elif self.info.level == LipidLevel.SPECIES:
-            fa_elements = self.info.get_elements()
+            fa_elements = self.info.get_elements(max(all_lipids[self.lipid_class]["poss_fa"]))
             for e in Element:
                 elements[e] += fa_elements[e]
+            elements[Element.H] += all_lipids[self.lipid_class]["max_fa"] - max(all_lipids[self.lipid_class]["poss_fa"]) # adding hydrogens for absent fatty acyl chains
             
         
         return elements

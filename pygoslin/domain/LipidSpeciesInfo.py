@@ -25,6 +25,7 @@ SOFTWARE.
 
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.Element import Element
 
 class LipidSpeciesInfo(FattyAcid):
     
@@ -36,8 +37,9 @@ class LipidSpeciesInfo(FattyAcid):
         self.level = None
         
         
-    """
-    def to_string(self, special_case = False):
-        suffix = self.lipid_FA_bond_type.suffix()
-        return "%s%i:%i%s%s" % ("O-" if special_case and len(suffix) > 0 else "", self.num_carbon, self.num_double_bonds, ";" + str(self.num_hydroxyl) if self.num_hydroxyl > 0 else "", suffix)
-    """
+    def get_elements(self, num_fa):
+        elements = super().get_elements()
+        elements[Element.O] += num_fa - 1
+        elements[Element.H] -= num_fa - 1
+        
+        return elements
