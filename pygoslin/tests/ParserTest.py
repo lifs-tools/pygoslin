@@ -430,7 +430,6 @@ class ParserTest(unittest.TestCase):
         lipid = swiss_lipids_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "GalGb3Cer 18:0;2/14:0"
-        print(lipid.get_sum_formula())
         assert lipid.get_sum_formula() == "C56H105NO23"
         assert abs(lipid.get_mass() - 1159.707744) < 0.001
         

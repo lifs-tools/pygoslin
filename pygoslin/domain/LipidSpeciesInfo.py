@@ -23,18 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+from pygoslin.domain.FattyAcid import FattyAcid
+from pygoslin.domain.LipidFaBondType import LipidFaBondType
 
-
-class LipidSpeciesInfo:
+class LipidSpeciesInfo(FattyAcid):
     
     def __init__(self, fa = None):
+        if fa != None:
+            super().__init__(fa.name, fa.num_carbon, fa.num_double_bonds, fa.num_hydroxyl, fa.lipid_FA_bond_type, fa.lcb, fa.position, fa.double_bond_positions)
+        else:
+            super().__init__("", 2, 0, 0, LipidFaBondType.UNDEFINED, False, 0, None)
         self.level = None
-        self.num_carbon = fa.num_carbon if fa != None else 0
-        self.num_hydroxyl = fa.num_hydroxyl if fa != None else 0
-        self.num_double_bonds = fa.num_double_bonds if fa != None else 0
-        self.lipid_FA_bond_type = fa.lipid_FA_bond_type if fa != None else None
         
         
+    """
     def to_string(self, special_case = False):
         suffix = self.lipid_FA_bond_type.suffix()
         return "%s%i:%i%s%s" % ("O-" if special_case and len(suffix) > 0 else "", self.num_carbon, self.num_double_bonds, ";" + str(self.num_hydroxyl) if self.num_hydroxyl > 0 else "", suffix)
+    """

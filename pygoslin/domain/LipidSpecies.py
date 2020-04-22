@@ -94,11 +94,18 @@ class LipidSpecies:
             elements = {e: hg_elements[e] for e in Element}
         except:
             raise LipidException("Inconsistant element tables")
+            
+        if self.info.level in {LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+            for fa in self.fa_list:
+                fa_elements = fa.get_elements()
+                for e in Element:
+                    elements[e] += fa_elements[e]
         
-        for fa in self.fa_list:
-            fa_elements = fa.get_elements()
+        elif self.info.level == LipidLevel.SPECIES:
+            fa_elements = self.info.get_elements()
             for e in Element:
                 elements[e] += fa_elements[e]
+            
         
         return elements
         
