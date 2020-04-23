@@ -35,32 +35,24 @@ try:
 except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
-parser = LipidMapsParser()
+swiss_lipids_parser = SwissLipidsParser()
+lipids_maps_parser = LipidMapsParser()
 
 class TestFormulas(unittest.TestCase):
 
-    def test_formulas(self):
-        global parser
-        
-        
-        #lipid = parser.parse("DG(17:1(9Z)/18:1(9Z)/0:0)")
-        #print(lipid.get_sum_formula())
-        #exit()
-        
-        
-        
-        with open('pygoslin/tests/formulas2.csv', newline='') as csvfile:
+    def test_formulas_swiss_lipids(self):
+        global swiss_lipids_parser
+
+        with open('pygoslin/tests/formulas-swiss-lipids.csv', newline='') as csvfile:
             lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
             
-            fail = 0
-            for i, row in enumerate(lipidreader):
-                if i and i % 1000 == 0: print(i)
+            for row in lipidreader:
                 
                 try:
-                    lipid = parser.parse(row[0])
+                    lipid = swiss_lipids_parser.parse(row[0])
                 except LipidException as e:
-                    #print(row[0], e)
-                    continue
+                    print(row[0], e)
+                    assert False
                     
                 try:
                     formula = lipid.get_sum_formula()
@@ -70,5 +62,30 @@ class TestFormulas(unittest.TestCase):
                         assert False
                 except Exception as e:
                     print(row[0], e)
+                    assert False
+
+
+    def test_formulas_lipid_maps(self):
+        global lipids_maps_parser
+
+        with open('pygoslin/tests/formulas-lipid-maps.csv', newline='') as csvfile:
+            lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
+            
+            for row in lipidreader:
+                
+                try:
+                    lipid = lipids_maps_parser.parse(row[0])
+                except LipidException as e:
+                    print(row[0], e)
+                    assert False
                     
-            print("fails: %i" % fail)
+                try:
+                    formula = lipid.get_sum_formula()
+                    if len(formula) == 0: continue
+                    if formula != row[1]:
+                        print("assert for %s: %s != %s" % (row[0], formula, row[1]))
+                        assert False
+                except Exception as e:
+                    print(row[0], e)
+                    assert False
+                    
