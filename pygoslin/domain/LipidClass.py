@@ -24,7 +24,10 @@ SOFTWARE.
 """
 
 
+import pygoslin
 from pygoslin.domain.LipidCategory import *
+from pygoslin.parser.ParserCommon import SumFormulaParser
+from pygoslin.domain.Element import Element
 from enum import Enum
 from os import path
 import pygoslin
@@ -55,50 +58,36 @@ all_lipids = [{"name": "UNDEFINED",
                 "synonyms": []}]
 
 
-
-
-def init_tables():
-    global all_lipids
-    global class_string_to_category
-    global class_string_to_class
+all_lipids_dir_name = path.dirname(pygoslin.__file__)
+with open(all_lipids_dir_name + "/data/goslin/lipid-list.csv", mode = "rt") as infile:
+    line = infile.readline() # skip title row
+    lipid_reader = csv.reader(infile, delimiter=',', quotechar='"')
+    sum_formula_parser = SumFormulaParser()
     
-    if len(all_lipids) > 1: return
-
-    import pygoslin
-    all_lipids_dir_name = path.dirname(pygoslin.__file__)
-    with open(all_lipids_dir_name + "/data/goslin/lipid-list.csv", mode = "rt") as infile:
-        line = infile.readline() # skip title row
-        lipid_reader = csv.reader(infile, delimiter=',', quotechar='"')
-        
-        from pygoslin.parser.Parser import SumFormulaParser
-        from pygoslin.domain.Element import Element
-        sum_formula_parser = SumFormulaParser()
-        
-        
-        i = 1
-        for row in lipid_reader:
-            if len(row) > 0 and len(row[0]) > 0:
-                
-                lipid_dict = {}
-                
-                lipid_dict["name"] = row[0]
-                lipid_dict["category"] = category_string_to_category[row[1]]
-                lipid_dict["description"] = row[2]
-                lipid_dict["max_fa"] = int(row[3])
-                lipid_dict["poss_fa"] = set(int(pos) for pos in row[4].split("|"))
-                row[5] = row[5].strip(" ")
-                lipid_dict["elements"] = sum_formula_parser.parse(row[5]) if len(row[5]) > 0 else {e: 0 for e in Element}
-                lipid_dict["synonyms"] = [r for r in row[6:] if len(r) > 0]
-                
-                
-                all_lipids.append(lipid_dict)
-                class_string_to_class[lipid_dict["name"]] = i
-                class_string_to_category[lipid_dict["name"]] = lipid_dict["category"]
-                for class_name in lipid_dict["synonyms"]:
-                    if len(class_name) > 0:
-                        class_string_to_class[class_name] = i
-                        class_string_to_category[class_name] = lipid_dict["category"]
-                i += 1
+    i = 1
+    for row in lipid_reader:
+        if len(row) > 0 and len(row[0]) > 0:
             
+            lipid_dict = {}
+            
+            lipid_dict["name"] = row[0]
+            lipid_dict["category"] = category_string_to_category[row[1]]
+            lipid_dict["description"] = row[2]
+            lipid_dict["max_fa"] = int(row[3])
+            lipid_dict["poss_fa"] = set(int(pos) for pos in row[4].split("|"))
+            row[5] = row[5].strip(" ")
+            lipid_dict["elements"] = sum_formula_parser.parse(row[5]) if len(row[5]) > 0 else {e: 0 for e in Element}
+            lipid_dict["synonyms"] = [r for r in row[6:] if len(r) > 0]
+            
+            
+            all_lipids.append(lipid_dict)
+            class_string_to_class[lipid_dict["name"]] = i
+            class_string_to_category[lipid_dict["name"]] = lipid_dict["category"]
+            for class_name in lipid_dict["synonyms"]:
+                if len(class_name) > 0:
+                    class_string_to_class[class_name] = i
+                    class_string_to_category[class_name] = lipid_dict["category"]
+            i += 1
+        
 
         

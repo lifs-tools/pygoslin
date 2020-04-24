@@ -109,3 +109,6 @@ element_shortcut = {Element.C: "C",
                     }
 
 element_order = [Element.C, Element.H, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
+
+def compute_sum_formula(elements):
+    return "".join(["%s%s" % (element_shortcut[e] if elements[e] > 0 else "", str(elements[e]) if elements[e] > 1 else "") for e in element_order])

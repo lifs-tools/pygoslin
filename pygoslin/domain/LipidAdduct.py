@@ -43,7 +43,8 @@ class LipidAdduct:
         if self.lipid != None: lipid_name.append(self.lipid.get_lipid_string(level))
         else: return ""
         
-        if self.adduct != None: lipid_name.append(self.adduct.get_lipid_string())
+        if level not in {None, LipidLevel.CLASS, LipidLevel.CATEGORY}:
+            if self.adduct != None: lipid_name.append(self.adduct.get_lipid_string())
         
         return "".join(lipid_name)
         
@@ -65,43 +66,32 @@ class LipidAdduct:
     
     
     
-    
-    def get_mass(self):
+    def get_elements(self):
         elements = {e: 0 for e in Element}
-        charge = 0
         
         if self.lipid != None:
             lipid_elements = self.lipid.get_elements()
-            for e in Element:
-                elements[e] += lipid_elements[e]
+            for e in Element: elements[e] += lipid_elements[e]
                 
         if self.adduct != None:
             adduct_elements = self.adduct.get_elements()
-            charge = self.adduct.get_charge()
             for e in Element:
                 elements[e] += adduct_elements[e]
-                
+        return elements
+    
+    
+    
+    def get_mass(self):
+        elements = self.get_elements()
+        charge = charge = self.adduct.get_charge() if self.adduct != None else 0
         mass = sum([element_masses[e] * elements[e] for e in Element])
-        
-        if charge != 0:
-            mass = (mass - charge * electron_rest_mass) / abs(charge)
+        if charge != 0: mass = (mass - charge * electron_rest_mass) / abs(charge)
             
         return mass
     
     
     
+    
     def get_sum_formula(self):
-        elements = {e: 0 for e in Element}
-        
-        if self.lipid != None:
-            lipid_elements = self.lipid.get_elements()
-            for e in Element:
-                elements[e] += lipid_elements[e]
-                
-        if self.adduct != None:
-            adduct_elements = self.adduct.get_elements()
-            for e in Element:
-                elements[e] += adduct_elements[e]
-                
-                
-        return "".join(["%s%s" % (element_shortcut[e] if elements[e] > 0 else "", str(elements[e]) if elements[e] > 1 else "") for e in element_order])
+        elements = self.get_elements()
+        return comupute_sum_fomula(elements)
