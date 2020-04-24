@@ -43,7 +43,7 @@ class LipidAdduct:
         if self.lipid != None: lipid_name.append(self.lipid.get_lipid_string(level))
         else: return ""
         
-        if level not in {None, LipidLevel.CLASS, LipidLevel.CATEGORY}:
+        if level == None or level not in {LipidLevel.CLASS, LipidLevel.CATEGORY}:
             if self.adduct != None: lipid_name.append(self.adduct.get_lipid_string())
         
         return "".join(lipid_name)
@@ -56,11 +56,12 @@ class LipidAdduct:
         if self.lipid != None: lipid_name.append(self.lipid.get_lipid_string(level))
         else: return ""
         
-        if self.adduct != None: lipid_name.append(self.adduct.get_lipid_string())
+        if level == None or level not in {LipidLevel.CLASS, LipidLevel.CATEGORY}:
+            if self.adduct != None: lipid_name.append(self.adduct.get_lipid_string())
         
-        if self.fragment != None:
-            lipid_name.append(" - ")
-            lipid_name.append(self.fragment.get_lipid_string())
+            if self.fragment != None:
+                lipid_name.append(" - ")
+                lipid_name.append(self.fragment.get_lipid_string())
         
         return "".join(lipid_name)
     
@@ -93,5 +94,4 @@ class LipidAdduct:
     
     
     def get_sum_formula(self):
-        elements = self.get_elements()
-        return comupute_sum_fomula(elements)
+        return compute_sum_formula(self.get_elements())

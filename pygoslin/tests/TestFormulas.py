@@ -29,6 +29,7 @@ import csv
 from pygoslin.parser.Parser import *
 from pygoslin.domain.LipidExceptions import *
 
+
 try:
     import pyximport
     pyximport.install(setup_args = {"script_args" : ["--force"]}, language_level = 3)
