@@ -58,7 +58,7 @@ class Adduct:
         except Exception as e:
             return elements
         
-        if self.adduct_string[0] == "-":
+        if len(self.adduct_string) > 0 and self.adduct_string[0] == "-":
             for e in Element:
                 elements[e] *= -1
         
