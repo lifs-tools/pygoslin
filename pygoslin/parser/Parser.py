@@ -233,16 +233,14 @@ class Parser:
         else:
             raise Exception("Error: file '%s' does not exist or can not be opened." % grammar_filename)
         
-        def top_nodes( rule_index):
-            collection, collection_top = [rule_index], []
-            i = 0
+        def top_nodes(rule_index):
+            collection, collection_top, i = [rule_index], [], 0
+            
             while i < len(collection):
-                current_index = collection[i]
-                if current_index in self.NTtoNT:
-                    for previous_index in self.NTtoNT[current_index]: collection.append(previous_index)
-                else:
-                    collection_top.append(current_index)
-                i += 1
+                current_index, i = collection[i], i + 1
+                if current_index in self.NTtoNT: collection += self.NTtoNT[current_index]
+                else: collection_top.append(current_index)
+                
             return collection_top
         
         
@@ -255,20 +253,22 @@ class Parser:
                     if chain == None: continue
                     chain = [rule_top] + chain + [rule]
                     while len(chain) > 1:
-                        top = chain[0]
-                        chain = chain[1:]
+                        top, chain = chain[0], chain[1:]
                         self.substitution[rule_index + (top << 16)] = chain
                     
         for k, v in self.TtoNT.items():
             self.OTtoNT[k] = list(v)[0]
         
         
+        
+        # expanding singleton rules, e.g. S -> A, A -> B, B -> C
         for d in [self.TtoNT, self.NTtoNT]:
             for rules in d.values():
-                new_rules = set()
-                for rule in rules:
-                    new_rules |= set([p for p in self.collect_one_backwards(rule)])
-                rules |= new_rules
+                collection, i = list(rules), 0
+                while i < len(collection):
+                    current_index, i = collection[i], i + 1
+                    if current_index in self.NTtoNT: collection += self.NTtoNT[current_index]
+                rules |= set(collection)
                     
             
     
@@ -473,16 +473,6 @@ class Parser:
     
     
     
-    # expanding singleton rules, e.g. S -> A, A -> B, B -> C
-    def collect_one_backwards(self, rule_index):
-        collection = [rule_index]
-        i = 0
-        while i < len(collection):
-            current_index = collection[i]
-            if current_index in self.NTtoNT:
-                for previous_index in self.NTtoNT[current_index]: collection.append(previous_index)
-            i += 1
-        return collection
     
     
     
@@ -603,14 +593,14 @@ class Parser:
         
         t, nt, mask, shift = self.TtoNT, self.NTtoNT, (1 << 32) - 1, 32
             
-        for i in range(n):
-            c = text_to_parse[i]
+        for j in range(n):
+            c = text_to_parse[j]
             if c not in t: return None
             
             for rule_index in t[c]:
-                DP[0][i][rule_index] = [c, None, rule_index, None]
-                DL[0][i] |= lft[rule_index]
-                DR[0][i] |= rgt[rule_index]
+                DP[0][j][rule_index] = [c, None, rule_index, None]
+                DL[0][j] |= lft[rule_index]
+                DR[0][j] |= rgt[rule_index]
         
         
         for i in range (1, n):
@@ -623,8 +613,7 @@ class Parser:
                     if im1mk not in Ks[jpok]: continue
                     
                     for key in DR[k][j] & DL[im1mk][jpok]:
-                        index_pair_1 = key >> shift
-                        index_pair_2 = key & mask
+                        index_pair_1, index_pair_2 = key >> shift, key & mask
                         parse_content = [index_pair_1, DP[k][j][index_pair_1], index_pair_2, DP[im1mk][jpok][index_pair_2]]
                         for rule_index in nt[key]:
                             DPij[rule_index] = parse_content
