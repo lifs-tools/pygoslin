@@ -82,14 +82,14 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
-        self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
+        self.registered_events["number_pre_event"] = self.handle_number
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["old_hydroxyl_pre_event"] = self.add_old_hydroxyl
-        self.registered_events["db_count_pre_event"] = self.add_double_bonds
-        self.registered_events["carbon_pre_event"] = self.add_carbon
-        self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
+        #self.registered_events["db_count_pre_event"] = self.add_double_bonds
+        #self.registered_events["carbon_pre_event"] = self.add_carbon
+        #self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
         
         
         self.registered_events["adduct_info_pre_event"] = self.new_adduct
@@ -97,6 +97,13 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["charge_pre_event"] = self.add_charge
         self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
     
+    
+        self.number_dict = {"db_single_position": self.add_db_single_position,
+                        "db": self.add_double_bonds,
+                        "fa_pure": self.add_carbon,
+                        "lcb_pure": self.add_carbon,
+                        "hydroxyl": self.add_hydroxyl
+                        }
 
 
 
@@ -130,9 +137,22 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         if self.current_fa != None: self.current_fa.double_bond_positions[self.db_position] = self.db_cistrans
         
 
-    def add_db_position_number(self, node):
+    def handle_number(self, node):
+        if self.domain[-2] in self.number_dict:
+            self.number_dict[self.domain[-2]](node)
+        """
+        if self.domain[-2] == "db_single_position":
+            self.add_db_single_position(node)
+        elif self.domain[-2] == "db":
+            self.add_double_bonds(node)
+        elif self.domain[-2] in {"fa_pure", "lcb_pure"}:
+            self.add_carbon(node)
+        elif self.domain[-2] == "hydroxyl":
+            self.add_hydroxyl(node)
+        """
+            
+    def add_db_single_position(self, node):
         self.db_position = int(node.get_text())
-        
 
     def add_cistrans(self, node):
         self.db_cistrans = node.get_text()

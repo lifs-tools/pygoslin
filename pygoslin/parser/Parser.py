@@ -246,7 +246,6 @@ class Parser:
         
         
         
-        
         for rule_index, values in self.NTtoNT.items():
             for rule in values:
                 for rule_top in top_nodes(rule):
@@ -257,10 +256,14 @@ class Parser:
                         top, chain = chain[0], chain[1:]
                         self.substitution[rule_index + (top << 16)] = chain
                     
-        for k, v in self.TtoNT.items():
-            self.OTtoNT[k] = list(v)[0]
-        
-        
+            
+        # save original TtoNT table
+        for k, v in self.TtoNT.items(): self.OTtoNT[k] = list(v)[0]
+            
+            
+            
+            
+            
         
         # expanding singleton rules, e.g. S -> A, A -> B, B -> C
         for d in [self.TtoNT, self.NTtoNT]:
@@ -279,8 +282,7 @@ class Parser:
             if key <= self.MASK: continue
             self.right_pair[key >> self.SHIFT].add(key)
             self.left_pair[key & self.MASK].add(key)
-           
-           
+
            
     
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
@@ -582,6 +584,8 @@ class Parser:
             
     # re-implementation of Cocke-Younger-Kasami algorithm
     def parser_pure(self, text_to_parse):
+        
+        
         n = len(text_to_parse)
         rgt = self.right_pair
         lft = self.left_pair
@@ -593,6 +597,9 @@ class Parser:
         Ks = [set([0]) for i in range(n)]
         
         t, nt, mask, shift = self.TtoNT, self.NTtoNT, (1 << 32) - 1, 32
+        
+        
+        #for c in t: print("%s: %i" % (c, len(t[c])))
             
         for j in range(n):
             c = text_to_parse[j]
