@@ -44,7 +44,7 @@ class BaseParserEventHandler:
             
             rule_name = event_name.replace("_pre_event", "").replace("_post_event", "")
             if rule_name not in self.rule_names:
-                raise Exception("Parser event handler error: rule '%s' in event '%s' is not present in the grammar%s" + (rule_name, event_name, " '" + self.parser.grammar_name + "'" if self.parser != None else ""))
+                raise Exception("Parser event handler error: rule '%s' in event '%s' is not present in the grammar%s" % (rule_name, event_name, " '" + self.parser.grammar_name + "'" if self.parser != None else ""))
     
     
     def handle_event(self, event_name, node):

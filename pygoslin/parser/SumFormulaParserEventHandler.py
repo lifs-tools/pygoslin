@@ -38,11 +38,11 @@ class SumFormulaParserEventHandler(BaseParserEventHandler):
         self.element = Element.H
         self.count = 0
         
-        self.registered_events["Molecule_pre_event"] = self.reset_parser
-        self.registered_events["Element_Group_post_event"] = self.element_group_post_event
-        self.registered_events["Element_pre_event"] = self.element_pre_event
-        self.registered_events["Single_Element_pre_event"] = self.single_element_group_pre_event
-        self.registered_events["Count_pre_event"] = self.count_pre_event
+        self.registered_events["molecule_pre_event"] = self.reset_parser
+        self.registered_events["element_group_post_event"] = self.element_group_post_event
+        self.registered_events["element_pre_event"] = self.element_pre_event
+        self.registered_events["single_element_pre_event"] = self.single_element_group_pre_event
+        self.registered_events["count_pre_event"] = self.count_pre_event
             
         
         
