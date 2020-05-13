@@ -41,7 +41,7 @@ os.environ["CFLAGS"] = "-O3 -Wall -std=c++11"
 
 setup(
     name = 'pygoslin',
-    version = '1.0',
+    version = '1.1.0',
     url = 'https://gitlib.isas.de/kopczynski/goslin',
     license = 'MIT',
     author = 'Dominik Kopczynski',
