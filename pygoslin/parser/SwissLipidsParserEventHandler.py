@@ -75,6 +75,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
+        self.registered_events["fa_lcb_suffix_type_pre_event"] = self.add_one_hydroxyl
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
@@ -213,6 +214,9 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.fa_list[-1].num_carbon -= 27
         self.fa_list[-1].num_double_bonds -= 1
         
+        
+    def add_one_hydroxyl(self, node):
+        self.current_fa.num_hydroxyl += 1
         
     def add_hydroxyl(self, node):
         hydroxyl = node.get_text()

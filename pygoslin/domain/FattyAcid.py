@@ -103,9 +103,7 @@ class FattyAcid:
         else:
             # long chain base
             elements[Element.C] = self.num_carbon # carbon
-            #elements[Element.H] = (2 * (self.num_carbon - self.num_double_bonds) + 2) # hydrogen
             elements[Element.H] = (2 * (self.num_carbon - self.num_double_bonds) + 1) # hydrogen
             elements[Element.O] = self.num_hydroxyl # oxygen
             elements[Element.N] = 1 # nitrogen
-            
         return elements
