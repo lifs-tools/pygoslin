@@ -34,8 +34,6 @@ except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
 
-import pygoslin
-from pygoslin.parser.Parser import LipidParser
 from pygoslin.parser.Parser import *
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
 from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
@@ -59,10 +57,10 @@ class ParserTest(unittest.TestCase):
     def test_lipid_parser(self):
         global lipid_parser
         
-        lipid_name = "PE 16:1-12:0"
+        lipid_name = "PE 16:1-12:0[M+H]1+"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "PE 16:1-12:0"
+        assert lipid.get_lipid_string() == "PE 16:1-12:0[M+H]1+"
         
         lipid_name = "PA 16:1-12:0 - fragment"
         lipid = lipid_parser.parse(lipid_name)
@@ -155,7 +153,7 @@ class ParserTest(unittest.TestCase):
                            ["TG(13:0/22:3(10Z,13Z,16Z)/22:5(7Z,10Z,13Z,16Z,19Z))[iso6]", "TAG 13:0/22:3(10Z,13Z,16Z)/22:5(7Z,10Z,13Z,16Z,19Z)"],
                            ["13R-HODE", "13R-HODE"],
                            ["CL(1'-[20:0/20:0],3'-[20:4(5Z,8Z,11Z,14Z)/18:2(9Z,12Z)])", "CL 20:0/20:0/20:4(5Z,8Z,11Z,14Z)/18:2(9Z,12Z)"],
-                           ["PA(P-20:0/18:3(6Z,9Z,12Z))", "PA 20:0p/18:3(6Z,9Z,12Z)"],
+                           ["PA(P-20:0/18:3(6Z,9Z,12Z))", "PA 20:1p/18:3(6Z,9Z,12Z)"],
                            ["M(IP)2C(t18:0/20:0(2OH))", "M(IP)2C 18:0;3/20:0;1"],
                            ["Cer(d16:2(4E,6E)/22:0(2OH))", "Cer 16:2(4E,6E);2/22:0;1"],
                            ["MG(18:1(11E)/0:0/0:0)[rac]", "MAG 18:1(11E)"],
@@ -173,6 +171,43 @@ class ParserTest(unittest.TestCase):
     def test_LP(self):
         global lipid_parser
         lipid = lipid_parser.parse("LP 19:1p")
+        
+        
+    def test_hydroxyls(self):
+        global goslin_parser, swiss_lipids_parser, lipid_maps_parser, hmdb_parser
+        
+        lipid = swiss_lipids_parser.parse("Cer(d18:1(4E)/24:0-2OH)")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        
+        lipid = swiss_lipids_parser.parse("Cer(d18:1(4E)/24:0(2OH))")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        
+        lipid = lipid_maps_parser.parse("Cer(d18:1(4E)/24:0(2OH))")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        
+        lipid = goslin_parser.parse("Cer 18:1(4E);2/24:0;1")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        lipid = hmdb_parser.parse("SM(d18:1/16:1(9Z)(OH))")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "SM 18:1;2/16:1(9Z);1"
+        assert lipid.get_sum_formula() == "C39H77N2O7P"
+        assert abs(lipid.get_mass() - 716.546841) < 1e-3
 
 
     def test_lyso(self):

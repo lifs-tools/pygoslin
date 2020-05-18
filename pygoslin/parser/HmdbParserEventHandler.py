@@ -73,6 +73,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
+        self.registered_events["fa_lcb_suffix_type_pre_event"] = self.add_one_hydroxyl
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
@@ -215,6 +216,10 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         if hydroxyl == "m": self.current_fa.num_hydroxyl = 1
         if hydroxyl == "d": self.current_fa.num_hydroxyl = 2
         if hydroxyl == "t": self.current_fa.num_hydroxyl = 3
+        
+        
+    def add_one_hydroxyl(self, node):
+        self.current_fa.num_hydroxyl += 1
         
         
     def add_double_bonds(self, node):

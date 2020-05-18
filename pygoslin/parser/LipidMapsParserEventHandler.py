@@ -52,6 +52,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["dpl_species_pre_event"] = self.set_species_level
         self.registered_events["cl_species_pre_event"] = self.set_species_level
         self.registered_events["dsl_species_pre_event"] = self.set_species_level
+        self.registered_events["species_fa_pre_event"] = self.set_species_level
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_subspecies_level
@@ -62,6 +63,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_dpl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lpl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_fourpl_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_threepl_pre_event"] = self.set_head_group_name
         self.registered_events["sphingosine_name_pre_event"] = self.set_head_group_name
         self.registered_events["sphinganine_name_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
@@ -195,7 +197,9 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         if ether == "O-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+        elif ether == "P-":
+            self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+            self.current_fa.num_double_bonds += 1
         
         
         
@@ -210,7 +214,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def add_double_bonds(self, node):
-        self.current_fa.num_double_bonds = int(node.get_text())
+        self.current_fa.num_double_bonds += int(node.get_text())
         
         
     def add_carbon(self, node):

@@ -29,6 +29,7 @@ import unittest
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.Element import Element
 
 class FattyAcidTest(unittest.TestCase):
     
@@ -59,12 +60,17 @@ class FattyAcidTest(unittest.TestCase):
 
     @unittest.expectedFailure
     def test_wrong_position(self):
-        instanceZero = FattyAcid("FA1", 2, 0, 0, LipidFaBondType.UNDEFINED, False, -2)
+        instanceZero = FattyAcid("FA1", 20, 2, 0, LipidFaBondType.UNDEFINED, False, -2)
 
 
     def test_carbon(self):
-        instance = FattyAcid("FAX", 2, 0, 0, LipidFaBondType.UNDEFINED, False, 1)
-        assert 2 == instance.num_carbon
+        instance = FattyAcid("FAX", 20, 2, 0, LipidFaBondType.ESTER, False, 1)
+        assert 20 == instance.num_carbon
+        elements = instance.get_elements()
+        assert elements[Element.C] == 20
+        assert elements[Element.H] == 35
+        assert elements[Element.O] == 1
+        assert elements[Element.N] == 0
 
 
     @unittest.expectedFailure

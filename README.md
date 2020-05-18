@@ -2,8 +2,6 @@
 
 This is the Goslin reference implementation for Python 3.
 
-> **_NOTE:_**  This is an *early* development version, please use at your own risk and report issues to help improve it!
-
 The pygoslin has been developed with regard the following general issues:
 
 1. Ease the handling with lipid names for developers working on mass spectrometry-based lipidomics tools.

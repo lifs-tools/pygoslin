@@ -23,43 +23,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import unittest
+import os
+import csv
+from pygoslin.parser.Parser import *
+from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.LipidLevel import *
+from pygoslin.domain.Element import *
 
-from setuptools import setup, find_packages
-import setuptools
-
-pyx_support = True
 try:
-    from Cython.Build import cythonize
+    import pyximport
+    pyximport.install(setup_args = {"script_args" : ["--force"]}, language_level = 3)
 except:
-    pyx_support = False
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
+parser = GoslinParser()
 
-import os
+class TestFormulas(unittest.TestCase):
 
-os.environ["CFLAGS"] = "-O3 -Wall -std=c++11" 
+    def test_masses(self):
+        global parser
 
-setup(
-    name = 'pygoslin',
-    version = '1.1.0',
-    url = 'https://gitlib.isas.de/kopczynski/goslin',
-    license = 'MIT',
-    author = 'Dominik Kopczynski',
-    author_email = 'dominik.kopczynski@isas.de',
-    description = 'Python implementation for Goslin',
-    long_description = open('README.md', encoding='utf-8').read(),
-    packages = setuptools.find_packages(),
-    classifiers = [
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-    ],
-    ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language_level = 3) if pyx_support else None,
-    setup_requires = ["pytest-runner"],
-    tests_require = ["pytest"],
-    python_requires = '>=3.5',
-    include_package_data = True,
-    package_data = {
-        '': ['data/goslin/*.g4', 'data/goslin/*.G4', 'data/goslin/lipid-list.csv'], # If any package contains *.G4 files, include them
-    }
-)
+        with open('pygoslin/tests/lipid-masses.csv', newline='') as csvfile:
+            lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
+            for i, row in enumerate(lipidreader):
+                if i == 0: continue
+                
+                lipid_name = row[1] + row[3]
+                
+                try:
+                    lipid = parser.parse(lipid_name)
+                except LipidException as e:
+                    print(row[0], e)
+                    assert False
+                 
+                assert lipid.get_lipid_string(LipidLevel.CLASS) == row[0]
+                assert compute_sum_formula(lipid.lipid.get_elements()) == row[2]
+                assert abs(lipid.get_mass() - float(row[4])) < 0.001
+                assert lipid.adduct.get_charge() == int(row[5])
+
+

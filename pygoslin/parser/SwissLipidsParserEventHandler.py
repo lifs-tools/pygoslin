@@ -55,13 +55,16 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["sl_hg_pre_event"] = self.set_head_group_name
         self.registered_events["st_species_hg_pre_event"] = self.set_head_group_name
         self.registered_events["st_sub1_hg_pre_event"] = self.set_head_group_name
-        self.registered_events["st_sub2_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["st_sub2_hg_pre_event"] = self.set_head_group_name_se
         self.registered_events["fa_species_pre_event"] = self.set_species_level
+        self.registered_events["sl_lcb_species_pre_event"] = self.set_species_level
         self.registered_events["gl_molecular_pre_event"] = self.set_molecular_level
         self.registered_events["unsorted_fa_separator_pre_event"] = self.set_molecular_level
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_level
+        
+        self.registered_events["st_species_fa_post_event"] = self.se_species_fa
         
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
@@ -72,6 +75,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
+        self.registered_events["fa_lcb_suffix_type_pre_event"] = self.add_one_hydroxyl
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
@@ -106,6 +110,9 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
 
     def set_head_group_name(self, node):
         self.head_group = node.get_text()
+        
+    def set_head_group_name_se(self, node):
+        self.head_group = node.get_text().replace("(", " ")
         
         
     def set_isomeric_level(self, node):
@@ -155,8 +162,6 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
             self.current_fa.position = len(self.fa_list) + 1
             
             
-            
-            
         self.fa_list.append(self.current_fa)
         self.current_fa = None
         
@@ -199,8 +204,19 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         if ether == "O-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+        elif ether == "P-":
+            self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+            self.current_fa.num_double_bonds += 1
+            
+            
+    def se_species_fa(self, node):
+        self.head_group += " 27:1"
+        self.fa_list[-1].num_carbon -= 27
+        self.fa_list[-1].num_double_bonds -= 1
         
+        
+    def add_one_hydroxyl(self, node):
+        self.current_fa.num_hydroxyl += 1
         
     def add_hydroxyl(self, node):
         hydroxyl = node.get_text()
@@ -210,7 +226,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
         
     def add_double_bonds(self, node):
-        self.current_fa.num_double_bonds = int(node.get_text())
+        self.current_fa.num_double_bonds += int(node.get_text())
         
         
     def add_carbon(self, node):

@@ -76,20 +76,20 @@ class LipidMolecularSubspecies(LipidSpecies):
         
         special_case = self.lipid_class in self.special_cases
         
-        fa_headgroup_separator = " " if all_lipids[self.lipid_class][1] != LipidCategory.ST else "/"
+        fa_headgroup_separator = " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
         
         fa_string = fa_separator.join(fatty_acid.to_string(special_case) for fatty_acid in self.fa_list)
         if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
         
         
-        return (all_lipids[self.lipid_class][0] if not self.use_head_group else self.head_group) + fa_string
+        return (all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group) + fa_string
     
     
     
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
             if not self.validate():
-                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class][0], ", ".join(str(p) for p in all_lipids[self.lipid_class][4]), len(self.fa)))
+                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class]["name"], ", ".join(str(p) for p in all_lipids[self.lipid_class]["poss_fa"]), len(self.fa)))
             return self.build_lipid_subspecies_name("-")
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
