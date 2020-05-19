@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.AdductInfoParserEventHandler import AdductInfoParserEventHandler
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
@@ -35,7 +35,7 @@ from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
 
-class LipidMapsParserEventHandler(BaseParserEventHandler):
+class LipidMapsParserEventHandler(AdductInfoParserEventHandler):
     def __init__(self):
         super().__init__()
         self.reset_lipid(None)
@@ -105,6 +105,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.omit_fa = False
         self.db_position = 0
         self.db_cistrans = ""
+        self.adduct = None
         
         
     def set_molecular_subspecies_level(self, node):
@@ -255,6 +256,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
     
         self.lipid = LipidAdduct()
         self.lipid.lipid = lipid
+        self.lipid.adduct = self.adduct
         self.content = self.lipid
         
         

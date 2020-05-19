@@ -24,10 +24,9 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.AdductInfoParserEventHandler import AdductInfoParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
-from pygoslin.domain.Adduct import Adduct
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
@@ -37,7 +36,7 @@ from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 from pygoslin.domain.LipidExceptions import UnsupportedLipidException
 
-class HmdbParserEventHandler(BaseParserEventHandler):
+class HmdbParserEventHandler(AdductInfoParserEventHandler):
     
     def __init__(self):
         super().__init__()
@@ -95,6 +94,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.db_position = 0
         self.db_cistrans = ""
         self.use_head_group = False
+        self.adduct = None
         
 
     def add_db_position(self, node):
@@ -201,6 +201,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         lipid.use_head_group = self.use_head_group
         self.lipid = LipidAdduct()
         self.lipid.lipid = lipid
+        self.lipid.adduct = self.adduct
         self.content = self.lipid
         
         

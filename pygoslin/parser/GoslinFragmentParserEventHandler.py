@@ -24,10 +24,9 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.AdductInfoParserEventHandler import AdductInfoParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
-from pygoslin.domain.Adduct import Adduct
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
@@ -39,7 +38,7 @@ from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 from pygoslin.domain.Fragment import Fragment
 
-class GoslinFragmentParserEventHandler(BaseParserEventHandler):
+class GoslinFragmentParserEventHandler(AdductInfoParserEventHandler):
     
     def __init__(self):
         super().__init__()
@@ -91,12 +90,6 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
-        
-        
-        self.registered_events["adduct_info_pre_event"] = self.new_adduct
-        self.registered_events["adduct_pre_event"] = self.add_adduct
-        self.registered_events["charge_pre_event"] = self.add_charge
-        self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
     
         self.registered_events["fragment_name_pre_event"] = self.add_fragment
     
@@ -231,24 +224,6 @@ class GoslinFragmentParserEventHandler(BaseParserEventHandler):
         
     def add_hydroxyl(self, node):
         self.current_fa.num_hydroxyl = int(node.get_text())
-        
-        
-    def new_adduct(self, node):
-        self.adduct = Adduct("", "", 0, 0)
-        
-        
-    def add_adduct(self, node):
-        self.adduct.adduct_string = node.get_text()
-        
-        
-    def add_charge(self, node):
-        self.adduct.charge = int (node.get_text())
-        
-        
-    def add_charge_sign(self, node):
-        sign = node.get_text()
-        if sign == "+": self.adduct.set_charge_sign(1)
-        if sign == "-": self.adduct.set_charge_sign(-1)
         
         
     def add_fragment(self, node):

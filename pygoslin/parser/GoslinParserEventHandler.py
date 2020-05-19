@@ -24,10 +24,9 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.AdductInfoParserEventHandler import AdductInfoParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
-from pygoslin.domain.Adduct import Adduct
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
@@ -38,7 +37,7 @@ from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 
-class GoslinParserEventHandler(BaseParserEventHandler):
+class GoslinParserEventHandler(AdductInfoParserEventHandler):
     
     def __init__(self):
         super().__init__()
@@ -87,15 +86,6 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["old_hydroxyl_pre_event"] = self.add_old_hydroxyl
-        #self.registered_events["db_count_pre_event"] = self.add_double_bonds
-        #self.registered_events["carbon_pre_event"] = self.add_carbon
-        #self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
-        
-        
-        self.registered_events["adduct_info_pre_event"] = self.new_adduct
-        self.registered_events["adduct_pre_event"] = self.add_adduct
-        self.registered_events["charge_pre_event"] = self.add_charge
-        self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
     
     
         self.number_dict = {"db_single_position": self.add_db_single_position,
@@ -117,6 +107,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.adduct = None
         self.db_position = 0
         self.db_cistrans = ""
+        self.adduct = None
         
 
     def set_head_group_name(self, node):
@@ -140,16 +131,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
     def handle_number(self, node):
         if self.domain[-2] in self.number_dict:
             self.number_dict[self.domain[-2]](node)
-        """
-        if self.domain[-2] == "db_single_position":
-            self.add_db_single_position(node)
-        elif self.domain[-2] == "db":
-            self.add_double_bonds(node)
-        elif self.domain[-2] in {"fa_pure", "lcb_pure"}:
-            self.add_carbon(node)
-        elif self.domain[-2] == "hydroxyl":
-            self.add_hydroxyl(node)
-        """
+            
             
     def add_db_single_position(self, node):
         self.db_position = int(node.get_text())
@@ -240,6 +222,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
     def add_old_hydroxyl(self, node):
         old_hydroxyl = node.get_text()
+        if old_hydroxyl == "m": self.current_fa.num_hydroxyl = 1
         if old_hydroxyl == "d": self.current_fa.num_hydroxyl = 2
         if old_hydroxyl == "t": self.current_fa.num_hydroxyl = 3
         
@@ -256,22 +239,6 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.current_fa.num_hydroxyl = int(node.get_text())
         
         
-    def new_adduct(self, node):
-        self.adduct = Adduct("", "", 0, 0)
-        
-        
-    def add_adduct(self, node):
-        self.adduct.adduct_string = node.get_text()
-        
-        
-    def add_charge(self, node):
-        self.adduct.charge = int (node.get_text())
-        
-        
-    def add_charge_sign(self, node):
-        sign = node.get_text()
-        if sign == "+": self.adduct.set_charge_sign(1)
-        if sign == "-": self.adduct.set_charge_sign(-1)
         
         
         

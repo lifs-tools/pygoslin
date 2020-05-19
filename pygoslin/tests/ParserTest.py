@@ -54,6 +54,8 @@ hmdb_parser = HmdbParser()
 class ParserTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
+    
+    
     def test_lipid_parser(self):
         global lipid_parser
         
@@ -144,6 +146,13 @@ class ParserTest(unittest.TestCase):
         
         
         
+        
+        
+        
+        
+        
+        
+        
     def test_lipid_maps(self):
         lipid_maps_parser = LipidMapsParser()
         
@@ -167,10 +176,23 @@ class ParserTest(unittest.TestCase):
             assert lipid.get_lipid_string() == lipid_name_output
         
         
+        
+        
+        
+        
+        
+        
+        
     @unittest.expectedFailure
     def test_LP(self):
         global lipid_parser
         lipid = lipid_parser.parse("LP 19:1p")
+        
+        
+        
+        
+        
+        
         
         
     def test_hydroxyls(self):
@@ -210,6 +232,13 @@ class ParserTest(unittest.TestCase):
         assert abs(lipid.get_mass() - 716.546841) < 1e-3
 
 
+
+
+
+
+
+
+
     def test_lyso(self):
         global lipid_parser
         
@@ -230,6 +259,11 @@ class ParserTest(unittest.TestCase):
             
             
             
+            
+            
+            
+            
+            
     @unittest.expectedFailure
     def test_lpe_fail(self):
         global lipid_parser
@@ -237,11 +271,22 @@ class ParserTest(unittest.TestCase):
         lipid = lipid_parser.parse(lipid_name)
         
         
+        
+        
+        
+        
+        
+        
     @unittest.expectedFailure
     def test_lipid_parser_fail(self):
         global lipid_parser
         lipid_name = "fail"
         lipid = lipid_parser.parse(lipid_name)
+        
+        
+        
+        
+        
         
         
         
@@ -267,6 +312,12 @@ class ParserTest(unittest.TestCase):
         lipid = goslin_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "DAG 38:1"
+        
+        
+        
+        
+        
+        
         
         
         
@@ -322,6 +373,11 @@ class ParserTest(unittest.TestCase):
         
         
         
+        
+        
+        
+        
+        
     def test_mediators(self):
         global goslin_parser
         
@@ -342,6 +398,11 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         
     
+    
+    
+    
+    
+    
         
     def test_lipid_fragment_success(self):
         goslin_fragment_parser = Parser(GoslinFragmentParserEventHandler(), "pygoslin/data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)
@@ -352,6 +413,10 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         assert lipid.fragment != None
         assert lipid.fragment.name == "-(H20)"
+        
+        
+        
+        
         
         
         
@@ -393,8 +458,6 @@ class ParserTest(unittest.TestCase):
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GL"
         
         
-        
-        
         ## sterol
         lipid_name = "ChE 16:1"
         lipid = goslin_parser.parse(lipid_name)
@@ -418,8 +481,6 @@ class ParserTest(unittest.TestCase):
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "ST"
         
         
-        
-        
         ## PC
         lipid_name = "PC O-18:1a/16:0"
         lipid = goslin_parser.parse(lipid_name)
@@ -432,17 +493,53 @@ class ParserTest(unittest.TestCase):
         assert lipid.lipid.get_lipid_string(LipidLevel.CATEGORY) == "GP"
         
         
+        
+        
+        
+        
+        
+        
+        
+        
     def test_adduct(self):
-        goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, "pygoslin/data/goslin/Goslin.g4")
+        global swiss_lipids_parser, goslin_parser, lipid_maps_parser, hmdb_parser, goslin_fragment_parser
 
         lipid_name = "PE 16:1/12:0[M+H]1+"
         lipid = goslin_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "PE 16:1/12:0[M+H]1+"
+
+
+        lipid_name = "LPE 16:1[M-H]1-"
+        lipid = goslin_fragment_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "LPE 16:1[M-H]1-"
+        
+        
+        lipid_name = "PE(16:1/12:0)[M+H]1+"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "PE 16:1/12:0[M+H]1+"
+        
+        
+        lipid_name = "Cer(d16:1/12:0)[M+NH4]1+"
+        lipid = lipid_maps_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 16:1;2/12:0[M+NH4]1+"
+        
+        
+        lipid_name = "HexCer(d16:1/12:0)[M+CH3COO]1-"
+        lipid = hmdb_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "HexCer 16:1;2/12:0[M+CH3COO]1-"
         
         
         
+        
+      
+      
+      
+      
         
       
     def test_swiss_lipids(self):
@@ -477,6 +574,11 @@ class ParserTest(unittest.TestCase):
         lipid = swiss_lipids_parser.parse(lipid_name)
         assert lipid != None
         assert lipid.get_lipid_string() == "NAPE 12:0/30:4(15Z,18Z,21Z,24Z)/12:0"
+      
+      
+      
+      
+      
       
       
       

@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.AdductInfoParserEventHandler import AdductInfoParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.Adduct import Adduct
@@ -36,7 +36,7 @@ from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 
-class SwissLipidsParserEventHandler(BaseParserEventHandler):
+class SwissLipidsParserEventHandler(AdductInfoParserEventHandler):
     
     def __init__(self):
         super().__init__()
@@ -94,6 +94,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.db_position = 0
         self.db_cistrans = ""
         self.use_head_group = False
+        self.adduct = None
         
 
     def add_db_position(self, node):
@@ -197,6 +198,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
     
         lipid.use_head_group = self.use_head_group
         self.lipid = LipidAdduct()
+        self.lipid.adduct = self.adduct
         self.lipid.lipid = lipid
         self.content = self.lipid
         

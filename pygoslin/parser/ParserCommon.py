@@ -94,7 +94,7 @@ class Parser:
     EOF_RULE = 1
     START_RULE = 2
     DEFAULT_QUOTE = "'"
-    
+    IMPORT_TERM = "import"
     
     
     
@@ -126,6 +126,8 @@ class Parser:
         
         if grammar_filename == None: return
         
+        imported = set()
+        
         if path.exists(grammar_filename):
             # interpret the rules and create the structure for parsing
             rules = Parser.extract_text_based_rules(grammar_filename, self.quote)
@@ -133,17 +135,44 @@ class Parser:
             del rules[0]
             ruleToNT = {Parser.EOF_RULE_NAME: Parser.EOF_RULE}
             self.TtoNT[Parser.EOF_SIGN] = set([Parser.EOF_RULE])
-            for rule_line in rules:
+            
+            rules_index = 0
+            while rules_index < len(rules):
+                rule_line = rules[rules_index]
+                rules_index += 1
+            
+                # check for imports
+                import_tokens = Parser.split_string(rule_line.strip(' '), ' ', self.quote)
+                if import_tokens[0] == Parser.IMPORT_TERM:
+                    if len(import_tokens) != 2: 
+                        raise Exception("Error: import command corrupted")
+                    
+                    import_file = import_tokens[1].strip(' ')
+                    if import_file in imported:
+                        raise Exception("Error: grammar '%s' is already imported" % import_file)
+                        
+                    dir_path = path.dirname(grammar_filename)
+                    import_file = path.join(dir_path, import_file + ".g4")
+                    
+                    if not path.exists(import_file):
+                        raise Exception("Error: grammar file '%s' does not exist" % import_file)
+                    
+                    imported_rules = Parser.extract_text_based_rules(import_file, self.quote)
+                    del imported_rules[0]
+                    rules += imported_rules
+                    continue
+                    
                 
                 tokens_level_1 = []
                 for t in Parser.split_string(rule_line, Parser.RULE_ASSIGNMENT, self.quote): tokens_level_1.append(t.strip(' '))
-                if len(tokens_level_1) != 2: raise Exception("Error: corrupted token in grammar rule: '%s'" % rule_line);
+                if len(tokens_level_1) != 2: raise Exception("Error: corrupted token in grammar rule: '%s'" % rule_line)
                 
                 if len(Parser.split_string(tokens_level_1[0], ' ', self.quote)) > 1:
-                    raise Exception("Error: several rule names on left hand side in grammar rule: '%s'" % rule_line);
+                    raise Exception("Error: several rule names on left hand side in grammar rule: '%s'" % rule_line)
                 
-
                 rule = tokens_level_1[0]
+                
+                
                 
                 if rule ==  Parser.EOF_RULE_NAME:
                     raise Exception("Error: rule name is not allowed to be called EOF")
