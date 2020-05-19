@@ -81,16 +81,24 @@ class LipidMapsParserEventHandler(AdductInfoParserEventHandler):
         
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
-        self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
+        #self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
         
         self.registered_events["ether_pre_event"] = self.add_ether
-        self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
+        #self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
         self.registered_events["hydroxyl_lcb_pre_event"] = self.add_hydroxyl_lcb
-        self.registered_events["db_count_pre_event"] = self.add_double_bonds
-        self.registered_events["carbon_pre_event"] = self.add_carbon
-        
+        self.registered_events["number_pre_event"] = self.handle_number
+        #self.registered_events["db_count_pre_event"] = self.add_double_bonds
+        #self.registered_events["carbon_pre_event"] = self.add_carbon
         self.registered_events["mod_text_pre_event"] = self.increment_hydroxyl
+        
+        
+        self.number_dict = {"db_single_position": self.add_db_position_number,
+                        "db": self.add_double_bonds,
+                        "fa_pure": self.add_carbon,
+                        "lcb_fa_unmod": self.add_carbon,
+                        "hydroxyl": self.add_hydroxyl
+                        }
         
         
         
@@ -121,6 +129,11 @@ class LipidMapsParserEventHandler(AdductInfoParserEventHandler):
         self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.db_position = 0
         self.db_cistrans = ""
+        
+        
+    def handle_number(self, node):
+        if self.domain[-2] in self.number_dict:
+            self.number_dict[self.domain[-2]](node)
         
 
     def add_db_position(self, node):
@@ -206,6 +219,7 @@ class LipidMapsParserEventHandler(AdductInfoParserEventHandler):
         
     def add_hydroxyl(self, node):
         self.current_fa.num_hydroxyl = int(node.get_text())
+        
         
     def add_hydroxyl_lcb(self, node):
         hydroxyl = node.get_text()

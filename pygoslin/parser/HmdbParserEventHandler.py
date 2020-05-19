@@ -65,7 +65,7 @@ class HmdbParserEventHandler(AdductInfoParserEventHandler):
         
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
-        self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
+        #self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
         
         self.registered_events["lcb_pre_event"] = self.new_lcb
@@ -76,12 +76,21 @@ class HmdbParserEventHandler(AdductInfoParserEventHandler):
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
-        self.registered_events["db_count_pre_event"] = self.add_double_bonds
-        self.registered_events["carbon_pre_event"] = self.add_carbon
+        #self.registered_events["db_count_pre_event"] = self.add_double_bonds
+        #self.registered_events["carbon_pre_event"] = self.add_carbon
         
         self.registered_events["furan_fa_pre_event"] = self.furan_fa
         self.registered_events["interlink_fa_pre_event"] = self.interlink_fa
         self.registered_events["lipid_suffix_pre_event"] = self.lipid_suffix
+        self.registered_events["number_pre_event"] = self.handle_number
+    
+    
+        self.number_dict = {"db_single_position": self.add_db_position_number,
+                        "db": self.add_double_bonds,
+                        "fa_core": self.add_carbon,
+                        "lcb_core": self.add_carbon,
+                        "hydroxyl": self.add_hydroxyl
+                        }
         
         
     def reset_lipid(self, node):
@@ -111,6 +120,10 @@ class HmdbParserEventHandler(AdductInfoParserEventHandler):
 
     def set_head_group_name(self, node):
         self.head_group = node.get_text()
+
+    def handle_number(self, node):
+        if self.domain[-2] in self.number_dict:
+            self.number_dict[self.domain[-2]](node)
         
         
     def set_isomeric_level(self, node):

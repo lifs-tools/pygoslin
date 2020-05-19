@@ -68,7 +68,7 @@ class SwissLipidsParserEventHandler(AdductInfoParserEventHandler):
         
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
-        self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
+        #self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
         
         self.registered_events["lcb_pre_event"] = self.new_lcb
@@ -76,11 +76,19 @@ class SwissLipidsParserEventHandler(AdductInfoParserEventHandler):
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
         self.registered_events["fa_lcb_suffix_type_pre_event"] = self.add_one_hydroxyl
+        self.registered_events["number_pre_event"] = self.handle_number
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
-        self.registered_events["db_count_pre_event"] = self.add_double_bonds
-        self.registered_events["carbon_pre_event"] = self.add_carbon
+        #self.registered_events["db_count_pre_event"] = self.add_double_bonds
+        #self.registered_events["carbon_pre_event"] = self.add_carbon
+    
+    
+        self.number_dict = {"db_single_position": self.add_db_position_number,
+                        "db": self.add_double_bonds,
+                        "fa_core": self.add_carbon,
+                        "lcb_core": self.add_carbon
+                        }
         
         
         
@@ -107,6 +115,11 @@ class SwissLipidsParserEventHandler(AdductInfoParserEventHandler):
 
     def add_cistrans(self, node):
         self.db_cistrans = node.get_text()
+        
+        
+    def handle_number(self, node):
+        if self.domain[-2] in self.number_dict:
+            self.number_dict[self.domain[-2]](node)
         
 
     def set_head_group_name(self, node):
