@@ -1,4 +1,5 @@
 # Python3 implementation for Goslin
+[![Build Status](https://travis-ci.org/lifs-tools/pygoslin.svg?branch=master)](https://travis-ci.org/lifs-tools/pygoslin)
 
 This is the Goslin reference implementation for Python 3.
 
