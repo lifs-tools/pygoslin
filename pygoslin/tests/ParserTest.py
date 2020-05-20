@@ -171,6 +171,43 @@ class ParserTest(unittest.TestCase):
     def test_LP(self):
         global lipid_parser
         lipid = lipid_parser.parse("LP 19:1p")
+        
+        
+    def test_hydroxyls(self):
+        global goslin_parser, swiss_lipids_parser, lipid_maps_parser, hmdb_parser
+        
+        lipid = swiss_lipids_parser.parse("Cer(d18:1(4E)/24:0-2OH)")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        
+        lipid = swiss_lipids_parser.parse("Cer(d18:1(4E)/24:0(2OH))")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        
+        lipid = lipid_maps_parser.parse("Cer(d18:1(4E)/24:0(2OH))")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        
+        lipid = goslin_parser.parse("Cer 18:1(4E);2/24:0;1")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "Cer 18:1(4E);2/24:0;1"
+        assert lipid.get_sum_formula() == "C42H83NO4"
+        assert abs(lipid.get_mass() - 665.632209) < 1e-3
+        
+        lipid = hmdb_parser.parse("SM(d18:1/16:1(9Z)(OH))")
+        assert lipid != None
+        assert lipid.get_lipid_string() == "SM 18:1;2/16:1(9Z);1"
+        assert lipid.get_sum_formula() == "C39H77N2O7P"
+        assert abs(lipid.get_mass() - 716.546841) < 1e-3
 
 
     def test_lyso(self):
