@@ -33,7 +33,7 @@ from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHand
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
 from pygoslin.parser.ParserCommon import Parser
-           
+from pygoslin.domain.LipidExceptions import LipidException
 
         
     
