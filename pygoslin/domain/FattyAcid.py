@@ -75,6 +75,10 @@ class FattyAcid:
 
 
 
+    def fa_smiles(self):
+        return "H"
+
+
     def get_elements(self):
         elements = {e: 0 for e in Element}
         

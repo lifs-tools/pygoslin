@@ -55,6 +55,8 @@ all_lipids = [{"name": "UNDEFINED",
                 "description": "Undefined lipid class",
                 "max_fa": 0,
                 "poss_fa": set(),
+                "tSMILES": "",
+                "elements": {e: 0 for e in Element},
                 "synonyms": []}]
 
 
@@ -77,7 +79,8 @@ with open(all_lipids_dir_name + "/data/goslin/lipid-list.csv", mode = "rt") as i
             lipid_dict["poss_fa"] = set(int(pos) for pos in row[4].split("|"))
             row[5] = row[5].strip(" ")
             lipid_dict["elements"] = sum_formula_parser.parse(row[5]) if len(row[5]) > 0 else {e: 0 for e in Element}
-            lipid_dict["synonyms"] = [r for r in row[6:] if len(r) > 0]
+            lipid_dict["tSMILES"] = row[6]
+            lipid_dict["synonyms"] = [r for r in row[7:] if len(r) > 0]
             
             
             all_lipids.append(lipid_dict)

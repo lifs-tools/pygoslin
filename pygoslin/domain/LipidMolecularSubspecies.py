@@ -98,6 +98,12 @@ class LipidMolecularSubspecies(LipidSpecies):
             raise Exception("LipidMolecularSubspecies does not know how to create a lipid string for level %s" % level)
     
     
+    
+    def get_smiles(self):
+        return all_lipids[self.lipid_class]["tSMILES"]
+    
+    
+    
     def validate(self):
         return True
     
