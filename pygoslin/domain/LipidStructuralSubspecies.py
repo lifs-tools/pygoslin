@@ -62,6 +62,10 @@ class LipidStructuralSubspecies(LipidMolecularSubspecies):
         self.info.num_double_bonds = num_double_bonds
         self.info.lipid_FA_bond_type = lipid_FA_bond_type
     
+    
+    
+    def get_smiles(self):
+        return super().get_smiles()
 
     
     def get_lipid_string(self, level = None):

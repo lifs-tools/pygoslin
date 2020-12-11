@@ -76,8 +76,42 @@ class FattyAcid:
 
 
     def fa_smiles(self):
-        return "H"
-
+        if self.lcb:
+            ident = ""
+            if self.num_double_bonds > 0: ident += "/"
+            ident += "C=C/" * self.num_double_bonds
+            ident += "C" * (self.num_carbon - 2 * self.num_double_bonds - 3)
+            
+            
+        else:
+            if self.num_double_bonds > 0 and len(self.double_bond_positions) > 0:
+                dbpk = sorted(list(k for k in self.double_bond_positions))
+                for i in range(1, len(dbpk)):
+                    if dbpk[i] - dbpk[i - 1] <= 1:
+                        raise ConstraintViolationException("Impossible double bond positions %s" % str(dbpk))
+                    
+                    
+                
+                return "XXX"
+            else:
+                subtract = 1
+                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
+                    ident = "C(=O)"
+                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
+                    ident = "C"
+                if self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
+                    ident = ""
+                    subtract = 0
+            
+            
+                if self.num_double_bonds > 0: ident += "/"
+                ident += "C=C/" * self.num_double_bonds
+                ident += "C" * (self.num_carbon - 2 * self.num_double_bonds - subtract)
+                
+        return ident
+                
+                
+                
 
     def get_elements(self):
         elements = {e: 0 for e in Element}

@@ -60,6 +60,10 @@ class LipidSpecies:
         """
 
 
+    def get_smiles(self):
+        raise RuntimeException("SMILES identifier cannot be generated on LipidSpecies")
+
+
     def get_lipid_string(self, level = None):
         
         if level == None:

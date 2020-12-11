@@ -66,8 +66,12 @@ class LipidAdduct:
         return "".join(lipid_name)
     
     
+    
+    
     def get_smiles(self):
         return self.lipid.get_smiles()
+    
+    
     
     
     def get_elements(self):

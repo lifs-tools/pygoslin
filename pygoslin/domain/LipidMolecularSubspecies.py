@@ -100,8 +100,22 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     
     def get_smiles(self):
-        return all_lipids[self.lipid_class]["tSMILES"]
-    
+        smiles_ident = all_lipids[self.lipid_class]["tSMILES"]
+        fa_iter, fa_dict = 1, {}
+        use_fa_iter = sum(1 - int(fa.lcb) for fa in self.fa_list) > 1
+        for fa in self.fa_list:
+            fa_smiles = fa.fa_smiles()
+            if fa.lcb:
+                key = "LCB"
+            else:
+                key = "FA%i" % fa_iter if use_fa_iter else "FA"
+                fa_iter += 1
+            fa_dict[key] = fa_smiles
+        try:
+            smiles_ident = smiles_ident.format(**fa_dict)
+        except:
+            raise RuntimeError("Number of wildcards of template SMILES '%s' does not match to number of acyl chain (%i) for lipid class %s." % (smiles_ident, len(self.fa_list), self.lipid_class))
+        return smiles_ident
     
     
     def validate(self):
