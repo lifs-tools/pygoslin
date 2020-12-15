@@ -34,7 +34,8 @@ class SMILESTest(unittest.TestCase):
     def test_goodSMILES(self):
         lipid_parser = LipidParser()
         
-        lipid = lipid_parser.parse("PC(18:1/24:1(17Z))")
+        #lipid = lipid_parser.parse("PC(18:1/24:1(17Z))")
+        lipid = lipid_parser.parse("MAG(18:1(11Z)/0:0/0:0)")
         print(lipid.get_lipid_string())
         print(lipid.get_smiles())
         

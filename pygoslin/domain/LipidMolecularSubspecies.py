@@ -78,7 +78,8 @@ class LipidMolecularSubspecies(LipidSpecies):
         
         fa_headgroup_separator = " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
         
-        fa_string = fa_separator.join(fatty_acid.to_string(special_case) for fatty_acid in self.fa_list)
+        fatty_acids = [fatty_acid.to_string(special_case) for fatty_acid in self.fa_list]
+        fa_string = fa_separator.join(f for f in fatty_acids if f != None)
         if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
         
         
@@ -96,6 +97,9 @@ class LipidMolecularSubspecies(LipidSpecies):
             return super().get_lipid_string(level)
         else:
             raise Exception("LipidMolecularSubspecies does not know how to create a lipid string for level %s" % level)
+    
+    
+    
     
     
     

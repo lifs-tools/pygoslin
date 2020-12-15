@@ -65,6 +65,7 @@ class FattyAcid:
         
         
     def to_string(self, special_case = False):
+        if self.num_carbon == 0: return None
         
         suffix = self.lipid_FA_bond_type.suffix()
         dbp = self.double_bond_positions
@@ -75,74 +76,123 @@ class FattyAcid:
 
 
     def assemble_fa_smiles(self, fa_structure):
-        """
-        C
-        C=
-        =C
-        C=O
-        C-OH
-        """
-        print(fa_structure)
-        return "foo"
+        
+        components = []
+        last_db = -1
+        for i, token in enumerate(fa_structure):
+            if token == "C":
+                components.append("C")
+            elif token == "C=":
+                if i - 1 == last_db:
+                    components.append("C=")
+                else:
+                    components.append("\\C=")
+            elif token == "=C":
+                components.append("C\\")
+                last_db = i
+            elif token == "/C=":
+                if i - 1 == last_db:
+                    components.append("C=")
+                else:
+                    components.append("/C=")
+            elif token == "=C/":
+                components.append("C/")
+                last_db = i
+            elif token == "\\C=":
+                if i - 1 == last_db:
+                    components.append("C=")
+                else:
+                    components.append("\\C=")
+            elif token == "=C\\":
+                components.append("C\\")
+                last_db = i
+            elif token == "C=O":
+                components.append("C(=O)")
+            elif token == "C-OH":
+                components.append("C(O)")
+                
+        return "".join(components)
+
+
+
 
 
     def fa_smiles(self):
-        fa_structure = []
+        
+        if self.num_carbon == 0: return "H"
+        
+        # check if defined double bond positions are possible
+        double_bond_positions = {}
+        not_isomeric = True
+        if self.num_double_bonds > 0 and len(self.double_bond_positions) > 0:
+            
+            if self.num_double_bonds != len(self.double_bond_positions):
+                raise ConstraintViolationException("Double bond number (%i) is unequal to number of provided double bond positions (%i)" % (self.num_double_bonds, len(self.double_bond_positions)))
+            
+            not_isomeric = False
+            dbpk = sorted(list(k for k in self.double_bond_positions))
+            for i in range(1, len(dbpk)):
+                set_ez = set([self.double_bond_positions[dbpk[i]], self.double_bond_positions[dbpk[i - 1]]])
+                if dbpk[i] - dbpk[i - 1] <= 1:
+                    raise ConstraintViolationException("Impossible double bond positions %s" % str(dbpk))
+                elif dbpk[i] - dbpk[i - 1] == 2 and "E" in set_ez and "Z" in set_ez:
+                    raise ConstraintViolationException("Impossible double bond positions %i%s and %i%s" % (dbpk[i - 1], self.double_bond_positions[dbpk[i - 1]], dbpk[i], self.double_bond_positions[dbpk[i]]))
+        
+            if dbpk[-1] == self.num_carbon:
+                raise ConstraintViolationException("Impossible double bond position %i with fatty acyl length %i" % (dbpk[-1], self.num_carbon))
+        
+            double_bond_positions = self.double_bond_positions
+        
+        
+        fa_structure = ["C"] * self.num_carbon
+        remaining_C = self.num_carbon
+        remaining_OH = self.num_hydroxyl
+        
         if self.lcb:
-            
-            remaining_C = self.num_carbon - 3
-            
-            if remaining_C < self.num_hydroxyl:
-                raise ConstraintViolationException("Impossible composition with double bond (%i) hydroxylation (%i) numbers" % (self.num_double_bonds, self.num_hydroxyl))
-                
-                fa_structure += ["C-OH"] * (self.num_hydroxyl - 2) # first two contained in template SMILES
-                remaining_C -= self.num_hydroxyl
-                
-            
-            fa_structure = ["C=", "=C"]
-            
-            if self.num_double_bonds > 0:
-                    remaining_C -= self.num_double_bonds * 2
-                    for i in range(self.num_double_bonds):
-                        fa_structure.append("C=")
-                        fa_structure.append("=C")
-            
-            
+            remaining_C -= 3
+            remaining_OH -= 2
+            if not_isomeric: double_bond_positions = {i * 2 + 1: "E" for i in range(self.num_double_bonds)} 
+        
         else:
-            if self.num_double_bonds > 0 and len(self.double_bond_positions) > 0:
-                dbpk = sorted(list(k for k in self.double_bond_positions))
-                for i in range(1, len(dbpk)):
-                    if dbpk[i] - dbpk[i - 1] <= 1:
-                        raise ConstraintViolationException("Impossible double bond positions %s" % str(dbpk))
-                    
-                    
-                
-                return "XXX"
+            if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
+                fa_structure[0] = "C=O"
+                remaining_C -= 1
+                if not_isomeric: double_bond_positions = {i * 2 + 2: "E" for i in range(self.num_double_bonds)} 
+            elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
+                remaining_C -= 1
+                if not_isomeric: double_bond_positions = {i * 2 + 1: "E" for i in range(self.num_double_bonds)}
+            elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
+                if not_isomeric: double_bond_positions = {i * 2 + 1: "E" for i in range(self.num_double_bonds)}
+        
+        
+        
+        if remaining_C < self.num_double_bonds * 2:
+            raise ConstraintViolationException("Impossible composition with double bond (%i) hydroxylation (%i) numbers on fatty acyl length %i" % (self.num_double_bonds, self.num_hydroxyl, self.num_carbon))
+        
+        
+        for dbp, ez in double_bond_positions.items():
+            if ez == "E":
+                fa_structure[dbp - 1] = "\\C="
+                fa_structure[dbp] = "=C\\"
+            elif ez == "Z":
+                fa_structure[dbp - 1] = "\\C="
+                fa_structure[dbp] = "=C/"
             else:
-                remaining_C = self.num_carbon
-                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
-                    fa_structure.append("C=O")
-                    remaining_C -= 1
-                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
-                    fa_structure.append("C")
-                    remaining_C -= 1
-                if self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
-                    pass
+                raise ConstraintViolationException("Error unknown double bond E/Z sign '%s'" % ez)       
+    
             
+                
+        if remaining_OH > 0:
+            nh = remaining_OH
+            for i, c in enumerate(fa_structure):
+                if c == "C": 
+                    fa_structure[i] = "C-OH"
+                    nh -= 1
+                if nh == 0: break
             
-                if self.num_double_bonds > 0:
-                    remaining_C -= self.num_double_bonds * 2
-                    for i in range(self.num_double_bonds):
-                        fa_structure.append("C=")
-                        fa_structure.append("=C")
-                        
-                if remaining_C < self.num_hydroxyl:
-                    raise ConstraintViolationException("Impossible composition with double bond (%i) hydroxylation (%i) numbers" % (self.num_double_bonds, self.num_hydroxyl))
+            if nh > 0:
+                raise ConstraintViolationException("Impossible composition with double bond (%i) hydroxylation (%i) numbers on fatty acyl length %i" % (self.num_double_bonds, self.num_hydroxyl, self.num_carbon))      
                 
-                fa_structure += ["C-OH"] * self.num_hydroxyl
-                remaining_C -= self.num_hydroxyl
-                
-                fa_structure += ["C"] * self.remaining_C
                 
         return self.assemble_fa_smiles(fa_structure)
                 

@@ -27,6 +27,7 @@ SOFTWARE.
 from pygoslin.parser.AdductInfoParserEventHandler import AdductInfoParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidClass import all_lipids, get_class
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
@@ -189,7 +190,13 @@ class GoslinParserEventHandler(AdductInfoParserEventHandler):
         
         lipid = None
         
-        
+        lipid_class = get_class(self.head_group)
+        max_fa = all_lipids[lipid_class]["max_fa"]
+        if len(self.fa_list) < max_fa:
+            for i in range(len(self.fa_list), max_fa):
+                new_fatty_acid = FattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, 0, {})
+                new_fatty_acid.num_carbon = 0
+                self.fa_list.append(new_fatty_acid)
         
         if self.level == LipidLevel.SPECIES:
             if len(self.fa_list) > 0:
