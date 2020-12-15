@@ -114,7 +114,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         try:
             smiles_ident = smiles_ident.format(**fa_dict)
         except:
-            raise RuntimeError("Number of wildcards of template SMILES '%s' does not match to number of acyl chain (%i) for lipid class %s." % (smiles_ident, len(self.fa_list), self.lipid_class))
+            raise RuntimeError("Number of wildcards of template SMILES '%s' does not match to number of acyl chain (%i) for lipid class %s." % (smiles_ident, len(self.fa_list), all_lipids[self.lipid_class]["name"]))
         return smiles_ident
     
     

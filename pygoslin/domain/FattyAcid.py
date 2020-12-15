@@ -74,13 +74,38 @@ class FattyAcid:
         return "%s%i:%i%s%s%s" % ("O-" if special_case and len(suffix) > 0 else "", self.num_carbon, self.num_double_bonds, db_pos, ";" + str(self.num_hydroxyl) if self.num_hydroxyl > 0 else "", suffix)
 
 
+    def assemble_fa_smiles(self, fa_structure):
+        """
+        C
+        C=
+        =C
+        C=O
+        C-OH
+        """
+        print(fa_structure)
+        return "foo"
+
 
     def fa_smiles(self):
+        fa_structure = []
         if self.lcb:
-            ident = ""
-            if self.num_double_bonds > 0: ident += "/"
-            ident += "C=C/" * self.num_double_bonds
-            ident += "C" * (self.num_carbon - 2 * self.num_double_bonds - 3)
+            
+            remaining_C = self.num_carbon - 3
+            
+            if remaining_C < self.num_hydroxyl:
+                raise ConstraintViolationException("Impossible composition with double bond (%i) hydroxylation (%i) numbers" % (self.num_double_bonds, self.num_hydroxyl))
+                
+                fa_structure += ["C-OH"] * (self.num_hydroxyl - 2) # first two contained in template SMILES
+                remaining_C -= self.num_hydroxyl
+                
+            
+            fa_structure = ["C=", "=C"]
+            
+            if self.num_double_bonds > 0:
+                    remaining_C -= self.num_double_bonds * 2
+                    for i in range(self.num_double_bonds):
+                        fa_structure.append("C=")
+                        fa_structure.append("=C")
             
             
         else:
@@ -94,21 +119,32 @@ class FattyAcid:
                 
                 return "XXX"
             else:
-                subtract = 1
+                remaining_C = self.num_carbon
                 if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
-                    ident = "C(=O)"
+                    fa_structure.append("C=O")
+                    remaining_C -= 1
                 elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
-                    ident = "C"
+                    fa_structure.append("C")
+                    remaining_C -= 1
                 if self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
-                    ident = ""
-                    subtract = 0
+                    pass
             
             
-                if self.num_double_bonds > 0: ident += "/"
-                ident += "C=C/" * self.num_double_bonds
-                ident += "C" * (self.num_carbon - 2 * self.num_double_bonds - subtract)
+                if self.num_double_bonds > 0:
+                    remaining_C -= self.num_double_bonds * 2
+                    for i in range(self.num_double_bonds):
+                        fa_structure.append("C=")
+                        fa_structure.append("=C")
+                        
+                if remaining_C < self.num_hydroxyl:
+                    raise ConstraintViolationException("Impossible composition with double bond (%i) hydroxylation (%i) numbers" % (self.num_double_bonds, self.num_hydroxyl))
                 
-        return ident
+                fa_structure += ["C-OH"] * self.num_hydroxyl
+                remaining_C -= self.num_hydroxyl
+                
+                fa_structure += ["C"] * self.remaining_C
+                
+        return self.assemble_fa_smiles(fa_structure)
                 
                 
                 
