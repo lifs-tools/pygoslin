@@ -68,7 +68,6 @@ class SMILESTest(unittest.TestCase):
                 tokens = line.strip().split("\t")
                 #print(tokens[1])
                 
-                
                 lipid = parser.parse(tokens[1])
                 smiles = clean_SMILES(lipid.get_smiles())
                 
