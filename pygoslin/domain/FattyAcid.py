@@ -125,17 +125,16 @@ class FattyAcid:
         double_bond_positions = {}
         not_isomeric = True
         if self.num_double_bonds > 0 and len(self.double_bond_positions) > 0:
-            
-            if self.num_double_bonds != len(self.double_bond_positions):
-                raise ConstraintViolationException("Double bond number (%i) is unequal to number of provided double bond positions (%i)" % (self.num_double_bonds, len(self.double_bond_positions)))
+            n_db = len(self.double_bond_positions) + (1 if self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL else 0)
+            if self.num_double_bonds != n_db:
+                raise ConstraintViolationException("Double bond number (%i) is unequal to number of provided double bond positions (%i)" % (self.num_double_bonds, n_db))
             
             not_isomeric = False
             dbpk = sorted(list(k for k in self.double_bond_positions))
             for i in range(1, len(dbpk)):
-                set_ez = set([self.double_bond_positions[dbpk[i]], self.double_bond_positions[dbpk[i - 1]]])
                 if dbpk[i] - dbpk[i - 1] <= 1:
                     raise ConstraintViolationException("Impossible double bond positions %s" % str(dbpk))
-                elif dbpk[i] - dbpk[i - 1] == 2 and "E" in set_ez and "Z" in set_ez:
+                elif dbpk[i] - dbpk[i - 1] == 2 and self.double_bond_positions[dbpk[i - 1]] == "E" and self.double_bond_positions[dbpk[i]] == "Z":
                     raise ConstraintViolationException("Impossible double bond positions %i%s and %i%s" % (dbpk[i - 1], self.double_bond_positions[dbpk[i - 1]], dbpk[i], self.double_bond_positions[dbpk[i]]))
         
             if dbpk[-1] == self.num_carbon:
@@ -150,6 +149,7 @@ class FattyAcid:
         
         if self.lcb:
             remaining_C -= 3
+            fa_structure = fa_structure[:-3]
             remaining_OH -= 2
             if not_isomeric: double_bond_positions = {i * 2 + 1: "E" for i in range(self.num_double_bonds)} 
         
@@ -163,6 +163,7 @@ class FattyAcid:
                 if not_isomeric: double_bond_positions = {i * 2 + 1: "E" for i in range(self.num_double_bonds)}
             elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
                 if not_isomeric: double_bond_positions = {i * 2 + 1: "E" for i in range(self.num_double_bonds)}
+                else: double_bond_positions[1] = "E"
         
         
         
