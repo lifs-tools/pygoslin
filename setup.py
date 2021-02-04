@@ -37,29 +37,31 @@ except:
 
 import os
 
-os.environ["CFLAGS"] = "-O3 -Wall -std=c++11" 
+#os.environ["CFLAGS"] = "-O3 -Wall" 
+#os.environ["CPPFLAGS"] = "-O3 -Wall -std=c++11" 
 
 setup(
     name = 'pygoslin',
-    version = '1.1.0',
+    version = '1.1.2',
     url = 'https://gitlib.isas.de/kopczynski/goslin',
     license = 'MIT',
     author = 'Dominik Kopczynski',
     author_email = 'dominik.kopczynski@isas.de',
     description = 'Python implementation for Goslin',
     long_description = open('README.md', encoding='utf-8').read(),
+    long_description_content_type="text/markdown",
     packages = setuptools.find_packages(),
     classifiers = [
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language_level = 3) if pyx_support else None,
+    #ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language_level = 3) if pyx_support else None,
     setup_requires = ["pytest-runner"],
     tests_require = ["pytest"],
     python_requires = '>=3.5',
     include_package_data = True,
     package_data = {
-        '': ['data/goslin/*.g4', 'data/goslin/*.G4', 'data/goslin/lipid-list.csv'], # If any package contains *.G4 files, include them
+        '': ['data/goslin/*.g4', 'data/goslin/*.G4', 'data/goslin/lipid-list.csv'],
     }
 )

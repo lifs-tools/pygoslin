@@ -13,3 +13,15 @@ test:
 	python3 -m unittest pygoslin.tests.GoslinTest
 	python3 -m unittest pygoslin.tests.LipidMapsTest
 	python3 -m unittest pygoslin.tests.HmdbTest
+
+distclean:
+	rm -rf build dist pygoslin.egg-info
+	
+build:
+	python3 -m build
+	
+uploadtest:
+	python3 -m twine upload --repository testpypi dist/*
+	
+upload:
+	python3 -m twine upload dist/*
