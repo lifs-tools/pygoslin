@@ -19,7 +19,14 @@ The pygoslin has been developed with regard the following general issues:
 
 ## Installation
 
-### Prerequisites
+### Installation via pip
+
+The easiest way to install pygoslin is simply via pip:
+```
+pip3 install pygoslin
+```
+
+### Regular installation: prerequisites
 The pygoslin package uses pip to create an isolated and defined build environment. You will need Python >=3.5 to build the package.
 
 ```
