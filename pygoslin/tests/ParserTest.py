@@ -144,6 +144,41 @@ class ParserTest(unittest.TestCase):
         
         
         
+    def test_extended_class(self):
+        global lipid_parser
+        
+        lipid_name = "PE O-16:1-12:0"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "PE-O"
+        
+        lipid_name = "LPE O-16:2p"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "LPE-p"
+        
+        lipid_name = "PC O-16:1p/12:0"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "PC-p"
+        
+        lipid_name = "PC O-16:1p"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "PC-p"
+        
+        lipid_name = "LPC O-16:1a"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "LPC-O"
+        
+        lipid_name = "LPC O-16:1"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "LPC-O"
+        
+        
+        
     def test_lipid_maps(self):
         lipid_maps_parser = LipidMapsParser()
         
