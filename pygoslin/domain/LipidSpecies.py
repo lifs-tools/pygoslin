@@ -29,6 +29,7 @@ from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
+from pygoslin.domain.LipidFaBondType import *
 from pygoslin.domain.Element import Element
 
 class LipidSpecies:
@@ -48,6 +49,15 @@ class LipidSpecies:
         self.lipid_class = fa.lipid_class
         self.info = LipidSpeciesInfo(fa)
         self.use_head_group = fa.use_head_group
+        
+        
+        
+    def get_extended_class(self):
+        special_case = self.lipid_class in self.special_cases if self.info != None and self.info.num_carbon > 0 else False
+        
+        if special_case and self.info.lipid_FA_bond_type in [LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_UNSPECIFIED]: return self.head_group + "-O"
+        if special_case and self.info.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL: return self.head_group + "-p"
+        return self.head_group
             
             
     def validate(self):

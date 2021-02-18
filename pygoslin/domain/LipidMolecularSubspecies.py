@@ -53,12 +53,12 @@ class LipidMolecularSubspecies(LipidSpecies):
                 num_hydroxyl += fas.num_hydroxyl
                 num_double_bonds += fas.num_double_bonds
                 
-                if lipid_FA_bond_type == LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL):
+                if lipid_FA_bond_type == LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_UNSPECIFIED):
                     lipid_FA_bond_type = fas.lipid_FA_bond_type
 #                    num_double_bonds += lipid_FA_bond_type.doubleBondCorrection();
 #                    log.debug("Correcting double bond count to {} due to ether bond.", num_double_bonds);
                 
-                elif lipid_FA_bond_type != LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL):
+                elif lipid_FA_bond_type != LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_UNSPECIFIED):
                     raise ConstraintViolationException("Only one FA can define an ether bond to the head group! Tried to add %s over existing %s" % (fas.lipid_FA_bond_type, lipid_FA_bond_type))
                 
         self.info = LipidSpeciesInfo()
@@ -70,6 +70,10 @@ class LipidMolecularSubspecies(LipidSpecies):
     
 
 
+    def get_extended_class(self):
+        return super().get_extended_class()
+    
+    
 
     def build_lipid_subspecies_name(self, fa_separator):
         

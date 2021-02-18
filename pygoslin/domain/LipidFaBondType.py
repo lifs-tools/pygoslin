@@ -31,6 +31,7 @@ class LipidFaBondType(Enum):
     ESTER = 1
     ETHER_PLASMANYL = 2
     ETHER_PLASMENYL = 3
+    ETHER_UNSPECIFIED = 4
 
     def suffix(self):
         if self == self.ETHER_PLASMANYL: return "a"
