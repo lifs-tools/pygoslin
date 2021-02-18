@@ -177,6 +177,16 @@ class ParserTest(unittest.TestCase):
         assert lipid != None
         assert lipid.get_extended_class() == "LPC-O"
         
+        lipid_name = "LPC 16:1"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "LPC"
+        
+        lipid_name = "PC 16:1/12:2"
+        lipid = lipid_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_extended_class() == "PC"
+        
         
         
     def test_lipid_maps(self):
