@@ -43,7 +43,7 @@ import os
 setup(
     name = 'pygoslin',
     version = '1.1.2',
-    url = 'https://gitlib.isas.de/kopczynski/goslin',
+    url = 'https://github.com/lifs-tools/pygoslin',
     license = 'MIT',
     author = 'Dominik Kopczynski',
     author_email = 'dominik.kopczynski@isas.de',
