@@ -40,7 +40,7 @@ class LipidSpecies:
         self.lipid_class = lipid_class if lipid_class != None else get_class(self.head_group)
         self.info = lipid_species_info
         self.use_head_group = False
-        self.special_cases = {class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]}
+        #self.special_cases = {class_string_to_class["PC"], class_string_to_class["PE"], class_string_to_class["LPC"], class_string_to_class["LPE"]}
         
         
     def clone(self, fa):
@@ -53,8 +53,8 @@ class LipidSpecies:
         
         
     def get_extended_class(self):
-        special_case = self.lipid_class in self.special_cases if self.info != None and self.info.num_carbon > 0 else False
-        
+        #special_case = self.lipid_class in self.special_cases if self.info != None and self.info.num_carbon > 0 else False
+        special_case = self.lipid_category == LipidCategory.GP if self.info != None and self.info.num_carbon > 0 else False
         if special_case and self.info.lipid_FA_bond_type in [LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_UNSPECIFIED]: return self.head_group + "-O"
         if special_case and self.info.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL: return self.head_group + "-p"
         return self.head_group
@@ -88,7 +88,8 @@ class LipidSpecies:
             if not self.validate(): raise ConstraintViolationException("No fatty acly chain information present for lipid '%s'" % all_lipids[self.lipid_class]["name"])
             lipid_string = [all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group]
             if self.info != None and self.info.num_carbon > 0:
-                special_case = self.lipid_class in self.special_cases
+                #special_case = self.lipid_class in self.special_cases
+                special_case = self.lipid_category == LipidCategory.GP
                 
                 lipid_string += " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
                 lipid_string += self.info.to_string(special_case)

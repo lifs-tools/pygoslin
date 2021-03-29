@@ -352,7 +352,7 @@ class ParserTest(unittest.TestCase):
         lipid = swiss_lipids_parser.parse(lipid_name)
         assert lipid
         assert lipid.lipid.info.level == LipidLevel.SPECIES
-        assert lipid.get_lipid_string() == "LPG 22:1a"
+        assert lipid.get_lipid_string() == "LPG O-22:1a"
         
         
         lipid_name = "PG(22:1(5Z)/12:0)"
