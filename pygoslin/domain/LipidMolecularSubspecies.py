@@ -76,9 +76,9 @@ class LipidMolecularSubspecies(LipidSpecies):
     
 
     def build_lipid_subspecies_name(self, fa_separator):
-        
-        
-        special_case = self.lipid_class in self.special_cases
+
+        #special_case = self.lipid_class in self.special_cases
+        special_case = self.lipid_category == LipidCategory.GP
         
         fa_headgroup_separator = " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
         

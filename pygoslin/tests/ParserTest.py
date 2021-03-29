@@ -198,7 +198,7 @@ class ParserTest(unittest.TestCase):
                            ["TG(13:0/22:3(10Z,13Z,16Z)/22:5(7Z,10Z,13Z,16Z,19Z))[iso6]", "TAG 13:0/22:3(10Z,13Z,16Z)/22:5(7Z,10Z,13Z,16Z,19Z)"],
                            ["13R-HODE", "13R-HODE"],
                            ["CL(1'-[20:0/20:0],3'-[20:4(5Z,8Z,11Z,14Z)/18:2(9Z,12Z)])", "CL 20:0/20:0/20:4(5Z,8Z,11Z,14Z)/18:2(9Z,12Z)"],
-                           ["PA(P-20:0/18:3(6Z,9Z,12Z))", "PA 20:1p/18:3(6Z,9Z,12Z)"],
+                           ["PA(P-20:0/18:3(6Z,9Z,12Z))", "PA O-20:1p/18:3(6Z,9Z,12Z)"],
                            ["M(IP)2C(t18:0/20:0(2OH))", "M(IP)2C 18:0;3/20:0;1"],
                            ["Cer(d16:2(4E,6E)/22:0(2OH))", "Cer 16:2(4E,6E);2/22:0;1"],
                            ["MG(18:1(11E)/0:0/0:0)[rac]", "MAG 18:1(11E)"],
@@ -258,10 +258,10 @@ class ParserTest(unittest.TestCase):
     def test_lyso(self):
         global lipid_parser
         
-        lipid_name = "LPA 16:1a"
+        lipid_name = "LPA O-16:1a"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "LPA 16:1a"
+        assert lipid.get_lipid_string() == "LPA O-16:1a"
         
         lipid_name = "LPC O-16:1a"
         lipid = lipid_parser.parse(lipid_name)
