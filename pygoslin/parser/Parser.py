@@ -81,11 +81,13 @@ class LipidParser:
         self.parser_list = [GoslinParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser(), GoslinFragmentParser()]
         
     def parse(self, lipid_name):
+        flag=True
         for parser in self.parser_list:
             lipid = parser.parse(lipid_name, False)
             if lipid != None:
+                flag=False
                 return lipid
-            
-        raise LipidException("Lipid not found")
+        if flag:
+            return None
 
 #init_tables()
