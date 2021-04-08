@@ -43,8 +43,8 @@ class TestFormulas(unittest.TestCase):
 
     def test_masses(self):
         global parser
-
-        with open('pygoslin/tests/lipid-masses.csv', newline='') as csvfile:
+        file_name = os.path.join('pygoslin', 'tests', 'lipid-masses.csv')
+        with open(file_name, newline='') as csvfile:
             lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
             for i, row in enumerate(lipidreader):
                 if i == 0: continue

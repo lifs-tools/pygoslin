@@ -379,7 +379,8 @@ class ParserTest(unittest.TestCase):
     
     @unittest.expectedFailure
     def test_lipid_fragment_fail(self):
-        goslin_parser = Parser(GoslinParserEventHandler(), "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
+        file_name = os.path.join("pygoslin", "data", "goslin", "Goslin.g4")
+        goslin_parser = Parser(GoslinParserEventHandler(), file_name, ParserTest.PARSER_QUOTE)
         
         
         lipid_name = "PE 16:1-12:0 - -(H20)"
@@ -389,7 +390,8 @@ class ParserTest(unittest.TestCase):
     
         
     def test_lipid_fragment_success(self):
-        goslin_fragment_parser = Parser(GoslinFragmentParserEventHandler(), "pygoslin/data/goslin/GoslinFragments.g4", ParserTest.PARSER_QUOTE)
+        file_name = os.path.join("pygoslin", "data", "goslin", "GoslinFragments.g4")
+        goslin_fragment_parser = Parser(GoslinFragmentParserEventHandler(), file_name, ParserTest.PARSER_QUOTE)
         
         
         lipid_name = "PE 16:1-12:0 - -(H20)"
@@ -404,7 +406,8 @@ class ParserTest(unittest.TestCase):
         
         
     def test_lipid_names(self):
-        goslin_parser = Parser(GoslinParserEventHandler(), "pygoslin/data/goslin/Goslin.g4", ParserTest.PARSER_QUOTE)
+        file_name = os.path.join("pygoslin", "data", "goslin", "Goslin.g4")
+        goslin_parser = Parser(GoslinParserEventHandler(), file_name, ParserTest.PARSER_QUOTE)
         
         ## glycerophospholipid
         lipid_name = "PE 16:1/12:0"
@@ -479,7 +482,8 @@ class ParserTest(unittest.TestCase):
         
     def test_adduct(self):
         goslin_parser_event_handler = GoslinParserEventHandler()
-        goslin_parser = Parser(goslin_parser_event_handler, "pygoslin/data/goslin/Goslin.g4")
+        file_name = os.path.join("pygoslin", "data", "goslin", "Goslin.g4")
+        goslin_parser = Parser(goslin_parser_event_handler, file_name)
 
         lipid_name = "PE 16:1/12:0[M+H]1+"
         lipid = goslin_parser.parse(lipid_name)
@@ -530,7 +534,8 @@ class ParserTest(unittest.TestCase):
     def test_parser_read(self):
         global lipid_parser
         lipidnames = []
-        with open("pygoslin/tests/lipidnames.txt", mode = "rt") as infile:
+        file_name = os.path.join("pygoslin/tests/lipidnames.txt")
+        with open(file_name, mode = "rt") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
                 if len(line) < 2: continue

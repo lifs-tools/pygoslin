@@ -43,8 +43,8 @@ class TestFormulas(unittest.TestCase):
 
     def test_formulas_swiss_lipids(self):
         global swiss_lipids_parser
-
-        with open('pygoslin/tests/formulas-swiss-lipids.csv', newline='') as csvfile:
+        file_names = os.path.join('pygoslin', 'tests', 'formulas-swiss-lipids.csv')
+        with open(file_names, newline='') as csvfile:
             lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
             
             for row in lipidreader:
@@ -68,8 +68,8 @@ class TestFormulas(unittest.TestCase):
 
     def test_formulas_lipid_maps(self):
         global lipids_maps_parser
-
-        with open('pygoslin/tests/formulas-lipid-maps.csv', newline='') as csvfile:
+        file_name = os.path.join('pygoslin', 'tests', 'formulas-lipid-maps.csv')
+        with open(file_name, newline='') as csvfile:
             lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
             
             for row in lipidreader:

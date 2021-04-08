@@ -50,7 +50,8 @@ class HMDBTest(unittest.TestCase):
     
     def test_parser(self):
         lipidnames = []
-        with open("pygoslin/data/goslin/testfiles/hmdb-test.csv", mode = "rt") as infile:
+        file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "hmdb-test.csv")
+        with open(file_name, mode = "rt") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
                 if len(line) > 0: lipidnames.append(line)

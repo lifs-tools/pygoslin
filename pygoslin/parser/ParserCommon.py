@@ -636,6 +636,7 @@ class SumFormulaParser(Parser):
     def __init__(self):
         self.event_handler = SumFormulaParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
-        super().__init__(self.event_handler, dir_name + "/data/goslin/SumFormula.g4", Parser.DEFAULT_QUOTE)
+        file_name = path.join(dir_name, "data", "goslin", "SumFormula.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
 
         

@@ -42,7 +42,8 @@ class GoslinParser(Parser):
     def __init__(self):
         self.event_handler = GoslinParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
-        super().__init__(self.event_handler, dir_name + "/data/goslin/Goslin.g4", Parser.DEFAULT_QUOTE)
+        file_name = path.join(dir_name, "data", "goslin", "Goslin.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
         
@@ -50,21 +51,24 @@ class GoslinFragmentParser(Parser):
     def __init__(self):
         self.event_handler = GoslinFragmentParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
-        super().__init__(self.event_handler, dir_name + "/data/goslin/GoslinFragments.g4", Parser.DEFAULT_QUOTE)
+        file_name = path.join(dir_name, "data", "goslin", "GoslinFragments.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
 class LipidMapsParser(Parser):
     def __init__(self):
         self.event_handler = LipidMapsParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
-        super().__init__(self.event_handler, dir_name + "/data/goslin/LipidMaps.g4", Parser.DEFAULT_QUOTE)
+        file_name = path.join(dir_name, "data", "goslin", "LipidMaps.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
 class SwissLipidsParser(Parser):
     def __init__(self):
         self.event_handler = SwissLipidsParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
-        super().__init__(self.event_handler, dir_name + "/data/goslin/SwissLipids.g4", Parser.DEFAULT_QUOTE)
+        file_name = path.join(dir_name, "data", "goslin", "SwissLipids.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
         
@@ -73,7 +77,8 @@ class HmdbParser(Parser):
     def __init__(self):
         self.event_handler = HmdbParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
-        super().__init__(self.event_handler, dir_name + "/data/goslin/HMDB.g4", Parser.DEFAULT_QUOTE)
+        file_name = path.join(dir_name, "data", "goslin", "HMDB.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
 class LipidParser:
