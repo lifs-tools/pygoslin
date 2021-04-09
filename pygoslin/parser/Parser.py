@@ -50,9 +50,9 @@ class GoslinParser(Parser):
         
 class ShorthandParser(Parser):
     def __init__(self):
-        self.event_handler = GoslinFragmentParserEventHandler()
+        self.event_handler = ShorthandParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
-        file_name = path.join(dir_name, "data", "goslin", "ShortHand2020.g4")
+        file_name = path.join(dir_name, "data", "goslin", "Shorthand2020.g4")
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
