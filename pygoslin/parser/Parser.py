@@ -32,6 +32,7 @@ from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParse
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
+from pygoslin.parser.ShorthandParserEventHandler import ShorthandParserEventHandler
 from pygoslin.parser.ParserCommon import Parser
 from pygoslin.domain.LipidExceptions import LipidException
 
@@ -43,6 +44,15 @@ class GoslinParser(Parser):
         self.event_handler = GoslinParserEventHandler()
         dir_name = path.dirname(pygoslin.__file__)
         file_name = path.join(dir_name, "data", "goslin", "Goslin.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
+        
+        
+        
+class ShorthandParser(Parser):
+    def __init__(self):
+        self.event_handler = GoslinFragmentParserEventHandler()
+        dir_name = path.dirname(pygoslin.__file__)
+        file_name = path.join(dir_name, "data", "goslin", "ShortHand2020.g4")
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
