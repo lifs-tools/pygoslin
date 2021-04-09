@@ -37,9 +37,7 @@ class Adduct:
     
     
     def set_charge_sign(self, sign):
-        if sign != -1 or sign != 0 or sign != 1:
-            self.charge_sign = sign
-            
+        if -1 <= sign <= 1: self.charge_sign = sign
         else: raise IllegalArgumentException("Sign can only be -1, 0, or 1")
             
     
