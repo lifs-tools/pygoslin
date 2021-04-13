@@ -39,8 +39,8 @@ class FattyAcid(FunctionalGroup):
         self.functional_groups = functional_groups
         self.lipid_FA_bond_type = lipid_FA_bond_type
         self.lcb = lcb
-        self.double_bond_positions = {key: double_bond_positions[key] for key in double_bond_positions} if double_bond_positions != None else {}
         
+        num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
         if num_carbon < 2:
             raise ConstraintViolationException("FattyAcid must have at least 2 carbons!")
         
@@ -51,29 +51,28 @@ class FattyAcid(FunctionalGroup):
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
         
         
-        num_double_bonds = len(self.double_bonds)
         if not self.lcb:
             if self.num_carbon > 0 or num_double_bonds > 0:
                 
-                elements[Element.C] = self.num_carbon # carbon
+                self.elements[Element.C] = self.num_carbon # carbon
                 if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
-                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds) # hydrogen
-                    elements[Element.O] = 1 # oxygen
+                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds) # hydrogen
+                    self.elements[Element.O] = 1 # oxygen
                 
                 elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
-                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
+                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
                 
                 elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
-                    elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
+                    self.elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
                     
                 else:
                     raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
                 
         else:
             # long chain base
-            elements[Element.C] = self.num_carbon # carbon
-            elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
-            elements[Element.N] = 1 # nitrogen
+            self.elements[Element.C] = self.num_carbon # carbon
+            self.elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
+            self.elements[Element.N] = 1 # nitrogen
         
         
         
@@ -81,13 +80,12 @@ class FattyAcid(FunctionalGroup):
         self.name = fa.name
         self.position = fa.position
         self.num_carbon = fa.num_carbon
-        self.num_hydroxyl = fa.num_hydroxyl
         self.lipid_FA_bond_type = fa.lipid_FA_bond_type
         self.lcb = fa.lcb
-        self.double_bond_positions = {key: value for key, value in fa.double_bond_positions.items()}
+        self.double_bonds = {key: value for key, value in fa.double_bonds.items()} if type(fa.double_bonds) != int else fa.double_bonds
         self.functional_groups = {}
         for fg, fg_list in fa.functional_groups.items():
-            self.function_groups[fg] = []
+            self.functional_groups[fg] = []
             for fg_item in fg_list:
                 func_group = FunctionalGroup("")
                 func_group.clone(fg_item)
@@ -98,15 +96,16 @@ class FattyAcid(FunctionalGroup):
     def to_string(self):
         fa_string = [self.lipid_FA_bond_type.prefix()]
         fa_string.append("%i" % self.num_carbon)
-        fa_string.append(":%i" % len(self.double_bonds))
         
+        if type(self.double_bonds) != int:
+            fa_string.append(":%i" % len(self.double_bonds))
+            db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
+            db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
+            fa_string.append(db_pos)
+        else:
+            fa_string.append(":%i" % self.double_bonds)
         
-        dbp = self.double_bond_positions
-        db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
-        db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
-        fa_string.append(db_pos)
-        
-        for fg, fg_list in self.func_group.items():
+        for fg, fg_list in self.functional_groups.items():
             fa_string.append(";%s" % ",".join([func_group.to_string() for func_group in fg_list]))
         
         return "".join(fa_string)
@@ -114,11 +113,11 @@ class FattyAcid(FunctionalGroup):
 
 
     def get_elements(self):
-        fg_dummy = FunctionalGroup()
+        fg_dummy = FunctionalGroup("")
         fg_dummy += self
         
-        for fg, fg_list in self.func_group.items():
+        for fg, fg_list in self.functional_groups.items():
             for func_group in fg_list:
                 fg_dummy += func_group
         
-        return fg_dummy.elements
+        return fg_dummy.get_elements()

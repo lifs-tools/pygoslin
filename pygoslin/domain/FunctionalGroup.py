@@ -57,3 +57,10 @@ class FunctionalGroup:
                 string = self.name
                 
         return string
+    
+    
+    def __iadd__(self, fg):
+        for k, v in fg.elements.items():
+            if k not in self.elements: self.elements[k] = 0
+            self.elements[k] += v
+        return self
