@@ -33,7 +33,7 @@ class LipidSpeciesInfo(FattyAcid):
         if fa != None:
             super().__init__(fa.name, fa.num_carbon, fa.double_bonds, fa.functional_groups, fa.lipid_FA_bond_type, fa.lcb, fa.position)
         else:
-            super().__init__("", 2, 0, {}, LipidFaBondType.ESTER, False, 0)
+            super().__init__("", 0, 0, {}, LipidFaBondType.ESTER, False, 0)
         
         self.level = None
         self.num_oxygen = 0

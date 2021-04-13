@@ -42,7 +42,7 @@ class FattyAcid(FunctionalGroup):
         self.lcb = lcb
         
         num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
-        if num_carbon < 2:
+        if num_carbon < 0 or num_carbon == 1:
             raise ConstraintViolationException("FattyAcid must have at least 2 carbons!")
         
         if num_double_bonds < 0:
@@ -111,7 +111,7 @@ class FattyAcid(FunctionalGroup):
                 db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
                 db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
                 fa_string.append(db_pos)
-            elif leve == LipidLevel.STRUCTURAL_SUBSPECIES:
+            elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
                 db_positions = ["%i" % k for k in sorted(self.double_bonds.keys())]
                 db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
                 fa_string.append(db_pos)

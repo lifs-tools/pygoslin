@@ -65,3 +65,28 @@ class FunctionalGroup:
             if k not in self.elements: self.elements[k] = 0
             self.elements[k] += v
         return self
+    
+    
+class AcylAlkylGroup(FunctionalGroup):
+    def __init__(self, fa, position = -1, count = 1, alkyl = False):
+        super().__init__("O", position = position, count = count)
+        self.fa = fa
+        self.alkyl = alkyl
+       
+       
+    def get_num_oxygens(self):
+        return self.fa.get_num_oxygens()
+    
+    
+    def to_string(self, level):
+        acyl_alkyl_string = []
+        if level == LipidLevel.ISOMERIC_SUBSPECIES: acyl_alkyl_string.append("%i" % self.position)
+        acyl_alkyl_string.append("O(")
+        if self.alkyl: acyl_alkyl_string.append("FA ")
+        acyl_alkyl_string.append(self.fa.to_string(level))
+        acyl_alkyl_string.append(")")
+        
+        return "".join(acyl_alkyl_string)
+        
+        
+        
