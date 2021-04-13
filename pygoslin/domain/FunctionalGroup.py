@@ -24,21 +24,36 @@ SOFTWARE.
 """
 
 
-from enum import Enum
+from pygoslin.domain.Element import *
 
-class LipidFaBondType(Enum):
-    UNDEFINED = 0
-    ESTER = 1
-    ETHER_PLASMANYL = 2
-    ETHER_PLASMENYL = 3
-    ETHER_UNSPECIFIED = 4
-
-    def prefix(self):
-        if self == self.ETHER_PLASMANYL: return "O-"
-        elif self == self.ETHER_PLASMENYL: return "P-"
-        else: return ""
-    
-
-    def double_bond_correction(self):
-        return 1 if self == self.ETHER_PLASMENYL else 0
-    
+class FunctionalGroup:
+    def __init__(self, name, position = -1, count = -1, elements = None):
+        self.name = name
+        self.position = position
+        self.count = count
+        self.elements = {e: 0 for e in Element} if elements == None else elements
+        
+        
+    def clone(self, fg):
+        self.name = fg.name
+        self.elements = {k: v for k, v in fg.elements.items()}
+        
+        
+    def get_elements(self):
+        return self.elements
+        
+        
+    def to_string(self):
+        string = ""
+        if self.position > -1:
+            if str.isnumeric(self.name[0]): string = "%i(%s)" % (self.position, self.name)
+            else: string = "%i%s" % (self.position, self.name)
+            
+        else:
+            if self.count > 1:
+                if str.isnumeric(self.name[-1]): string = "(%s)%i" % (self.name, self.count)
+                else: string = "%s%i" % (self.name, self.count)
+            else:
+                string = self.name
+                
+        return string

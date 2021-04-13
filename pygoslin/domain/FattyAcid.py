@@ -24,18 +24,19 @@ SOFTWARE.
 """
 
 
+from pygoslin.domain.FunctionalGroup import *
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.Element import Element
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 
-class FattyAcid:
+class FattyAcid(FunctionalGroup):
 
-    def __init__(self, name, num_carbon, num_double_bonds, num_hydroxyl, lipid_FA_bond_type, lcb, position, double_bond_positions = None):
-        self.name = name
+    def __init__(self, name, num_carbon, double_bonds, functional_groups, lipid_FA_bond_type, lcb, position):
+        super().__init__(name)
         self.position = position
         self.num_carbon = num_carbon
-        self.num_double_bonds = num_double_bonds
-        self.num_hydroxyl = num_hydroxyl
+        self.double_bonds = double_bonds
+        self.functional_groups = functional_groups
         self.lipid_FA_bond_type = lipid_FA_bond_type
         self.lcb = lcb
         self.double_bond_positions = {key: double_bond_positions[key] for key in double_bond_positions} if double_bond_positions != None else {}
@@ -46,64 +47,78 @@ class FattyAcid:
         if num_double_bonds < 0:
             raise ConstraintViolationException("FattyAcid must have at least 0 double bonds!")
         
-        if num_hydroxyl < 0:
-            raise ConstraintViolationException("FattyAcid must have at least 0 hydroxy groups!")
-        
         if position < 0:
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
+        
+        
+        num_double_bonds = len(self.double_bonds)
+        if not self.lcb:
+            if self.num_carbon > 0 or num_double_bonds > 0:
+                
+                elements[Element.C] = self.num_carbon # carbon
+                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
+                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds) # hydrogen
+                    elements[Element.O] = 1 # oxygen
+                
+                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
+                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
+                
+                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
+                    elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
+                    
+                else:
+                    raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
+                
+        else:
+            # long chain base
+            elements[Element.C] = self.num_carbon # carbon
+            elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
+            elements[Element.N] = 1 # nitrogen
+        
         
         
     def clone(self, fa):
         self.name = fa.name
         self.position = fa.position
         self.num_carbon = fa.num_carbon
-        self.num_double_bonds = fa.num_double_bonds
         self.num_hydroxyl = fa.num_hydroxyl
         self.lipid_FA_bond_type = fa.lipid_FA_bond_type
         self.lcb = fa.lcb
         self.double_bond_positions = {key: value for key, value in fa.double_bond_positions.items()}
+        self.functional_groups = {}
+        for fg, fg_list in fa.functional_groups.items():
+            self.function_groups[fg] = []
+            for fg_item in fg_list:
+                func_group = FunctionalGroup("")
+                func_group.clone(fg_item)
+                self.function_groups[fg].append(func_group)
+                
+                
+        
+    def to_string(self):
+        fa_string = [self.lipid_FA_bond_type.prefix()]
+        fa_string.append("%i" % self.num_carbon)
+        fa_string.append(":%i" % len(self.double_bonds))
         
         
-    def to_string(self, special_case = False):
-        
-        suffix = self.lipid_FA_bond_type.suffix()
         dbp = self.double_bond_positions
-        db_positions = ["%i%s" % (k, dbp[k]) for k in sorted(dbp.keys())]
-        db_pos = "(%s)" % ",".join(db_positions) if len (dbp) > 0 else ""
+        db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
+        db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
+        fa_string.append(db_pos)
         
-        return "%s%i:%i%s%s%s" % ("O-" if special_case and len(suffix) > 0 else "", self.num_carbon, self.num_double_bonds, db_pos, ";" + str(self.num_hydroxyl) if self.num_hydroxyl > 0 else "", suffix)
+        for fg, fg_list in self.func_group.items():
+            fa_string.append(";%s" % ",".join([func_group.to_string() for func_group in fg_list]))
+        
+        return "".join(fa_string)
 
 
 
     def get_elements(self):
-        elements = {e: 0 for e in Element}
+        fg_dummy = FunctionalGroup()
+        fg_dummy += self
         
-        if not self.lcb:
+        for fg, fg_list in self.func_group.items():
+            for func_group in fg_list:
+                fg_dummy += func_group
         
-            if self.num_carbon > 0 or self.num_double_bonds > 0:
-                
-                elements[Element.C] = self.num_carbon # carbon
-                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
-                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * self.num_double_bonds) # hydrogen
-                    elements[Element.O] = (1 + self.num_hydroxyl) # oxygen
-                
-                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
-                    elements[Element.H] = (2 * self.num_carbon - 1 - 2 * self.num_double_bonds + 2) # hydrogen
-                    elements[Element.O] = self.num_hydroxyl # oxygen
-                
-                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
-                    elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * self.num_double_bonds) # hydrogen
-                    elements[Element.O] = self.num_hydroxyl # oxygen
-                    
-                else:
-                    raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
-                
-                
-                
-        else:
-            # long chain base
-            elements[Element.C] = self.num_carbon # carbon
-            elements[Element.H] = (2 * (self.num_carbon - self.num_double_bonds) + 1) # hydrogen
-            elements[Element.O] = self.num_hydroxyl # oxygen
-            elements[Element.N] = 1 # nitrogen
-        return elements
+        return fg_dummy.elements
