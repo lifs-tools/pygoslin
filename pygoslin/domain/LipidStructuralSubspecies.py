@@ -36,32 +36,19 @@ class LipidStructuralSubspecies(LipidMolecularSubspecies):
 
     def __init__(self, head_group, fa = []):
         super().__init__(head_group)
-        num_carbon = 0
-        num_hydroxyl = 0
-        num_double_bonds = 0
-        lipid_FA_bond_type = LipidFaBondType.ESTER
+        
+        self.info = LipidSpeciesInfo()
+        self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES
+        
         for fas in fa:
             if fas.name in self.fa:
                 raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fas.name)
+            
             else:
                 self.fa[fas.name] = fas
                 self.fa_list.append(fas)
-                num_carbon += fas.num_carbon
-                num_hydroxyl += fas.num_hydroxyl
-                num_double_bonds += fas.num_double_bonds
-                if lipid_FA_bond_type == LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_UNSPECIFIED):
-                    lipid_FA_bond_type = fas.lipid_FA_bond_type
-                    
-                elif lipid_FA_bond_type != LipidFaBondType.ESTER and fas.lipid_FA_bond_type in (LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_UNSPECIFIED):
-                    raise ConstraintViolationException("Only one FA can define an ether bond to the head group! Tried to add %s over existing %s" % (fas.lipid_FA_bond_type, lipid_FA_bond_type))
+                self.info.add(fas)
                 
-                
-        self.info = LipidSpeciesInfo()
-        self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES
-        self.info.num_carbon = num_carbon
-        self.info.num_hydroxyl = num_hydroxyl
-        self.info.num_double_bonds = num_double_bonds
-        self.info.lipid_FA_bond_type = lipid_FA_bond_type
     
 
     def get_extended_class(self):
@@ -70,9 +57,7 @@ class LipidStructuralSubspecies(LipidMolecularSubspecies):
     
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            if not super().validate():
-                raise ConstraintViolationException("Number of fatty acyl chains for '%s' is incorrect, should be [%s], present: %i" % (all_lipids[self.lipid_class]["name"], ", ".join(str(p) for p in all_lipids[self.lipid_class]["poss_fa"]), len(self.fa)))
-            return self.build_lipid_subspecies_name("/")
+            return self.build_lipid_subspecies_name("/", LipidLevel.STRUCTURAL_SUBSPECIES)
         
         elif level in (LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)

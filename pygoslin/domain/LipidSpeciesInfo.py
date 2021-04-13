@@ -31,15 +31,31 @@ class LipidSpeciesInfo(FattyAcid):
     
     def __init__(self, fa = None):
         if fa != None:
-            super().__init__(fa.name, fa.num_carbon, fa.num_double_bonds, fa.num_hydroxyl, fa.lipid_FA_bond_type, fa.lcb, fa.position, fa.double_bond_positions)
+            super().__init__(fa.name, fa.num_carbon, fa.double_bonds, fa.functional_groups, fa.lipid_FA_bond_type, fa.lcb, fa.position)
         else:
-            super().__init__("", 2, 0, 0, LipidFaBondType.UNDEFINED, False, 0, None)
+            super().__init__("", 2, 0, {}, LipidFaBondType.ESTER, False, 0)
+        
         self.level = None
+        self.num_oxygen = 0
+        self.num_esters = 0
+        self.ester_prefix = ["", "O-", "dO-", "tO-", "eO-"]
         
+    def add(self, fa):
+        self.num_carbon += fa.num_carbon
+        self.double_bonds += fa.double_bonds if type(fa.double_bonds) == int else len(fa.double_bonds)
+        if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
+            self.num_esters += 1
+            
+            if self.lipid_FA_bond_type in {LipidFaBondType.ESTER, LipidFaBondType.ETHER_PLASMENYL}:
+                self.lipid_FA_bond_type = fa.lipid_FA_bond_type
         
-    def get_elements(self, num_fa):
-        elements = super().get_elements()
-        elements[Element.O] += num_fa - 1
-        elements[Element.H] -= num_fa - 1
+        self.num_oxygen += fa.get_num_oxygens()
         
-        return elements
+    
+    def to_string(self):
+        info_string = [self.ester_prefix[self.num_esters]]
+        info_string.append("%i:%i" % (self.num_carbon, self.double_bonds))
+        if self.num_oxygen > 0:
+            info_string.append(";O%s" % (str(self.num_oxygen) if self.num_oxygen > 1 else ""))
+            
+        return "".join(info_string)

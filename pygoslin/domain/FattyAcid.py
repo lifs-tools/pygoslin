@@ -28,6 +28,7 @@ from pygoslin.domain.FunctionalGroup import *
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.Element import Element
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.LipidLevel import LipidLevel
 
 class FattyAcid(FunctionalGroup):
 
@@ -75,6 +76,13 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.N] = 1 # nitrogen
         
         
+    def get_num_oxygens(self):
+        num_oxygen = 0
+        for fg, fg_list in self.functional_groups.items():
+            for func_group in fg_list:
+                num_oxygen += func_group.get_num_oxygens()
+        return num_oxygen
+        
         
     def clone(self, fa):
         self.name = fa.name
@@ -93,20 +101,45 @@ class FattyAcid(FunctionalGroup):
                 
                 
         
-    def to_string(self):
+    def to_string(self, level):
         fa_string = [self.lipid_FA_bond_type.prefix()]
         fa_string.append("%i" % self.num_carbon)
         
         if type(self.double_bonds) != int:
             fa_string.append(":%i" % len(self.double_bonds))
-            db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
-            db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
-            fa_string.append(db_pos)
+            if level == LipidLevel.ISOMERIC_SUBSPECIES:
+                db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
+                db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
+                fa_string.append(db_pos)
+            elif leve == LipidLevel.STRUCTURAL_SUBSPECIES:
+                db_positions = ["%i" % k for k in sorted(self.double_bonds.keys())]
+                db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
+                fa_string.append(db_pos)
+            
         else:
             fa_string.append(":%i" % self.double_bonds)
         
-        for fg, fg_list in self.functional_groups.items():
-            fa_string.append(";%s" % ",".join([func_group.to_string() for func_group in fg_list]))
+        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+            for fg, fg_list in self.functional_groups.items():
+                fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
+                if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
+        
+        elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
+            for fg, fg_list in self.functional_groups.items():
+                if len(fg_list) > 0:
+                    
+                    if len(fg_list) == 1:
+                        fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
+                        if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
+                    
+                    else:
+                        fg_count = sum([func_group.count for func_group in fg_list])
+                        if fg_count > 1: fa_string.append(";(%s)%i" % (fg, fg_count))
+                        else: fa_string.append(";%s" % fg)
+        
+        else:
+            num_oxygen = self.get_num_oxygens()
+            if num_oxygen > 0: fa_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
         
         return "".join(fa_string)
 

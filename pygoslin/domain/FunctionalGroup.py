@@ -25,9 +25,10 @@ SOFTWARE.
 
 
 from pygoslin.domain.Element import *
+from pygoslin.domain.LipidLevel import LipidLevel
 
 class FunctionalGroup:
-    def __init__(self, name, position = -1, count = -1, elements = None):
+    def __init__(self, name, position = -1, count = 1, elements = None):
         self.name = name
         self.position = position
         self.count = count
@@ -43,20 +44,20 @@ class FunctionalGroup:
         return self.elements
         
         
-    def to_string(self):
-        string = ""
-        if self.position > -1:
-            if str.isnumeric(self.name[0]): string = "%i(%s)" % (self.position, self.name)
-            else: string = "%i%s" % (self.position, self.name)
+    def to_string(self, level):
+        fg_string = ""
+        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+            if str.isnumeric(self.name[0]): fg_string = "%i(%s)" % (self.position, self.name)
+            else: fg_string = "%i%s" % (self.position, self.name)
             
         else:
-            if self.count > 1:
-                if str.isnumeric(self.name[-1]): string = "(%s)%i" % (self.name, self.count)
-                else: string = "%s%i" % (self.name, self.count)
-            else:
-                string = self.name
+            fg_string = "(%s)%i" % (self.name, self.count) if self.count > 1 else self.name
                 
-        return string
+        return fg_string
+    
+    
+    def get_num_oxygens(self):
+        return self.elements[Element.O]
     
     
     def __iadd__(self, fg):
