@@ -41,6 +41,10 @@ class Element(Enum):
     S = 11
     S34 = 12
     S33 = 13
+    F = 14
+    Cl = 15
+    Br = 16
+    I = 17
     
 electron_rest_mass = 0.00054857990946
 
@@ -49,6 +53,10 @@ element_positions = {"C": Element.C,
                     "N": Element.N,
                     "O": Element.O,
                     "P": Element.P,
+                    "F": Element.F,
+                    "Cl": Element.Cl,
+                    "Br": Element.Br,
+                    "I": Element.I,
                     "P'": Element.P32,
                     "S": Element.S,
                     "S'": Element.S34,
@@ -73,7 +81,7 @@ element_positions = {"C": Element.C,
                     "O18": Element.O18,
                     "P32": Element.P32,
                     "S34": Element.S34,
-                    "S33": Element.S33
+                    "S33": Element.S33,
                      }
 
 element_masses = {Element.C: 12.0, 
@@ -82,6 +90,10 @@ element_masses = {Element.C: 12.0,
                     Element.O: 15.99491463,
                     Element.P: 30.973762, 
                     Element.S: 31.9720707,
+                    Element.Br: 78.918327,
+                    Element.Cl: 34.968853,
+                    Element.F: 18.9984031,
+                    Element.I: 126.904473
                     Element.H2: 2.014101779, 
                     Element.C13: 13.0033548378, 
                     Element.N15: 15.0001088984,
@@ -98,6 +110,8 @@ element_shortcut = {Element.C: "C",
                     Element.O: "O",
                     Element.P: "P",
                     Element.S: "S",
+                    Element.Br: "Br",
+                    Element.Cl: "Cl",
                     Element.H2: "H'",
                     Element.C13: "C'",
                     Element.N15: "N'",
@@ -108,7 +122,7 @@ element_shortcut = {Element.C: "C",
                     Element.S34: "S''"
                     }
 
-element_order = [Element.C, Element.H, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
+element_order = [Element.C, Element.H, Element.N, Element.O, Element.P, Element.S, Element.F, Element.Cl, Element.Br, Element.I, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
 
 def compute_sum_formula(elements):
     return "".join(["%s%s" % (element_shortcut[e] if elements[e] > 0 else "", str(elements[e]) if elements[e] > 1 else "") for e in element_order])

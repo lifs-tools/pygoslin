@@ -72,7 +72,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         head_group = [(all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group)]
         
         
-        if self.lipid_category == LipidCategory.SL and head_group[0] != "Cer":
+        if self.lipid_category == LipidCategory.SL and head_group[0] not in {"Cer", "SPB"}:
             head_group.append("(1)")
         for hgd in self.headgroup_decorators:
             head_group.insert(0, hgd.to_string(level))

@@ -53,7 +53,7 @@ class FunctionalGroup:
             
         else:
             fg_string = "(%s)%i" % (self.name, self.count) if self.count > 1 else self.name
-        if self.stereochemistry != None: fg_string += "[%s]" % self.stereochemistry
+        if self.stereochemistry != None and level == LipidLevel.ISOMERIC_SUBSPECIES: fg_string += "[%s]" % self.stereochemistry
                 
         return fg_string
     
@@ -67,6 +67,32 @@ class FunctionalGroup:
             if k not in self.elements: self.elements[k] = 0
             self.elements[k] += v
         return self
+    
+    
+known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 5}),
+                           "Me": FunctionalGroup("Me", elements = {Element.C: 1, Element.H: 3}),
+                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1}),
+                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1}),
+                           "F": FunctionalGroup("F", elements = {Element.F: 1}),
+                           "I": FunctionalGroup("I", elements = {Element.I: 1}),
+                           "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2}),
+                           "Ep": FunctionalGroup("Ep", elements = {Element.O: 1}),
+                           "OO": FunctionalGroup("OO", elements = {Element.O: 2, Element.H: 1}),
+                           "OMe": FunctionalGroup("OMe", elements = {Element.O: 1, Element.C: 1, Element.H: 3}),
+                           "oxy": FunctionalGroup("oxy", elements = {}),
+                           "NH2": FunctionalGroup("NH2", elements = {}),
+                           "OOH": FunctionalGroup("OOH", elements = {}),
+                           "SH": FunctionalGroup("SH", elements = {}),
+                           "OH": FunctionalGroup("OH", elements = {}),
+                           "oxo": FunctionalGroup("oxo", elements = {}),
+                           "CN": FunctionalGroup("CN", elements = {}),
+                           "P": FunctionalGroup("P", elements = {}),
+                           "S": FunctionalGroup("S", elements = {}),
+                           "COOH": FunctionalGroup("COOH", elements = {}),
+                           "G": FunctionalGroup("G", elements = {}),
+                           "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
+                           "COG": FunctionalGroup("COG", elements = {}),
+                           "COT": FunctionalGroup("COT", elements = {})}
     
     
 class HeadGroupDecorator(FunctionalGroup):

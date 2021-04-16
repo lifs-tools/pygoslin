@@ -32,7 +32,7 @@ from pygoslin.domain.LipidLevel import LipidLevel
 
 class FattyAcid(FunctionalGroup):
 
-    def __init__(self, name, num_carbon, double_bonds, functional_groups = None, lipid_FA_bond_type = LipidFaBondType.ESTER, lcb = False, position = 0):
+    def __init__(self, name, num_carbon = 0, double_bonds = 0, functional_groups = None, lipid_FA_bond_type = LipidFaBondType.ESTER, lcb = False, position = 0):
         super().__init__(name)
         self.position = position
         self.num_carbon = num_carbon
