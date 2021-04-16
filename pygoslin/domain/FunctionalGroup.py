@@ -95,7 +95,27 @@ _known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2
                            "G": FunctionalGroup("G", elements = {}),
                            "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
                            "COG": FunctionalGroup("COG", elements = {}),
-                           "COT": FunctionalGroup("COT", elements = {})}
+                           "COT": FunctionalGroup("COT", elements = {}),
+                           "Hex": FunctionalGroup("", elements = {}),
+                           "Gal": FunctionalGroup("", elements = {}),
+                           "Glc": FunctionalGroup("", elements = {}),
+                           "Man": FunctionalGroup("", elements = {}),
+                           "Neu": FunctionalGroup("", elements = {}),
+                           "HexNAc": FunctionalGroup("", elements = {}),
+                           "GalNAc": FunctionalGroup("", elements = {}),
+                           "GlcNAc": FunctionalGroup("", elements = {}),
+                           "NeuAc": FunctionalGroup("", elements = {}),
+                           "NeuGc": FunctionalGroup("", elements = {}),
+                           "Kdn": FunctionalGroup("", elements = {}),
+                           "GlcA": FunctionalGroup("", elements = {}),
+                           "Xyl": FunctionalGroup("", elements = {}),
+                           "Fuc": FunctionalGroup("", elements = {}),
+                           "NeuAc2": FunctionalGroup("", elements = {}),
+                           "SHex": FunctionalGroup("", elements = {}),
+                           "NAc": FunctionalGroup("", elements = {}),
+                           "Nac": FunctionalGroup("", elements = {}),
+                           "SGal": FunctionalGroup("", elements = {}),
+                           "HexA": FunctionalGroup("", elements = {})}
 
 def get_functional_group(name):
     if name in _known_functional_groups:
