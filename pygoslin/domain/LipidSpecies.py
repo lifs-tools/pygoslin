@@ -64,7 +64,6 @@ class LipidSpecies:
 
 
     def get_lipid_string(self, level = None):
-        
         if level == None:
             if self.info != None:
                 level = self.info.level

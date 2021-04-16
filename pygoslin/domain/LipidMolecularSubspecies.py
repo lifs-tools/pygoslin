@@ -40,6 +40,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         self.fa_list = []
         self.info = LipidSpeciesInfo()
         self.info.level = LipidLevel.MOLECULAR_SUBSPECIES
+        self.headgroup_decorators = []
         
         for fas in fa:
             if fas.name in self.fa:
@@ -61,17 +62,28 @@ class LipidMolecularSubspecies(LipidSpecies):
 
         fa_headgroup_separator = " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
         
-        fa_string = fa_separator.join(fatty_acid.to_string(level) for fatty_acid in self.fa_list)
-        if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
+        if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+            fa_string = fa_separator.join(fatty_acid.to_string(level) for fatty_acid in self.fa_list)
+            if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
+        else:
+            fa_string = fa_separator.join(fatty_acid.to_string(level) for fatty_acid in self.fa_list if fatty_acid.num_carbon > 0)
+            if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
+            
+        head_group = [(all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group)]
         
         
-        return (all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group) + fa_string
+        if self.lipid_category == LipidCategory.SL and head_group[0] != "Cer":
+            head_group.append("(1)")
+        for hgd in self.headgroup_decorators:
+            head_group.insert(0, hgd.to_string(level))
+        
+        return "".join(head_group) + fa_string
     
     
     
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
-            return self.build_lipid_subspecies_name("-", LipidLevel.MOLECULAR_SUBSPECIES)
+            return self.build_lipid_subspecies_name("_", LipidLevel.MOLECULAR_SUBSPECIES)
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)

@@ -67,6 +67,18 @@ class FunctionalGroup:
         return self
     
     
+class HeadGroupDecorator(FunctionalGroup):
+    def __init__(self, name, position = -1, count = 1, elements = None):
+        super().__init__(name, position = position, count = count, elements = elements)
+        
+        
+    def to_string(self, level):
+        return "%s-" % self.name
+    
+    
+    
+    
+    
 class AcylAlkylGroup(FunctionalGroup):
     def __init__(self, fa, position = -1, count = 1, alkyl = False):
         super().__init__("O", position = position, count = count)
