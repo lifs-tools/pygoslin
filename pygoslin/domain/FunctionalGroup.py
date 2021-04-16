@@ -28,10 +28,11 @@ from pygoslin.domain.Element import *
 from pygoslin.domain.LipidLevel import LipidLevel
 
 class FunctionalGroup:
-    def __init__(self, name, position = -1, count = 1, elements = None):
+    def __init__(self, name, position = -1, count = 1, stereochemistry = None, elements = None):
         self.name = name
         self.position = position
         self.count = count
+        self.stereochemistry = stereochemistry
         self.elements = {e: 0 for e in Element} if elements == None else elements
         
         
@@ -52,6 +53,7 @@ class FunctionalGroup:
             
         else:
             fg_string = "(%s)%i" % (self.name, self.count) if self.count > 1 else self.name
+        if self.stereochemistry != None: fg_string += "[%s]" % self.stereochemistry
                 
         return fg_string
     
