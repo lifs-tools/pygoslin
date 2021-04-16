@@ -93,6 +93,7 @@ class Cycle(FunctionalGroup):
                         else: cycle_string.append(";%s" % fg)
                     
         cycle_string.append("]")
+        if self.stereochemistry != None: cycle_string.append("[%s]" % self.stereochemistry)
         
         return "".join(cycle_string)
         

@@ -93,7 +93,7 @@ element_masses = {Element.C: 12.0,
                     Element.Br: 78.918327,
                     Element.Cl: 34.968853,
                     Element.F: 18.9984031,
-                    Element.I: 126.904473
+                    Element.I: 126.904473,
                     Element.H2: 2.014101779, 
                     Element.C13: 13.0033548378, 
                     Element.N15: 15.0001088984,

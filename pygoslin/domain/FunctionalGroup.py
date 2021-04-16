@@ -40,6 +40,9 @@ class FunctionalGroup:
         self.name = fg.name
         self.elements = {k: v for k, v in fg.elements.items()}
         
+    def copy(self):
+        return FunctionalGroup(self.name, position = self.position, count = self.count, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
+        
         
     def get_elements(self):
         return self.elements
@@ -48,8 +51,8 @@ class FunctionalGroup:
     def to_string(self, level):
         fg_string = ""
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            if str.isnumeric(self.name[0]): fg_string = "%i(%s)" % (self.position, self.name)
-            else: fg_string = "%i%s" % (self.position, self.name)
+            if str.isnumeric(self.name[0]): fg_string = "%i(%s)" % (self.position, self.name) if self.position > -1 else self.name
+            else: fg_string = "%i%s" % (self.position, self.name) if self.position > -1 else self.name
             
         else:
             fg_string = "(%s)%i" % (self.name, self.count) if self.count > 1 else self.name
@@ -69,7 +72,7 @@ class FunctionalGroup:
         return self
     
     
-known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 5}),
+_known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 5}),
                            "Me": FunctionalGroup("Me", elements = {Element.C: 1, Element.H: 3}),
                            "Br": FunctionalGroup("Br", elements = {Element.Br: 1}),
                            "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1}),
@@ -80,20 +83,24 @@ known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2,
                            "OO": FunctionalGroup("OO", elements = {Element.O: 2, Element.H: 1}),
                            "OMe": FunctionalGroup("OMe", elements = {Element.O: 1, Element.C: 1, Element.H: 3}),
                            "oxy": FunctionalGroup("oxy", elements = {}),
-                           "NH2": FunctionalGroup("NH2", elements = {}),
-                           "OOH": FunctionalGroup("OOH", elements = {}),
-                           "SH": FunctionalGroup("SH", elements = {}),
-                           "OH": FunctionalGroup("OH", elements = {}),
-                           "oxo": FunctionalGroup("oxo", elements = {}),
-                           "CN": FunctionalGroup("CN", elements = {}),
-                           "P": FunctionalGroup("P", elements = {}),
-                           "S": FunctionalGroup("S", elements = {}),
-                           "COOH": FunctionalGroup("COOH", elements = {}),
+                           "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 2}),
+                           "OOH": FunctionalGroup("OOH", elements = {Element.O: 2, Element.H: 1}),
+                           "SH": FunctionalGroup("SH", elements = {Element.S: 1, Element.H: 1}),
+                           "OH": FunctionalGroup("OH", elements = {Element.O: 1, Element.H: 1}),
+                           "oxo": FunctionalGroup("oxo", elements = {Element.O: 1}),
+                           "CN": FunctionalGroup("CN", elements = {Element.C: 1, Element.N: 1}),
+                           "P": FunctionalGroup("P", elements = {Element.P: 1}),
+                           "S": FunctionalGroup("S", elements = {Element.S: 1}),
+                           "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2, Element.H: 1}),
                            "G": FunctionalGroup("G", elements = {}),
                            "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
                            "COG": FunctionalGroup("COG", elements = {}),
                            "COT": FunctionalGroup("COT", elements = {})}
-    
+
+def get_functional_group(name):
+    if name in _known_functional_groups:
+        return _known_functional_groups[name].copy()
+    raise Exception("Name '%s' not registered in functional group list" % name)
     
 class HeadGroupDecorator(FunctionalGroup):
     def __init__(self, name, position = -1, count = 1, elements = None):
