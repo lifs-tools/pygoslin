@@ -39,6 +39,8 @@ from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 
+from pygoslin.domain.LipidExceptions import *
+
 class ShorthandParserEventHandler(BaseParserEventHandler):
     
     def __init__(self):
@@ -82,9 +84,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["carbon_pre_event"] = self.set_carbon
         self.registered_events["db_count_pre_event"] = self.set_double_bond_count
         self.registered_events["db_position_number_pre_event"] = self.set_double_bond_position
-        self.registered_events["db_position_post_event"] = self.set_double_bond_information
+        self.registered_events["db_single_position_pre_event"] = self.set_double_bond_information
+        self.registered_events["db_single_position_post_event"] = self.add_double_bond_information
         self.registered_events["cistrans_pre_event"] = self.set_cistrans
-        #self.registered_events["
+        self.registered_events["ether_type_pre_event"] = self.set_ether_type
         #self.registered_events["
         
         
@@ -157,36 +160,59 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
     
     def new_fatty_acyl_chain(self, node):
         self.current_fa.append(FattyAcid("FA"))
+        self.tmp["fa%i" % len(self.current_fa)] = {}
         
         
     def add_fatty_acyl_chain(self, node):
+        fa_i = "fa%i" % len(self.current_fa)
+        if type(self.current_fa[-1].double_bonds) != int:
+            if len(self.current_fa[-1].double_bonds) != self.tmp[fa_i]["db_count"]:
+                raise LipidException("Double bond count does not match with number of double bond positions")
+            
+        else:
+            if self.current_fa[-1].double_bonds > 0:
+                self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
+        del self.tmp[fa_i]
+        
         self.fa_list.append(self.current_fa.pop())
         
         
     def set_double_bond_position(self, node):
-        self.tmp["db_position"] = int(node.get_text())
-        self.tmp["db_cistrans"] = ""
+        fa_i = "fa%i" % len(self.current_fa)
+        self.tmp[fa_i]["db_position"] = int(node.get_text())
         
         
     def set_double_bond_information(self, node):
-        pos = self.tmp["db_position"]
-        cistrans = self.tmp["db_cistrans"]
+        fa_i = "fa%i" % len(self.current_fa)
+        self.tmp[fa_i]["db_position"] = 0
+        self.tmp[fa_i]["db_cistrans"] = ""
+        
+        
+    def add_double_bond_information(self, node):
+        fa_i = "fa%i" % len(self.current_fa)
+        pos = self.tmp[fa_i]["db_position"]
+        cistrans = self.tmp[fa_i]["db_cistrans"]
         
         if cistrans == "": self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
         
-        del self.tmp["db_position"]
-        del self.tmp["db_cistrans"]
+        del self.tmp[fa_i]["db_position"]
+        del self.tmp[fa_i]["db_cistrans"]
         if type(self.current_fa[-1].double_bonds) == int: self.current_fa[-1].double_bonds = {}
         self.current_fa[-1].double_bonds[pos] = cistrans
         
         
     def set_cistrans(self, node):
-        self.tmp["db_cistrans"] = node.get_text()
+        self.tmp["fa%i" % len(self.current_fa)]["db_cistrans"] = node.get_text()
+        
+        
+    def set_ether_type(self, node):
+        ether_type = node.get_text()
+        if ether_type == "O-": self.current_fa[-1].lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
+        elif ether_type == "P-": self.current_fa[-1].lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         
         
     def set_species_level(self, node):
-        self.level = min(self.level, LipidLevel.SPECIES)
-    
+        self.level = self.level if self.level.value < LipidLevel.SPECIES.value else LipidLevel.SPECIES
         
     
     def set_carbon(self, node):
@@ -194,7 +220,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
       
       
     def set_double_bond_count(self, node):
-        self.current_fa[-1].double_bonds = int(node.get_text())
+        self.tmp["fa%i" % len(self.current_fa)]["db_count"] = self.current_fa[-1].double_bonds = int(node.get_text())
+        
         
         
     def build_lipid(self, node):
