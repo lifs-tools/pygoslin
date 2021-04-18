@@ -112,9 +112,13 @@ _known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2
                            "Fuc": FunctionalGroup("", elements = {}),
                            "NeuAc2": FunctionalGroup("", elements = {}),
                            "SHex": FunctionalGroup("", elements = {}),
+                           "S(3')Hex": FunctionalGroup("", elements = {}),
+                           "S(3´)Hex": FunctionalGroup("", elements = {}),
                            "NAc": FunctionalGroup("", elements = {}),
                            "Nac": FunctionalGroup("", elements = {}),
                            "SGal": FunctionalGroup("", elements = {}),
+                           "S(3')Gal": FunctionalGroup("", elements = {}),
+                           "S(3´)Gal": FunctionalGroup("", elements = {}),
                            "HexA": FunctionalGroup("", elements = {})}
 
 def get_functional_group(name):

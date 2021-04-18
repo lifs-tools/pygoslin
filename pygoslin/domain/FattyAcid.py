@@ -51,30 +51,7 @@ class FattyAcid(FunctionalGroup):
         if position < 0:
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
         
-        
-        if not self.lcb:
-            if self.num_carbon > 0 or num_double_bonds > 0:
-                
-                self.elements[Element.C] = self.num_carbon # carbon
-                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
-                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds) # hydrogen
-                    self.elements[Element.O] = 1 # oxygen
-                
-                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
-                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
-                
-                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
-                    self.elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
-                    
-                else:
-                    raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
-                
-        else:
-            # long chain base
-            self.elements[Element.C] = self.num_carbon # carbon
-            self.elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
-            self.elements[Element.N] = 1 # nitrogen
-        
+        self.calculate_elements()
         
     def get_num_oxygens(self):
         num_oxygen = 0
@@ -144,6 +121,33 @@ class FattyAcid(FunctionalGroup):
         
         return "".join(fa_string)
 
+
+    def calculate_elements(self):
+        
+        num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
+        if not self.lcb:
+            if self.num_carbon > 0 or num_double_bonds > 0:
+                
+                self.elements[Element.C] = self.num_carbon # carbon
+                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
+                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds) # hydrogen
+                    self.elements[Element.O] = 1 # oxygen
+                
+                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
+                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
+                
+                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
+                    self.elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
+                    
+                else:
+                    raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
+                
+        else:
+            # long chain base
+            self.elements[Element.C] = self.num_carbon # carbon
+            self.elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
+            self.elements[Element.N] = 1 # nitrogen
+        
 
 
     def get_elements(self):

@@ -31,6 +31,7 @@ from pygoslin.domain.Adduct import Adduct
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
+from pygoslin.domain.FunctionalGroup import *
 
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
@@ -44,30 +45,50 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         super().__init__()
         self.reset_lipid(None)
         
-        """
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
         
-        self.registered_events["hg_cl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_mlcl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_pl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_lpl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_lpl_o_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_pl_o_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
-        self.registered_events["mediator_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_mgl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_dgl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_sgl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_tgl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_dlcl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_sac_di_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_sac_f_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_tpl_pre_event"] = self.set_head_group_name
-        self.registered_events["st_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_ste_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_stes_pre_event"] = self.set_head_group_name
+        self.registered_events["med_species_pre_event"] = self.set_species_level
+        self.registered_events["gl_species_pre_event"] = self.set_species_level
+        self.registered_events["gl_species_double_pre_event"] = self.set_species_level
+        self.registered_events["pl_species_pre_event"] = self.set_species_level
+        self.registered_events["pl_species_double_pre_event"] = self.set_species_level
+        self.registered_events["pl_species_triple_pre_event"] = self.set_species_level
+        self.registered_events["sl_species_pre_event"] = self.set_species_level
+        
+        ## set head groups
+        self.registered_events["med_hg_single_pre_event"] = self.set_head_group_name
+        self.registered_events["med_hg_double_pre_event"] = self.set_head_group_name
+        self.registered_events["med_hg_triple_pre_event"] = self.set_head_group_name
+        self.registered_events["gl_hg_single_pre_event"] = self.set_head_group_name
+        self.registered_events["gl_hg_double_pre_event"] = self.set_head_group_name
+        self.registered_events["gl_hg_triple_pre_event"] = self.set_head_group_name
+        self.registered_events["pl_hg_single_pre_event"] = self.set_head_group_name
+        self.registered_events["pl_hg_double_pre_event"] = self.set_head_group_name
+        self.registered_events["pl_hg_triple_pre_event"] = self.set_head_group_name
+        self.registered_events["pl_hg_quadro_pre_event"] = self.set_head_group_name
+        self.registered_events["sl_hg_single_pre_event"] = self.set_head_group_name
+        self.registered_events["sl_hg_double_name_pre_event"] = self.set_head_group_name
+        self.registered_events["st_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["st_hg_ester_pre_event"] = self.set_head_group_name
+
+        ## set head group head_group_decorators
+        self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
+        
+        # fatty acyl events
+        self.registered_events["lcb_post_event"] = self.set_lcb
+        self.registered_events["fatty_acyl_chain_pre_event"] = self.new_fatty_acyl_chain
+        self.registered_events["fatty_acyl_chain_post_event"] = self.add_fatty_acyl_chain
+        self.registered_events["carbon_pre_event"] = self.set_carbon
+        self.registered_events["db_count_pre_event"] = self.set_double_bond_count
+        self.registered_events["db_position_number_pre_event"] = self.set_double_bond_position
+        self.registered_events["db_position_post_event"] = self.set_double_bond_information
+        self.registered_events["cistrans_pre_event"] = self.set_cistrans
+        #self.registered_events["
+        #self.registered_events["
+        
+        
+        """
         
         self.registered_events["gl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
@@ -104,28 +125,102 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
 
 
     def reset_lipid(self, node):
-        self.level = LipidLevel.STRUCTURAL_SUBSPECIES
+        self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.lipid = None
         self.head_group = ""
-        self.lcb = None
-        self.fa_list = []
-        self.current_fa = None
         self.adduct = None
-        self.db_position = 0
-        self.db_cistrans = ""
-        self.unspecified_ether = False
+        self.fa_list = []
+        self.current_fa = []
+        self.head_group_decorators = []
+        self.tmp = {}
         
-    """
+        
     def set_head_group_name(self, node):
         self.head_group = node.get_text()
         
         
+    def set_carbohydrate(self, node):
+        carbohydrate = node.get_text()
+        try:
+            functional_group = get_functional_group(name)
+        except Exception:
+            raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
+        
+        self.head_group_decorators.append(carbohydrate)
+        
+        
+    def set_lcb(self, node):
+        self.fa_list[-1].lcb = True
+        self.fa_list[-1].name = "LCB"
+        self.fa_list[-1].calculate_elements()
+        
+    
+    def new_fatty_acyl_chain(self, node):
+        self.current_fa.append(FattyAcid("FA"))
+        
+        
+    def add_fatty_acyl_chain(self, node):
+        self.fa_list.append(self.current_fa.pop())
+        
+        
+    def set_double_bond_position(self, node):
+        self.tmp["db_position"] = int(node.get_text())
+        self.tmp["db_cistrans"] = ""
+        
+        
+    def set_double_bond_information(self, node):
+        pos = self.tmp["db_position"]
+        cistrans = self.tmp["db_cistrans"]
+        
+        if cistrans == "": self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+        
+        del self.tmp["db_position"]
+        del self.tmp["db_cistrans"]
+        if type(self.current_fa[-1].double_bonds) == int: self.current_fa[-1].double_bonds = {}
+        self.current_fa[-1].double_bonds[pos] = cistrans
+        
+        
+    def set_cistrans(self, node):
+        self.tmp["db_cistrans"] = node.get_text()
+        
+        
+    def set_species_level(self, node):
+        self.level = min(self.level, LipidLevel.SPECIES)
+    
+        
+    
+    def set_carbon(self, node):
+        self.current_fa[-1].num_carbon = int(node.get_text()) 
+      
+      
+    def set_double_bond_count(self, node):
+        self.current_fa[-1].double_bonds = int(node.get_text())
+        
+        
+    def build_lipid(self, node):
+        # add count numbers for fatty acyl chains
+        fa_it = len(self.fa_list) > 0 and self.fa_list[0].lcb
+        for it in range(fa_it, len(self.fa_list)):
+            self.fa_list[it].name += "%i" % (it + 1)
+        
+        lipid_level_class = None
+        if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
+        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
+        if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
+        if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
+        
+        self.lipid = LipidAdduct()
+        self.lipid.lipid = lipid_level_class(self.head_group, self.fa_list)
+        for decorator in self.head_group_decorators[::-1]:
+            self.lipid.lipid.headgroup_decorators.append(decorator)
+        
+        self.content = self.lipid
+        
+    """
     def set_unspecified_ether(self, node):
         self.unspecified_ether = True
         
     
-    def set_species_level(self, node):
-        self.level = LipidLevel.SPECIES
         
         
     def set_isomeric_level(self, node):
