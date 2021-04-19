@@ -33,7 +33,7 @@ class FunctionalGroup:
         self.position = position
         self.count = count
         self.stereochemistry = stereochemistry
-        self.elements = {e: 0 for e in Element} if elements == None else elements
+        self.elements = {e: 0 for e in Element} if elements == None else {k: v for k, v in elements.items()}
         
         
     def clone(self, fg):
@@ -45,7 +45,8 @@ class FunctionalGroup:
         
         
     def get_elements(self):
-        return self.elements
+        elements = {k: v * self.count for k, v in self.elements.items()}
+        return elements
         
         
     def to_string(self, level):
@@ -56,20 +57,21 @@ class FunctionalGroup:
             
         else:
             fg_string = "(%s)%i" % (self.name, self.count) if self.count > 1 else self.name
-        if self.stereochemistry != None and level == LipidLevel.ISOMERIC_SUBSPECIES: fg_string += "[%s]" % self.stereochemistry
+        if self.stereochemistry != None and self.stereochemistry != "" and level == LipidLevel.ISOMERIC_SUBSPECIES: fg_string += "[%s]" % self.stereochemistry
                 
         return fg_string
     
     
     def get_num_oxygens(self):
-        return self.elements[Element.O]
+        return self.elements[Element.O] * self.count if Element.O in self.elements else 0
     
     
     def __iadd__(self, fg):
         for k, v in fg.elements.items():
             if k not in self.elements: self.elements[k] = 0
-            self.elements[k] += v
+            self.elements[k] += v * fg.count
         return self
+    
     
     
 _known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 5}),
@@ -96,35 +98,38 @@ _known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2
                            "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
                            "COG": FunctionalGroup("COG", elements = {}),
                            "COT": FunctionalGroup("COT", elements = {}),
-                           "Hex": FunctionalGroup("", elements = {}),
-                           "Gal": FunctionalGroup("", elements = {}),
-                           "Glc": FunctionalGroup("", elements = {}),
-                           "Man": FunctionalGroup("", elements = {}),
-                           "Neu": FunctionalGroup("", elements = {}),
-                           "HexNAc": FunctionalGroup("", elements = {}),
-                           "GalNAc": FunctionalGroup("", elements = {}),
-                           "GlcNAc": FunctionalGroup("", elements = {}),
-                           "NeuAc": FunctionalGroup("", elements = {}),
-                           "NeuGc": FunctionalGroup("", elements = {}),
-                           "Kdn": FunctionalGroup("", elements = {}),
-                           "GlcA": FunctionalGroup("", elements = {}),
-                           "Xyl": FunctionalGroup("", elements = {}),
-                           "Fuc": FunctionalGroup("", elements = {}),
-                           "NeuAc2": FunctionalGroup("", elements = {}),
-                           "SHex": FunctionalGroup("", elements = {}),
-                           "S(3')Hex": FunctionalGroup("", elements = {}),
-                           "S(3´)Hex": FunctionalGroup("", elements = {}),
-                           "NAc": FunctionalGroup("", elements = {}),
-                           "Nac": FunctionalGroup("", elements = {}),
-                           "SGal": FunctionalGroup("", elements = {}),
-                           "S(3')Gal": FunctionalGroup("", elements = {}),
-                           "S(3´)Gal": FunctionalGroup("", elements = {}),
-                           "HexA": FunctionalGroup("", elements = {})}
+                           "Hex": FunctionalGroup("Hex", elements = {}),
+                           "Gal": FunctionalGroup("Gal", elements = {}),
+                           "Glc": FunctionalGroup("Glc", elements = {}),
+                           "Man": FunctionalGroup("Man", elements = {}),
+                           "Neu": FunctionalGroup("Neu", elements = {}),
+                           "HexNAc": FunctionalGroup("NexNAc", elements = {}),
+                           "GalNAc": FunctionalGroup("GalNAc", elements = {}),
+                           "GlcNAc": FunctionalGroup("GlcNAc", elements = {}),
+                           "NeuAc": FunctionalGroup("NeuAc", elements = {}),
+                           "NeuGc": FunctionalGroup("NeuGc", elements = {}),
+                           "Kdn": FunctionalGroup("Kdn", elements = {}),
+                           "GlcA": FunctionalGroup("GlcA", elements = {}),
+                           "Xyl": FunctionalGroup("Xyl", elements = {}),
+                           "Fuc": FunctionalGroup("Fuc", elements = {}),
+                           "NeuAc2": FunctionalGroup("NeuAc2", elements = {}),
+                           "SHex": FunctionalGroup("SHex", elements = {}),
+                           "S(3')Hex": FunctionalGroup("S(3')Hex", elements = {}),
+                           "S(3´)Hex": FunctionalGroup("S(3')Hex", elements = {}),
+                           "NAc": FunctionalGroup("NAc", elements = {}),
+                           "Nac": FunctionalGroup("Nac", elements = {}),
+                           "SGal": FunctionalGroup("SGal", elements = {}),
+                           "S(3')Gal": FunctionalGroup("S(3')Gal", elements = {}),
+                           "S(3´)Gal": FunctionalGroup("S(3')Gal", elements = {}),
+                           "HexA": FunctionalGroup("HexA", elements = {}),
+                           "O": FunctionalGroup("O", elements = {Element.O: 1})}
+
 
 def get_functional_group(name):
     if name in _known_functional_groups:
         return _known_functional_groups[name].copy()
     raise Exception("Name '%s' not registered in functional group list" % name)
+
     
 class HeadGroupDecorator(FunctionalGroup):
     def __init__(self, name, position = -1, count = 1, elements = None):

@@ -32,6 +32,7 @@ from pygoslin.domain.Adduct import Adduct
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.FunctionalGroup import *
+from pygoslin.domain.Cycle import *
 
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
@@ -50,6 +51,13 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
         
+        ## set adduct events
+        self.registered_events["adduct_info_pre_event"] = self.new_adduct
+        self.registered_events["adduct_pre_event"] = self.add_adduct
+        self.registered_events["charge_pre_event"] = self.add_charge
+        self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
+        
+        ## set species events
         self.registered_events["med_species_pre_event"] = self.set_species_level
         self.registered_events["gl_species_pre_event"] = self.set_species_level
         self.registered_events["gl_species_double_pre_event"] = self.set_species_level
@@ -58,7 +66,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_species_triple_pre_event"] = self.set_species_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
         
-        ## set head groups
+        ## set head groups events
         self.registered_events["med_hg_single_pre_event"] = self.set_head_group_name
         self.registered_events["med_hg_double_pre_event"] = self.set_head_group_name
         self.registered_events["med_hg_triple_pre_event"] = self.set_head_group_name
@@ -88,8 +96,26 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_single_position_post_event"] = self.add_double_bond_information
         self.registered_events["cistrans_pre_event"] = self.set_cistrans
         self.registered_events["ether_type_pre_event"] = self.set_ether_type
-        #self.registered_events["
         
+        # functional group events
+        self.registered_events["func_group_data_pre_event"] = self.set_functional_group
+        self.registered_events["func_group_data_post_event"] = self.add_functional_group
+        self.registered_events["func_group_pos_number_pre_event"] = self.set_functional_group_position
+        self.registered_events["func_group_name_pre_event"] = self.set_functional_group_name
+        self.registered_events["func_group_count_pre_event"] = self.set_functional_group_count
+        self.registered_events["stereo_type_pre_event"] = self.set_functional_group_stereo
+        self.registered_events["func_group_placeholder_pre_event"] = self.set_placeholder
+        self.registered_events["func_group_placeholder_number_pre_event"] = self.set_functional_group_count
+        self.registered_events["func_group_cycle_pre_event"] = self.set_cycle
+        self.registered_events["func_group_cycle_post_event"] = self.add_cycle
+        self.registered_events["cycle_start_pre_event"] = self.set_cycle_start
+        self.registered_events["cycle_end_pre_event"] = self.set_cycle_end
+        self.registered_events["cycle_number_pre_event"] = self.set_cycle_number
+        
+        #self.registered_events["
+        #self.registered_events["
+        #self.registered_events["
+        #self.registered_events["
         
         """
         
@@ -115,15 +141,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
-        
-        
-        self.registered_events["adduct_info_pre_event"] = self.new_adduct
-        self.registered_events["adduct_pre_event"] = self.add_adduct
-        self.registered_events["charge_pre_event"] = self.add_charge
-        self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
-        self.registered_events["hg_lpl_oc_pre_event"] = self.set_unspecified_ether
-        self.registered_events["hg_pl_oc_pre_event"] = self.set_unspecified_ether
         """
+        
 
 
 
@@ -137,6 +156,12 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.head_group_decorators = []
         self.tmp = {}
         
+        #self.debug = True
+        
+        
+    def set_lipid_level(self, level):
+        self.level = self.level if self.level.value < level.value else level
+        
         
     def set_head_group_name(self, node):
         self.head_group = node.get_text()
@@ -145,7 +170,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
     def set_carbohydrate(self, node):
         carbohydrate = node.get_text()
         try:
-            functional_group = get_functional_group(name)
+            functional_group = get_functional_group(carbohydrate).copy()
         except Exception:
             raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
         
@@ -155,7 +180,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
     def set_lcb(self, node):
         self.fa_list[-1].lcb = True
         self.fa_list[-1].name = "LCB"
-        self.fa_list[-1].calculate_elements()
         
     
     def new_fatty_acyl_chain(self, node):
@@ -164,6 +188,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def add_fatty_acyl_chain(self, node):
+        
         fa_i = "fa%i" % len(self.current_fa)
         if type(self.current_fa[-1].double_bonds) != int:
             if len(self.current_fa[-1].double_bonds) != self.tmp[fa_i]["db_count"]:
@@ -171,8 +196,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
             
         else:
             if self.current_fa[-1].double_bonds > 0:
-                self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
+                self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+                
         del self.tmp[fa_i]
+        
         
         self.fa_list.append(self.current_fa.pop())
         
@@ -193,7 +220,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         pos = self.tmp[fa_i]["db_position"]
         cistrans = self.tmp[fa_i]["db_cistrans"]
         
-        if cistrans == "": self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+        if cistrans == "": self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
         
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
@@ -203,6 +230,93 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def set_cistrans(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["db_cistrans"] = node.get_text()
+        
+        
+    def set_functional_group(self, node):
+        fa_i = "fa%i" % len(self.current_fa)
+        self.tmp[fa_i]["fg_pos"] = -1
+        self.tmp[fa_i]["fg_name"] = "O"
+        self.tmp[fa_i]["fg_cnt"] = 1
+        self.tmp[fa_i]["fg_stereo"] = ""
+        
+        
+    def set_cycle(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = "cy"
+        self.current_fa.append(Cycle(0))
+        fa_i = "fa%i" % len(self.current_fa)
+        self.tmp[fa_i] = {}
+        
+        
+    def add_cycle(self, node):
+        fa_i = "fa%i" % len(self.current_fa)
+        del self.tmp[fa_i]
+        cycle = self.current_fa.pop()
+        if "cy" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["cy"] = []
+        self.current_fa[-1].functional_groups["cy"].append(cycle)
+        
+        
+    def set_cycle_start(self, node):
+        self.current_fa[-1].start = int(node.get_text())
+        
+        
+    def set_cycle_end(self, node):
+        self.current_fa[-1].end = int(node.get_text())
+        
+        
+    def set_cycle_number(self, node):
+        self.current_fa[-1].count = int(node.get_text())
+        
+    
+    def set_functional_group_position(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_pos"] = int(node.get_text())
+        
+    
+    def set_functional_group_name(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = node.get_text()
+        
+    
+    def set_functional_group_count(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_cnt"] = int(node.get_text())
+        
+    
+    def set_functional_group_stereo(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_stereo"] = node.get_text()
+        
+        
+    def set_placeholder(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = "O"
+        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+        
+        
+    def add_functional_group(self, node):
+        
+        fa_i = "fa%i" % len(self.current_fa)
+        fg_pos = self.tmp[fa_i]["fg_pos"]
+        fg_name = self.tmp[fa_i]["fg_name"]
+        fg_cnt = self.tmp[fa_i]["fg_cnt"]
+        fg_stereo = self.tmp[fa_i]["fg_stereo"]
+        
+        if fg_name == "cy": return
+        
+        if fg_pos == -1:
+            self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        
+        try:
+            functional_group = get_functional_group(fg_name).copy()
+        except Exception:
+            raise LipidParsingException(" '%s' unknown" % fg_name)
+        
+        functional_group.position = fg_pos
+        functional_group.count = fg_cnt
+        functional_group.stereochemistry = fg_stereo
+        
+        del self.tmp[fa_i]["fg_pos"]
+        del self.tmp[fa_i]["fg_name"]
+        del self.tmp[fa_i]["fg_cnt"]
+        del self.tmp[fa_i]["fg_stereo"]
+        
+        if fg_name not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[fg_name] = []
+        self.current_fa[-1].functional_groups[fg_name].append(functional_group)
         
         
     def set_ether_type(self, node):
@@ -237,139 +351,12 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
         self.lipid = LipidAdduct()
+        self.lipid.adduct = self.adduct
         self.lipid.lipid = lipid_level_class(self.head_group, self.fa_list)
         for decorator in self.head_group_decorators[::-1]:
             self.lipid.lipid.headgroup_decorators.append(decorator)
         
         self.content = self.lipid
-        
-    """
-    def set_unspecified_ether(self, node):
-        self.unspecified_ether = True
-        
-    
-        
-        
-    def set_isomeric_level(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
-        self.db_position = 0
-        self.db_cistrans = ""
-        
-
-    def add_db_position(self, node):
-        if self.current_fa != None: self.current_fa.double_bond_positions[self.db_position] = self.db_cistrans
-        
-
-    def add_db_position_number(self, node):
-        self.db_position = int(node.get_text())
-        
-
-    def add_cistrans(self, node):
-        self.db_cistrans = node.get_text()
-        
-        
-    def set_molecular_subspecies_level(self, node):
-        self.level = LipidLevel.MOLECULAR_SUBSPECIES
-        
-        
-    def new_fa(self, node):
-        if self.unspecified_ether:
-            lipid_FA_bond_type = LipidFaBondType.ETHER_UNSPECIFIED
-            self.unspecified_ether = False
-        else:
-            lipid_FA_bond_type = LipidFaBondType.ESTER
-        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, lipid_FA_bond_type, False, 0, {})
-
-        
-            
-    def append_fa(self, node):
-        
-        current_fa = self.current_fa
-        if self.level == LipidLevel.SPECIES:
-            self.current_fa = LipidSpeciesInfo(current_fa)
-            
-        elif self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
-            self.current_fa.position = len(self.fa_list) + 1
-            
-            
-        self.fa_list.append(self.current_fa)
-        self.current_fa = None
-        
-        
-        
-        
-        
-    def new_lcb(self, node):
-        self.lcb = FattyAcid("LCB", 2, 0, 0, LipidFaBondType.ESTER, True, 1, {})
-        self.current_fa = self.lcb
-            
-            
-    def clean_lcb(self, node):
-        lcb = self.lcb
-        if self.level == LipidLevel.SPECIES:
-            self.lcb = LipidSpeciesInfo(lcb)
-            self.lcb.lipid_FA_bond_type = LipidFaBondType.ESTER
-
-        
-        self.current_fa = None
-        
-        
-        
-    def build_lipid(self, node):
-        if self.lcb != None:
-            for fa in self.fa_list: fa.position += 1
-            self.fa_list = [self.lcb] + self.fa_list
-        
-        lipid = None
-        
-        
-        
-        if self.level == LipidLevel.SPECIES:
-            if len(self.fa_list) > 0:
-                lipid_species_info = LipidSpeciesInfo(self.fa_list[0])
-                lipid_species_info.level = LipidLevel.SPECIES
-                lipid = LipidSpecies(self.head_group, lipid_species_info = lipid_species_info)
-            else:
-                lipid = LipidSpecies(self.head_group)
-            
-        elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
-            lipid = LipidMolecularSubspecies(self.head_group, self.fa_list)
-            
-        elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            lipid = LipidStructuralSubspecies(self.head_group, self.fa_list)
-            
-        elif self.level == LipidLevel.ISOMERIC_SUBSPECIES:
-            lipid = LipidIsomericSubspecies(self.head_group, self.fa_list)
-    
-        self.lipid = LipidAdduct()
-        self.lipid.lipid = lipid
-        self.lipid.adduct = self.adduct
-        self.content = self.lipid
-        
-        
-        
-    def add_ether(self, node):
-        ether = node.get_text()
-        if ether == "a": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "p": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
-        
-        
-    def add_old_hydroxyl(self, node):
-        old_hydroxyl = node.get_text()
-        if old_hydroxyl == "d": self.current_fa.num_hydroxyl = 2
-        if old_hydroxyl == "t": self.current_fa.num_hydroxyl = 3
-        
-        
-    def add_double_bonds(self, node):
-        self.current_fa.num_double_bonds = int(node.get_text())
-        
-        
-    def add_carbon(self, node):
-        self.current_fa.num_carbon = int(node.get_text())
-        
-        
-    def add_hydroxyl(self, node):
-        self.current_fa.num_hydroxyl = int(node.get_text())
         
         
     def new_adduct(self, node):
@@ -388,6 +375,5 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         sign = node.get_text()
         if sign == "+": self.adduct.set_charge_sign(1)
         if sign == "-": self.adduct.set_charge_sign(-1)
-    """
         
         

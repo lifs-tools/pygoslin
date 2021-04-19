@@ -28,6 +28,7 @@ from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.FunctionalGroup import FunctionalGroup
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
 
@@ -40,7 +41,6 @@ class LipidMolecularSubspecies(LipidSpecies):
         self.fa_list = []
         self.info = LipidSpeciesInfo()
         self.info.level = LipidLevel.MOLECULAR_SUBSPECIES
-        self.headgroup_decorators = []
         
         for fas in fa:
             if fas.name in self.fa:
@@ -79,6 +79,16 @@ class LipidMolecularSubspecies(LipidSpecies):
         
         return "".join(head_group) + fa_string
     
+    
+    
+    def get_elements(self):
+        dummy = FunctionalGroup("dummy", elements = super().get_elements()) # get elements from head group + all decorators
+        # add elements from all fatty acyl chains
+        for fa in self.fa_list:
+            fa.compute_elements()
+            dummy += fa
+        
+        return dummy.elements
     
     
     def get_lipid_string(self, level = None):

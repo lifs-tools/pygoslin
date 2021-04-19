@@ -51,7 +51,6 @@ class FattyAcid(FunctionalGroup):
         if position < 0:
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
         
-        self.calculate_elements()
         
     def get_num_oxygens(self):
         num_oxygen = 0
@@ -120,10 +119,10 @@ class FattyAcid(FunctionalGroup):
             if num_oxygen > 0: fa_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
         
         return "".join(fa_string)
+    
 
 
-    def calculate_elements(self):
-        
+    def compute_elements(self):
         num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
         if not self.lcb:
             if self.num_carbon > 0 or num_double_bonds > 0:
@@ -148,14 +147,17 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
             self.elements[Element.N] = 1 # nitrogen
         
+        
 
 
     def get_elements(self):
+        self.compute_elements()
+        
         fg_dummy = FunctionalGroup("")
         fg_dummy += self
         
         for fg, fg_list in self.functional_groups.items():
             for func_group in fg_list:
                 fg_dummy += func_group
-        
+            
         return fg_dummy.get_elements()

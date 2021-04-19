@@ -27,19 +27,25 @@ SOFTWARE.
 from pygoslin.domain.LipidExceptions import RuntimeException
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
+from pygoslin.domain.FunctionalGroup import FunctionalGroup
 from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidClass import *
 from pygoslin.domain.LipidFaBondType import *
 from pygoslin.domain.Element import Element
 
 class LipidSpecies:
-    def __init__(self, head_group, lipid_category = None, lipid_class = None, lipid_species_info = None):
+    def __init__(self, head_group, fa = []):
         self.head_group = head_group.strip(" ")
-        self.lipid_category = lipid_category if lipid_category != None else get_category(self.head_group)
-        
-        self.lipid_class = lipid_class if lipid_class != None else get_class(self.head_group)
-        self.info = lipid_species_info
+        self.lipid_category = get_category(self.head_group)
+        self.lipid_class = get_class(self.head_group)
         self.use_head_group = False
+        self.headgroup_decorators = []
+        
+        self.info = LipidSpeciesInfo()
+        self.info.level = LipidLevel.SPECIES
+    
+        for fas in fa: self.info.add(fas)
         
         
     def clone(self, fa):
@@ -64,19 +70,13 @@ class LipidSpecies:
 
 
     def get_lipid_string(self, level = None):
-        if level == None:
-            if self.info != None:
-                level = self.info.level
-            else:
-                raise RuntimeException("LipidSpecies does not know how to create a lipid string for level %s" % (level if level != None else " unknown"))
-        
         if level == LipidLevel.CATEGORY:
             return self.lipid_category.name
         
         elif level == LipidLevel.CLASS:
             return all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group
         
-        elif level == LipidLevel.SPECIES:
+        elif level == None or level == LipidLevel.SPECIES:
             lipid_string = [all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group]
             if self.info != None and self.info.num_carbon > 0:
                 #special_case = self.lipid_class in self.special_cases
@@ -90,36 +90,13 @@ class LipidSpecies:
             raise RuntimeException("LipidSpecies does not know how to create a lipid string for level %s" + level)
         
         
+        
     def get_elements(self):
-        if self.use_head_group:
-            return {e: 0 for e in Element}
+        if self.use_head_group or self.info.level not in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+            raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
+        dummy = FunctionalGroup("dummy", elements = all_lipids[self.lipid_class]["elements"])
+        for hgd in self.headgroup_decorators: dummy += hgd
         
-        hg_elements = all_lipids[self.lipid_class]["elements"]
-        try:
-            elements = {e: hg_elements[e] for e in Element}
-        except:
-            raise LipidException("Inconsistant element tables")
-            
-        if self.info.level in {LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
-            num_true_fa = 0
-            for fa in self.fa_list:
-                fa_elements = fa.get_elements()
-                #print("%s: %s" % (self.head_group, fa_elements))
-                if fa.num_carbon != 0 or fa.num_double_bonds != 0: num_true_fa += 1
-                for e in Element:
-                    elements[e] += fa_elements[e]
-            if all_lipids[self.lipid_class]["max_fa"] < num_true_fa:
-                raise LipidException("Inconsistancy in number of fatty acyl chains for lipid '%s'" % self.head_group)
-            elements[Element.H] += all_lipids[self.lipid_class]["max_fa"] - num_true_fa # adding hydrogens for absent fatty acyl chains
-            
-        
-        elif self.info.level == LipidLevel.SPECIES:
-            fa_elements = self.info.get_elements(max(all_lipids[self.lipid_class]["poss_fa"]))
-            for e in Element:
-                elements[e] += fa_elements[e]
-            elements[Element.H] += all_lipids[self.lipid_class]["max_fa"] - max(all_lipids[self.lipid_class]["poss_fa"]) # adding hydrogens for absent fatty acyl chains
-            
-        
-        return elements
+        return dummy.elements
         
