@@ -33,6 +33,7 @@ class FunctionalGroup:
         self.position = position
         self.count = count
         self.stereochemistry = stereochemistry
+        self.ring_stereo = ""
         self.elements = {e: 0 for e in Element} if elements == None else {k: v for k, v in elements.items()}
         self.functional_groups = functional_groups if functional_groups != None else {}
         
@@ -41,8 +42,15 @@ class FunctionalGroup:
         self.name = fg.name
         self.elements = {k: v for k, v in fg.elements.items()}
         
+        
     def copy(self):
-        return FunctionalGroup(self.name, position = self.position, count = self.count, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
+        functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
+        for fg, fg_list in self.functional_groups.items():
+            if fg not in functional_group.functional_groups: functional_group.functional_groups[fg] = []
+            for func_group in fg_list:
+                functional_group.functional_groups[fg].append(func_group)
+        functional_group.ring_stereo = self.ring_stereo
+        return functional_group
         
         
     def get_elements(self):
@@ -65,8 +73,8 @@ class FunctionalGroup:
     def to_string(self, level):
         fg_string = ""
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            if str.isnumeric(self.name[0]): fg_string = "%i(%s)" % (self.position, self.name) if self.position > -1 else self.name
-            else: fg_string = "%i%s" % (self.position, self.name) if self.position > -1 else self.name
+            if str.isnumeric(self.name[0]): fg_string = "%i%s(%s)" % (self.position, self.ring_stereo, self.name) if self.position > -1 else self.name
+            else: fg_string = "%i%s%s" % (self.position, self.ring_stereo, self.name) if self.position > -1 else self.name
             
         else:
             fg_string = "(%s)%i" % (self.name, self.count) if self.count > 1 else self.name

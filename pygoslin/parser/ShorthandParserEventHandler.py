@@ -125,6 +125,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["fatty_alkyl_linkage_post_event"] = self.add_alkyl_linkage
         self.registered_events["fatty_linkage_number_pre_event"] = self.set_fatty_linkage_number
         
+        self.registered_events["ring_stereo_pre_event"] = self.set_ring_stereo
         
         """
         self.registered_events["gl_species_pre_event"] = self.set_species_level
@@ -187,6 +188,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def pre_sphingolipid(self, node):
         self.tmp["sl_hydroxyl"] = False
+        
+        
+    def set_ring_stereo(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_ring_stereo"] = node.get_text()
         
         
     def post_sphingolipid(self, node):
@@ -266,6 +271,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.tmp[fa_i]["fg_name"] = "O"
         self.tmp[fa_i]["fg_cnt"] = 1
         self.tmp[fa_i]["fg_stereo"] = ""
+        self.tmp[fa_i]["fg_ring_stereo"] = ""
         
         
     def set_cycle(self, node):
@@ -363,6 +369,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         fg_name = self.tmp[fa_i]["fg_name"]
         fg_cnt = self.tmp[fa_i]["fg_cnt"]
         fg_stereo = self.tmp[fa_i]["fg_stereo"]
+        fg_ring_stereo = self.tmp[fa_i]["fg_ring_stereo"]
         
         if fg_name in {"cy", "acyl", "alkyl"}: return
         
@@ -377,6 +384,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         functional_group.position = fg_pos
         functional_group.count = fg_cnt
         functional_group.stereochemistry = fg_stereo
+        functional_group.ring_stereo = fg_ring_stereo
         
         del self.tmp[fa_i]["fg_pos"]
         del self.tmp[fa_i]["fg_name"]
