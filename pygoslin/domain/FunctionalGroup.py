@@ -28,12 +28,13 @@ from pygoslin.domain.Element import *
 from pygoslin.domain.LipidLevel import LipidLevel
 
 class FunctionalGroup:
-    def __init__(self, name, position = -1, count = 1, stereochemistry = None, elements = None):
+    def __init__(self, name, position = -1, count = 1, stereochemistry = None, elements = None, functional_groups = None):
         self.name = name
         self.position = position
         self.count = count
         self.stereochemistry = stereochemistry
         self.elements = {e: 0 for e in Element} if elements == None else {k: v for k, v in elements.items()}
+        self.functional_groups = functional_groups if functional_groups != None else {}
         
         
     def clone(self, fg):
@@ -46,7 +47,19 @@ class FunctionalGroup:
         
     def get_elements(self):
         elements = {k: v * self.count for k, v in self.elements.items()}
+        for fg, fg_list in self.functional_groups.items():
+            for func_group in fg_list:
+                func_group.compute_elements()
+                for k, v in func_group.get_elements().items():
+                    if k not in elements: elements[k] = 0
+                    elements[k] += v * func_group.count
         return elements
+    
+    
+    def compute_elements(self):
+        for fg, fg_list in self.functional_groups.items():
+            for func_group in fg_list:
+                func_group.compute_elements()
         
         
     def to_string(self, level):
@@ -63,13 +76,28 @@ class FunctionalGroup:
     
     
     def get_num_oxygens(self):
-        return self.elements[Element.O] * self.count if Element.O in self.elements else 0
+        num_oxygens = self.elements[Element.O] * self.count if Element.O in self.elements else 0
+        for fg, fg_list in self.functional_groups.items():
+            for func_group in fg_list:
+                func_group.compute_elements()
+                if Element.O in func_group.elements:
+                    num_oxygens += func_group.elements[Element.O] * func_group.count
+        return num_oxygens
+    
     
     
     def __iadd__(self, fg):
         for k, v in fg.elements.items():
             if k not in self.elements: self.elements[k] = 0
             self.elements[k] += v * fg.count
+        
+        for fg, fg_list in fg.functional_groups.items():
+            for func_group in fg_list:
+                func_group.compute_elements()
+                for k, v in func_group.get_elements().items():
+                    if k not in self.elements: self.elements[k] = 0
+                    self.elements[k] += v * func_group.count
+        
         return self
     
     
@@ -96,6 +124,7 @@ _known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2
                            "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2, Element.H: 1}),
                            "G": FunctionalGroup("G", elements = {}),
                            "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
+                           "H": FunctionalGroup("H", elements = {Element.H: 1}),
                            "COG": FunctionalGroup("COG", elements = {}),
                            "COT": FunctionalGroup("COT", elements = {}),
                            "Hex": FunctionalGroup("Hex", elements = {}),
@@ -106,6 +135,8 @@ _known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2
                            "HexNAc": FunctionalGroup("NexNAc", elements = {}),
                            "GalNAc": FunctionalGroup("GalNAc", elements = {}),
                            "GlcNAc": FunctionalGroup("GlcNAc", elements = {}),
+                           "OGlcNAc": FunctionalGroup("OGlcNAc", elements = {}),
+                           "OGlc": FunctionalGroup("OGlc", elements = {}),
                            "NeuAc": FunctionalGroup("NeuAc", elements = {}),
                            "NeuGc": FunctionalGroup("NeuGc", elements = {}),
                            "Kdn": FunctionalGroup("Kdn", elements = {}),
@@ -115,20 +146,22 @@ _known_functional_groups = {"Et": FunctionalGroup("Et", elements = {Element.C: 2
                            "NeuAc2": FunctionalGroup("NeuAc2", elements = {}),
                            "SHex": FunctionalGroup("SHex", elements = {}),
                            "S(3')Hex": FunctionalGroup("S(3')Hex", elements = {}),
-                           "S(3´)Hex": FunctionalGroup("S(3')Hex", elements = {}),
+                           "S(3′)Hex": FunctionalGroup("S(3')Hex", elements = {}),
                            "NAc": FunctionalGroup("NAc", elements = {}),
                            "Nac": FunctionalGroup("Nac", elements = {}),
                            "SGal": FunctionalGroup("SGal", elements = {}),
                            "S(3')Gal": FunctionalGroup("S(3')Gal", elements = {}),
-                           "S(3´)Gal": FunctionalGroup("S(3')Gal", elements = {}),
+                           "S(3′)Gal": FunctionalGroup("S(3')Gal", elements = {}),
                            "HexA": FunctionalGroup("HexA", elements = {}),
                            "O": FunctionalGroup("O", elements = {Element.O: 1})}
+
 
 
 def get_functional_group(name):
     if name in _known_functional_groups:
         return _known_functional_groups[name].copy()
     raise Exception("Name '%s' not registered in functional group list" % name)
+
 
     
 class HeadGroupDecorator(FunctionalGroup):
@@ -140,26 +173,21 @@ class HeadGroupDecorator(FunctionalGroup):
         return "%s-" % self.name
     
     
-    
-    
+
     
 class AcylAlkylGroup(FunctionalGroup):
     def __init__(self, fa, position = -1, count = 1, alkyl = False):
         super().__init__("O", position = position, count = count)
-        self.fa = fa
+        if fa != None: self.funcional_groups["alkyl" if alkyl else "acyl"] = [fa]
         self.alkyl = alkyl
-       
-       
-    def get_num_oxygens(self):
-        return self.fa.get_num_oxygens()
-    
-    
+
     def to_string(self, level):
         acyl_alkyl_string = []
         if level == LipidLevel.ISOMERIC_SUBSPECIES: acyl_alkyl_string.append("%i" % self.position)
         acyl_alkyl_string.append("O(")
         if self.alkyl: acyl_alkyl_string.append("FA ")
-        acyl_alkyl_string.append(self.fa.to_string(level))
+        fa = self.functional_groups["alkyl" if self.alkyl else "acyl"][0]
+        acyl_alkyl_string.append(fa.to_string(level))
         acyl_alkyl_string.append(")")
         
         return "".join(acyl_alkyl_string)

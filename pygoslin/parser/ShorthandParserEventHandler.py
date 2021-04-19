@@ -51,6 +51,11 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
         
+        ## set categories
+        self.registered_events["sl_pre_event"] = self.pre_sphingolipid
+        self.registered_events["sl_post_event"] = self.post_sphingolipid
+        self.registered_events["sl_hydroxyl_pre_event"] = self.set_hydroxyl
+        
         ## set adduct events
         self.registered_events["adduct_info_pre_event"] = self.new_adduct
         self.registered_events["adduct_pre_event"] = self.add_adduct
@@ -97,7 +102,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["cistrans_pre_event"] = self.set_cistrans
         self.registered_events["ether_type_pre_event"] = self.set_ether_type
         
-        # functional group events
+        ## set functional group events
         self.registered_events["func_group_data_pre_event"] = self.set_functional_group
         self.registered_events["func_group_data_post_event"] = self.add_functional_group
         self.registered_events["func_group_pos_number_pre_event"] = self.set_functional_group_position
@@ -112,13 +117,16 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["cycle_end_pre_event"] = self.set_cycle_end
         self.registered_events["cycle_number_pre_event"] = self.set_cycle_number
         
-        #self.registered_events["
-        #self.registered_events["
-        #self.registered_events["
-        #self.registered_events["
+        ## set linkage events
+        
+        self.registered_events["fatty_acyl_linkage_pre_event"] = self.set_acyl_linkage
+        self.registered_events["fatty_acyl_linkage_post_event"] = self.add_acyl_linkage
+        self.registered_events["fatty_alkyl_linkage_pre_event"] = self.set_alkyl_linkage
+        self.registered_events["fatty_alkyl_linkage_post_event"] = self.add_alkyl_linkage
+        self.registered_events["fatty_linkage_number_pre_event"] = self.set_fatty_linkage_number
+        
         
         """
-        
         self.registered_events["gl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
@@ -156,7 +164,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.head_group_decorators = []
         self.tmp = {}
         
-        #self.debug = True
+        #self.debug = ""
         
         
     def set_lipid_level(self, level):
@@ -164,7 +172,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def set_head_group_name(self, node):
-        self.head_group = node.get_text()
+        if len(self.head_group) == 0: self.head_group = node.get_text()
         
         
     def set_carbohydrate(self, node):
@@ -174,7 +182,19 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         except Exception:
             raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
         
-        self.head_group_decorators.append(carbohydrate)
+        self.head_group_decorators.append(functional_group)
+        
+        
+    def pre_sphingolipid(self, node):
+        self.tmp["sl_hydroxyl"] = False
+        
+        
+    def post_sphingolipid(self, node):
+        if not self.tmp["sl_hydroxyl"] and self.head_group not in {"Cer", "SPB"}: self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        
+        
+    def set_hydroxyl(self, node):
+        self.tmp["sl_hydroxyl"] = True
         
         
     def set_lcb(self, node):
@@ -189,6 +209,9 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def add_fatty_acyl_chain(self, node):
         
+        fg_i = "fa%i" % (len(self.current_fa) - 2)
+        is_acyl_alkyl = len(self.current_fa) > 2 and "fg_name" in self.tmp[fg_i] and self.tmp[fg_i]["fg_name"] in {"acyl", "alkyl"}
+        
         fa_i = "fa%i" % len(self.current_fa)
         if type(self.current_fa[-1].double_bonds) != int:
             if len(self.current_fa[-1].double_bonds) != self.tmp[fa_i]["db_count"]:
@@ -200,8 +223,13 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
                 
         del self.tmp[fa_i]
         
-        
-        self.fa_list.append(self.current_fa.pop())
+        if is_acyl_alkyl:
+            acyl_alkyl = self.current_fa.pop()
+            acyl_alkyl_type = "alkyl" if self.current_fa[-1].alkyl else "acyl"
+            if acyl_alkyl_type not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[acyl_alkyl_type] = []
+            self.current_fa[-1].functional_groups[acyl_alkyl_type].append(acyl_alkyl)
+        else:
+            self.fa_list.append(self.current_fa.pop())
         
         
     def set_double_bond_position(self, node):
@@ -248,11 +276,51 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def add_cycle(self, node):
-        fa_i = "fa%i" % len(self.current_fa)
-        del self.tmp[fa_i]
+        del self.tmp["fa%i" % len(self.current_fa)]
         cycle = self.current_fa.pop()
         if "cy" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["cy"] = []
         self.current_fa[-1].functional_groups["cy"].append(cycle)
+        
+        
+    def set_fatty_linkage_number(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["linkage_pos"] = int(node.get_text())
+        
+        
+    def set_acyl_linkage(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = "acyl"
+        self.current_fa.append(AcylAlkylGroup(None))
+        self.tmp["fa%i" % len(self.current_fa)] = {"linkage_pos": -1}
+        
+    def add_acyl_linkage(self, node):
+        linkage_pos = self.tmp["fa%i" % len(self.current_fa)]["linkage_pos"]
+        
+        del self.tmp["fa%i" % len(self.current_fa)]
+        acyl = self.current_fa.pop()
+        
+        acyl.position = linkage_pos
+        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        
+        if "acyl" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["acyl"] = []
+        self.current_fa[-1].functional_groups["acyl"].append(acyl)
+        
+        
+    def set_alkyl_linkage(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = "alkyl"
+        self.current_fa.append(AcylAlkylGroup(None, alkyl = True))
+        self.tmp["fa%i" % len(self.current_fa)] = {"linkage_pos": -1}
+        
+        
+    def add_alkyl_linkage(self, node):
+        linkage_pos = self.tmp["fa%i" % len(self.current_fa)]["linkage_pos"]
+        
+        del self.tmp["fa%i" % len(self.current_fa)]
+        alkyl = self.current_fa.pop()
+        
+        alkyl.position = linkage_pos
+        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        
+        if "alkyl" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["alkyl"] = []
+        self.current_fa[-1].functional_groups["alkyl"].append(alkyl)
         
         
     def set_cycle_start(self, node):
@@ -296,7 +364,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         fg_cnt = self.tmp[fa_i]["fg_cnt"]
         fg_stereo = self.tmp[fa_i]["fg_stereo"]
         
-        if fg_name == "cy": return
+        if fg_name in {"cy", "acyl", "alkyl"}: return
         
         if fg_pos == -1:
             self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
@@ -330,7 +398,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     
     def set_carbon(self, node):
-        self.current_fa[-1].num_carbon = int(node.get_text()) 
+        self.current_fa[-1].num_carbon = int(node.get_text())
       
       
     def set_double_bond_count(self, node):

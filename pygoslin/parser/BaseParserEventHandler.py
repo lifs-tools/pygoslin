@@ -32,7 +32,7 @@ class BaseParserEventHandler:
         self.rule_names = set()
         self.parser = None
         self.content = None
-        self.debug = False
+        self.debug = None
     
     
     # checking if all registered events are reasonable and orrur as rules in the grammar
@@ -48,7 +48,8 @@ class BaseParserEventHandler:
     
     
     def handle_event(self, event_name, node):
+        if self.debug != None and self.debug == "full": print(event_name)
         if event_name in self.registered_events:
-            if self.debug: print(event_name)
+            if self.debug != None and self.debug != "full": print(event_name)
             self.registered_events[event_name](node)
             

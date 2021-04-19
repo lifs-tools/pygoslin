@@ -32,12 +32,11 @@ from pygoslin.domain.LipidLevel import LipidLevel
 
 class Cycle(FunctionalGroup):
     def __init__(self, count, start = None, end = None, double_bonds = None, functional_groups = None):
-        super().__init__("cy")
+        super().__init__("cy", functional_groups)
         self.count = count
         self.start = start
         self.end = end
         self.double_bonds = double_bonds
-        self.functional_groups = functional_groups if functional_groups != None else {}
         
         if type(start) != type(end):
             raise ConstraintViolationException("Cycle data start and end values not of same type!")
@@ -46,14 +45,6 @@ class Cycle(FunctionalGroup):
             if end - start + 1 != count:
                 raise ConstraintViolationException("Cycle data start (%i) and end (%i) values do not correspond to count (%i)!" % (start, end, count))
                 
-    
-    def get_num_oxygens(self):
-        num_oxygen = 0
-        for fg, fg_list in self.functional_groups.items():
-            for func_group in fg_list:
-                num_oxygen += func_group.get_num_oxygens()
-        return num_oxygen
-    
         
     def clone(self, cyc):
         pass

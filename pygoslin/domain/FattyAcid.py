@@ -33,11 +33,10 @@ from pygoslin.domain.LipidLevel import LipidLevel
 class FattyAcid(FunctionalGroup):
 
     def __init__(self, name, num_carbon = 0, double_bonds = 0, functional_groups = None, lipid_FA_bond_type = LipidFaBondType.ESTER, lcb = False, position = 0):
-        super().__init__(name)
+        super().__init__(name, functional_groups if functional_groups != None else {})
         self.position = position
         self.num_carbon = num_carbon
         self.double_bonds = double_bonds
-        self.functional_groups = functional_groups if functional_groups != None else {}
         self.lipid_FA_bond_type = lipid_FA_bond_type
         self.lcb = lcb
         
@@ -51,14 +50,7 @@ class FattyAcid(FunctionalGroup):
         if position < 0:
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
         
-        
-    def get_num_oxygens(self):
-        num_oxygen = 0
-        for fg, fg_list in self.functional_groups.items():
-            for func_group in fg_list:
-                num_oxygen += func_group.get_num_oxygens()
-        return num_oxygen
-        
+
         
     def clone(self, fa):
         self.name = fa.name
@@ -148,16 +140,3 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.N] = 1 # nitrogen
         
         
-
-
-    def get_elements(self):
-        self.compute_elements()
-        
-        fg_dummy = FunctionalGroup("")
-        fg_dummy += self
-        
-        for fg, fg_list in self.functional_groups.items():
-            for func_group in fg_list:
-                fg_dummy += func_group
-            
-        return fg_dummy.get_elements()
