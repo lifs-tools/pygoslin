@@ -207,7 +207,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
             
         else:
             if self.current_fa[-1].double_bonds > 0:
-                self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+                self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
                 
         del self.tmp[fa_i]
         
