@@ -173,12 +173,25 @@ def get_functional_group(name):
 
     
 class HeadGroupDecorator(FunctionalGroup):
-    def __init__(self, name, position = -1, count = 1, elements = None):
+    def __init__(self, name, position = -1, count = 1, elements = None, suffix = False):
         super().__init__(name, position = position, count = count, elements = elements)
-        
+        self.suffix = suffix
         
     def to_string(self, level):
-        return "%s-" % self.name
+        if self.suffix:
+            if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
+                decorator_string = "(%s)" % self.functional_groups["decorator_alkyl"][0].to_string(level)
+                
+            elif "decorator_acyl" in self.functional_groups and len(self.functional_groups["decorator_acyl"]) > 0:
+                decorator_string = "(FA %s)" % self.functional_groups["decorator_acyl"][0].to_string(level)
+                
+            else:
+                decorator_string = ""
+        
+        else:
+            decorator_string = "%s-" % self.name
+        
+        return decorator_string
     
     
 
@@ -193,7 +206,7 @@ class AcylAlkylGroup(FunctionalGroup):
         acyl_alkyl_string = []
         if level == LipidLevel.ISOMERIC_SUBSPECIES: acyl_alkyl_string.append("%i" % self.position)
         acyl_alkyl_string.append("O(")
-        if self.alkyl: acyl_alkyl_string.append("FA ")
+        if not self.alkyl: acyl_alkyl_string.append("FA ")
         fa = self.functional_groups["alkyl" if self.alkyl else "acyl"][0]
         acyl_alkyl_string.append(fa.to_string(level))
         acyl_alkyl_string.append(")")
