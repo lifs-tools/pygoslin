@@ -112,6 +112,7 @@ class FunctionalGroup:
     
 _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1}), # hydroxyl
                            "Me": FunctionalGroup("Me", elements = {Element.C: 1, Element.H: 2}), # methyl
+                           "dMe": FunctionalGroup("dMe", elements = {Element.C: 1}), # methylen
                            "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}), # keto
                            "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}), # carboxyl
                            "Ep": FunctionalGroup("Ep", elements = {Element.O: 1, Element.H: -2}), # epoxy
@@ -121,13 +122,13 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 4}), # ethyl
                            "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1}),
                            "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
+                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
+                           "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
+                           "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 1}),
+                           "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}),
+                           "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),
+                           "SH": FunctionalGroup("SH", elements = {Element.S: 1}),
                            
-                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1}),
-                           "I": FunctionalGroup("I", elements = {Element.I: 1}),
-                           "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2}),
-                           "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 2}),
-                           "OOH": FunctionalGroup("OOH", elements = {Element.O: 2, Element.H: 1}),
-                           "SH": FunctionalGroup("SH", elements = {Element.S: 1, Element.H: 1}),
                            "CN": FunctionalGroup("CN", elements = {Element.C: 1, Element.N: 1}),
                            "P": FunctionalGroup("P", elements = {Element.P: 1}),
                            "S": FunctionalGroup("S", elements = {Element.S: 1}),
