@@ -50,6 +50,12 @@ class Cycle(FunctionalGroup):
         
     def clone(self, cyc):
         pass
+    
+    
+    def compute_elements(self):
+        self.elements[Element.H] = -2
+        if self.double_bonds != None:
+            self.elements[Element.H] -= 2 * (self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds))
         
         
     def to_string(self, level):

@@ -111,11 +111,18 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["stereo_type_pre_event"] = self.set_functional_group_stereo
         self.registered_events["func_group_placeholder_pre_event"] = self.set_placeholder
         self.registered_events["func_group_placeholder_number_pre_event"] = self.set_functional_group_count
+        
+        ## set cycle events
         self.registered_events["func_group_cycle_pre_event"] = self.set_cycle
         self.registered_events["func_group_cycle_post_event"] = self.add_cycle
         self.registered_events["cycle_start_pre_event"] = self.set_cycle_start
         self.registered_events["cycle_end_pre_event"] = self.set_cycle_end
         self.registered_events["cycle_number_pre_event"] = self.set_cycle_number
+        self.registered_events["cycle_db_cnt_pre_event"] = self.set_cycle_db_count
+        self.registered_events["cycle_db_positions_pre_event"] = self.set_cycle_db_positions
+        self.registered_events["cycle_db_positions_post_event"] = self.check_cycle_db_positions
+        self.registered_events["cycle_db_position_number_pre_event"] = self.set_cycle_db_position
+        self.registered_events["cycle_db_position_cis_trans_pre_event"] = self.set_cycle_db_position_cistrans
         
         ## set linkage events
         
@@ -145,7 +152,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.head_group_decorators = []
         self.tmp = {}
         
-        #self.debug = ""
+        #self.debug = "full"
         
         
     def set_lipid_level(self, level):
@@ -354,6 +361,30 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def set_cycle_number(self, node):
         self.current_fa[-1].cycle = int(node.get_text())
+        
+        
+    def set_cycle_db_count(self, node):
+        self.current_fa[-1].double_bonds = int(node.get_text())
+    
+    
+    def set_cycle_db_positions(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["cycle_db"] = self.current_fa[-1].double_bonds
+        self.current_fa[-1].double_bonds = {}
+    
+    
+    def check_cycle_db_positions(self, node):
+        if len(self.current_fa[-1].double_bonds) != self.tmp["fa%i" % len(self.current_fa)]["cycle_db"]:
+            raise LipidException("Double bond number in cycle does not correspond to number of double bond positions.")
+    
+    def set_cycle_db_position(self, node):
+        pos = int(node.get_text())
+        self.current_fa[-1].double_bonds[pos] = ""
+        self.tmp["fa%i" % len(self.current_fa)]["last_db_pos"] = pos
+        
+        
+    def set_cycle_db_position_cistrans(self, node):
+        pos = self.tmp["fa%i" % len(self.current_fa)]["last_db_pos"]
+        self.current_fa[-1].double_bonds[pos] = node.get_text()
         
     
     def set_functional_group_position(self, node):

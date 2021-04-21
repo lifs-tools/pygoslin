@@ -118,11 +118,11 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "OO": FunctionalGroup("OO", elements = {Element.O: 2}),  # peroxy
                            "OMe": FunctionalGroup("OMe", elements = {Element.O: 1, Element.C: 1, Element.H: 2}), # methoxy
                            "oxy": FunctionalGroup("oxy", elements = {Element.O: 1}), # Alkoxy / ether
+                           "Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 4}), # ethyl
+                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1}),
+                           "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
                            
-                           "Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 5}),
                            "Br": FunctionalGroup("Br", elements = {Element.Br: 1}),
-                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1}),
-                           "F": FunctionalGroup("F", elements = {Element.F: 1}),
                            "I": FunctionalGroup("I", elements = {Element.I: 1}),
                            "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2}),
                            "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 2}),
