@@ -31,19 +31,21 @@ from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidLevel import LipidLevel
 
 class Cycle(FunctionalGroup):
-    def __init__(self, count, start = None, end = None, double_bonds = None, functional_groups = None):
+    def __init__(self, cycle, start = None, end = None, double_bonds = None, functional_groups = None):
         super().__init__("cy", functional_groups)
-        self.count = count
+        self.count = 1
+        self.cycle = cycle
         self.start = start
         self.end = end
         self.double_bonds = double_bonds
+        self.elements[Element.H] = -2
         
         if type(start) != type(end):
             raise ConstraintViolationException("Cycle data start and end values not of same type!")
         
         if type(start) == int:
-            if end - start + 1 != count:
-                raise ConstraintViolationException("Cycle data start (%i) and end (%i) values do not correspond to count (%i)!" % (start, end, count))
+            if end - start + 1 != cycle:
+                raise ConstraintViolationException("Cycle data start (%i) and end (%i) values do not correspond to count (%i)!" % (start, end, cycle))
                 
         
     def clone(self, cyc):
@@ -54,7 +56,7 @@ class Cycle(FunctionalGroup):
         cycle_string = ["["]
         if self.start != None and level == LipidLevel.ISOMERIC_SUBSPECIES:
             cycle_string.append("%i-%i" % (self.start, self.end))
-        cycle_string.append("cy%i" % self.count)    
+        cycle_string.append("cy%i" % self.cycle)    
             
         if self.double_bonds != None:
             if type(self.double_bonds) != int:
@@ -67,19 +69,21 @@ class Cycle(FunctionalGroup):
         
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            for fg, fg_list in self.functional_groups.items():
+            for fg in sorted(self.functional_groups.keys()):
+                fg_list = self.functional_groups[fg]
                 fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
                 if len(fg_summary) > 0: cycle_string.append(";%s" % fg_summary)
         
         elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            for fg, fg_list in self.functional_groups.items():
+            for fg in sorted(self.functional_groups.keys()):
+                fg_list = self.functional_groups[fg]
                 if len(fg_list) > 0:
                     if len(fg_list) == 1:
                         fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
                         if len(fg_summary) > 0: cycle_string.append(";%s" % fg_summary)
                 
                     else:
-                        fg_count = sum([func_group.count for func_group in fg_list])
+                        fg_count = sum([func_group.cycle for func_group in fg_list])
                         if fg_count > 1: cycle_string.append(";(%s)%i" % (fg, fg_count))
                         else: cycle_string.append(";%s" % fg)
                     

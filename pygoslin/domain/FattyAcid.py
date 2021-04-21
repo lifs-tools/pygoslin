@@ -89,12 +89,14 @@ class FattyAcid(FunctionalGroup):
             fa_string.append(":%i" % self.double_bonds)
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            for fg, fg_list in self.functional_groups.items():
+            for fg in sorted(self.functional_groups):
+                fg_list = self.functional_groups[fg]
                 fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
                 if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
         
         elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            for fg, fg_list in self.functional_groups.items():
+            for fg in sorted(self.functional_groups):
+                fg_list = self.functional_groups[fg]
                 if len(fg_list) > 0:
                     
                     if len(fg_list) == 1:

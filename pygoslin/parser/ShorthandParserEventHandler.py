@@ -353,7 +353,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def set_cycle_number(self, node):
-        self.current_fa[-1].count = int(node.get_text())
+        self.current_fa[-1].cycle = int(node.get_text())
         
     
     def set_functional_group_position(self, node):
