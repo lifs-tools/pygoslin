@@ -175,7 +175,9 @@ sl_double : sl_hg_double headgroup_separator lcb sorted_fa_separator fatty_acyl_
 sl_hydroxyl : ROB sl_hydroxyl_number RCB;
 sl_hydroxyl_number : number;
 sl_hg_single : 'SPB' | 'SPBP' | 'LIPC' | 'LSM';
-sl_hg_double : sl_hg_double_name | carbohydrate sl_hg_double  | carbohydrate '-' sl_hg_double;
+sl_hg_double : sl_hg_double_name | carbohydrate_structural sl_hg_double  | carbohydrate_isomeric sl_hg_double;
+carbohydrate_structural : carbohydrate;
+carbohydrate_isomeric : carbohydrate carbohydrate_separator;
 sl_hg_double_name : 'SM' | 'Cer' | 'CerP' | acer_hg | 'HexCer' | 'GlcCer' | 'GalCer' | 'Hex2Cer' | 'LacCer' | 'SHexCer' | 'IPC' | 'PI-Cer' | 'EPC' | 'PE-Cer' | 'GIPC' | 'MIPC' | 'M(IP)2C' | 'Hex3Cer' | 'S(3' apostroph ')HexCer' | 'S(3' apostroph ')GalCer';
 acer_hg : acer_hg_pure | acer_med '-' acer_hg_pure;
 acer_hg_pure : 'ACer';
@@ -217,6 +219,7 @@ carbon_db_separator : COLON;
 cycle_separator: DASH;
 db_funcgroup_separator : SEMICOLON;
 db_position_separator : COMMA;
+carbohydrate_separator : DASH;
 funcgroup_separator : SEMICOLON;
 func_repetition_separator : COMMA;
 round_open_bracket : ROB;

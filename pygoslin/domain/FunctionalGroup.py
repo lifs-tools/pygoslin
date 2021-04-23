@@ -83,6 +83,7 @@ class FunctionalGroup:
         return fg_string
     
     
+    
     def get_num_oxygens(self):
         num_oxygens = self.elements[Element.O] * self.count if Element.O in self.elements else 0
         for fg, fg_list in self.functional_groups.items():
@@ -133,13 +134,20 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "S": FunctionalGroup("S", elements = {Element.S: 1, Element.O: 4}),
                            "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
                            "G": FunctionalGroup("G", elements = {Element.N: 1, Element.H: 1}),
+                           "Hex": FunctionalGroup("Hex", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "Gal": FunctionalGroup("Gal", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "Glc": FunctionalGroup("Glc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "NeuAc": FunctionalGroup("NeuAc", elements = {Element.O: 8, Element.N: 1, Element.C: 11, Element.H: 17}),
+                           "SGal": FunctionalGroup("SGal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3')Gal": FunctionalGroup("S(3')Gal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3′)Gal": FunctionalGroup("S(3')Gal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "SHex": FunctionalGroup("SHex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3')Hex": FunctionalGroup("S(3')Hex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3′)Hex": FunctionalGroup("S(3')Hex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
                            
                            "H": FunctionalGroup("H", elements = {Element.H: 1}),
                            "COG": FunctionalGroup("COG", elements = {}),
                            "COT": FunctionalGroup("COT", elements = {}),
-                           "Hex": FunctionalGroup("Hex", elements = {}),
-                           "Gal": FunctionalGroup("Gal", elements = {}),
-                           "Glc": FunctionalGroup("Glc", elements = {}),
                            "Man": FunctionalGroup("Man", elements = {}),
                            "Neu": FunctionalGroup("Neu", elements = {}),
                            "HexNAc": FunctionalGroup("NexNAc", elements = {}),
@@ -147,21 +155,14 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "GlcNAc": FunctionalGroup("GlcNAc", elements = {}),
                            "OGlcNAc": FunctionalGroup("OGlcNAc", elements = {}),
                            "OGlc": FunctionalGroup("OGlc", elements = {}),
-                           "NeuAc": FunctionalGroup("NeuAc", elements = {}),
                            "NeuGc": FunctionalGroup("NeuGc", elements = {}),
                            "Kdn": FunctionalGroup("Kdn", elements = {}),
                            "GlcA": FunctionalGroup("GlcA", elements = {}),
                            "Xyl": FunctionalGroup("Xyl", elements = {}),
                            "Fuc": FunctionalGroup("Fuc", elements = {}),
                            "NeuAc2": FunctionalGroup("NeuAc2", elements = {}),
-                           "SHex": FunctionalGroup("SHex", elements = {}),
-                           "S(3')Hex": FunctionalGroup("S(3')Hex", elements = {Element.O: 8, Element.H: 8, Element.C: 5, Element.S: 1}),
-                           "S(3′)Hex": FunctionalGroup("S(3')Hex", elements = {Element.O: 8, Element.H: 8, Element.C: 5, Element.S: 1}),
                            "NAc": FunctionalGroup("NAc", elements = {}),
                            "Nac": FunctionalGroup("Nac", elements = {}),
-                           "SGal": FunctionalGroup("SGal", elements = {}),
-                           "S(3')Gal": FunctionalGroup("S(3')Gal", elements = {}),
-                           "S(3′)Gal": FunctionalGroup("S(3')Gal", elements = {}),
                            "HexA": FunctionalGroup("HexA", elements = {}),
                            "O": FunctionalGroup("O", elements = {Element.O: 1})}
 

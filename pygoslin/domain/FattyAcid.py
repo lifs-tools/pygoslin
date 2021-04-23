@@ -140,5 +140,5 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.C] = self.num_carbon # carbon
             self.elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
             self.elements[Element.N] = 1 # nitrogen
-        
+            self.elements[Element.O] = 1
         

@@ -74,8 +74,12 @@ class LipidMolecularSubspecies(LipidSpecies):
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES and self.lipid_category == LipidCategory.SP and head_group[0] not in {"Cer", "SPB"}:
             head_group.append("(1)")
-        for hgd in self.headgroup_decorators:
-            head_group.insert(0, hgd.to_string(level))
+            
+        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+            head_group = ["%s-" % hgd.to_string(level) for hgd in self.headgroup_decorators] + head_group
+                
+        else:
+            head_group = sorted(hgd.to_string(level) for hgd in self.headgroup_decorators) + head_group
         
         return "".join(head_group) + fa_string
     
@@ -84,6 +88,10 @@ class LipidMolecularSubspecies(LipidSpecies):
     def get_elements(self):
         dummy = FunctionalGroup("dummy", elements = super().get_elements()) # get elements from head group + all decorators
         # add elements from all fatty acyl chains
+        
+        head_group = (all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group)
+        if self.lipid_category == LipidCategory.SP and head_group == "Cer" and len(self.headgroup_decorators) == 0:
+            dummy.elements[Element.O] -= 1
         
         for fa in self.fa_list:
             fa.compute_elements()

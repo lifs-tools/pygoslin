@@ -89,6 +89,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
 
         ## set head group head_group_decorators
         self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
+        self.registered_events["carbohydrate_structural_pre_event"] = self.set_carbohydrate_structural
         
         # fatty acyl events
         self.registered_events["lcb_post_event"] = self.set_lcb
@@ -171,6 +172,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
             raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
         
         self.head_group_decorators.append(functional_group)
+        
+        
+    def set_carbohydrate_structural(self, node):
+        self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
         
         
     def pre_sphingolipid(self, node):
