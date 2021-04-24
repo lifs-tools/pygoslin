@@ -154,7 +154,7 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "NeuGc": FunctionalGroup("NeuGc", elements = {Element.C: 11, Element.H: 17, Element.N: 1, Element.O: 9}),
                            "NAc": FunctionalGroup("NAc", elements = {Element.C: 5, Element.H: 7, Element.N: 1, Element.O: 2, Element.S: 1}),
                            "Nac": FunctionalGroup("Nac", elements = {Element.C: 5, Element.H: 7, Element.N: 1, Element.O: 2, Element.S: 1}),
-                           "Fuc": FunctionalGroup("Fuc", elements = {Element.C:, 6, Element.H: 10, Element.O: 4}),
+                           "Fuc": FunctionalGroup("Fuc", elements = {Element.C: 6, Element.H: 10, Element.O: 4}),
                            "Kdn": FunctionalGroup("Kdn", elements = {Element.C: 9, Element.H: 14, Element.O: 8}),
                            "Xyl": FunctionalGroup("Xyl", elements = {Element.C: 29, Element.H: 52, Element.O: 26}),
                            "COG": FunctionalGroup("COG", elements = {Element.C: 18, Element.H: 19, Element.N: 5, Element.O: 1}),
