@@ -143,13 +143,17 @@ pl_species_double : pl_hg_triple headgroup_separator fatty_acyl_chain2 | pl_hg_q
 pl_species_triple : pl_hg_quadro headgroup_separator fatty_acyl_chain3;
 pl_single : pl_hg_single headgroup_separator fatty_acyl_chain | pl_full;
 pl_full : pl_hg_single headgroup_separator fatty_acyl_chain2;
-pl_double : pl_hg_double headgroup_separator fatty_acyl_chain2;
+pl_double : pl_hg_double_all headgroup_separator fatty_acyl_chain2;
 pl_triple : pl_hg_triple headgroup_separator fatty_acyl_chain3 | pl_full4;
 pl_quadro : pl_hg_quadro headgroup_separator fatty_acyl_chain4;
 pl_full4 : pl_hg_triple headgroup_separator fatty_acyl_chain4;
-pl_hg : pl_hg_double | pl_hg_triple | pl_hg_quadro;
+pl_hg : pl_hg_double_all | pl_hg_triple | pl_hg_quadro;
 pl_hg_single : 'LPA' | 'LPC' | 'LPE' | 'LPG' | 'LPI' | 'LPS' | hg_lpim | 'CPA' | 'LCDPDAG' | 'LDMPE' | 'LMMPE' | 'LPIMIP' | 'LPIN' | 'PE-isoLG';
-pl_hg_double : 'CDP-DAG' | 'DMPE' | 'MMPE' | 'PA' | 'PC' | 'PE' | 'PEt' | 'PG' | 'PI' | hg_pip | 'PS' | 'LBPA' | 'PGP' | 'PPA' | 'Glc-GP' | '6-Ac-Glc-GP' | hg_pim | 'PnC' | 'PnE' | 'PT' | 'PE-NMe2' | 'PE-NMe' | 'PIMIP' | 'CDPDAG' | 'PS-N(' pl_hg_fa ')' | 'PE-N(' pl_hg_fa ')' | 'PS-N(' pl_hg_alk ')' | 'PE-N(' pl_hg_alk ')' | 'PS-CAP' | 'PS-MDA' | 'PE-CAP' | 'PE-Glc' | 'PE-GlcA' | 'PE-GlcK' | 'PE-CM' | 'PE-CE' | 'PE-FA' | 'PE-CA' | 'PE-MDA' | 'PE-HNE';
+pl_hg_double_all : pl_hg_double_fa | pl_hg_double;
+pl_hg_double_fa : pl_hg_double_fa_hg ROB pl_hg_fa RCB | pl_hg_double_fa_hg ROB pl_hg_alk RCB;
+pl_hg_double_fa_hg : 'PS-N' | 'PE-N';
+pl_hg_double : 'CDP-DAG' | 'DMPE' | 'MMPE' | 'PA' | 'PC' | 'PE' | 'PEt' | 'PG' | 'PI' | hg_pip | 'PS' | 'LBPA' | 'PGP' | 'PPA' | 'Glc-GP' | '6-Ac-Glc-GP' | hg_pim | 'PnC' | 'PnE' | 'PT' | 'PE-NMe2' | 'PE-NMe' | 'PIMIP' | 'CDPDAG' | 'PS-CAP' | 'PS-MDA' | 'PE-CAP' | 'PE-Glc' | 'PE-GlcA' | 'PE-GlcK' | 'PE-CM' | 'PE-CE' | 'PE-FA' | 'PE-CA' | 'PE-MDA' | 'PE-HNE' | 'PS-N(Alk)' | 'PS-N(FA)' | pl_hg_species;
+pl_hg_species : 'PE-N(Alk)' | 'PE-N(FA)';
 pl_hg_triple : 'LCL';
 pl_hg_quadro : 'BMP' | 'CL';
 hg_pip : hg_pip_pure | hg_pip_pure hg_pip_m | hg_pip_pure hg_pip_d | hg_pip_pure hg_pip_t;
@@ -161,8 +165,8 @@ hg_pim : 'PIM' hg_pim_number;
 hg_pim_number : number;
 hg_lpim : 'LPIM' hg_lpim_number;
 hg_lpim_number : number;
-pl_hg_fa : 'FA' | med;
-pl_hg_alk : 'Alk' | fa_pure;
+pl_hg_fa : med;
+pl_hg_alk : fa_pure;
 
 
 carbohydrate : 'Hex' | 'Gal' | 'Glc' | 'Man' | 'Neu' | 'HexNAc' | 'GalNAc' | 'GlcNAc' | 'NeuAc' | 'NeuGc' | 'Kdn' | 'GlcA' | 'Xyl' | 'Fuc' | 'NeuAc2' | 'SHex' | 'S(3' apostroph ')Hex' | 'NAc' | 'Nac' | 'SGal' | 'S(3' apostroph ')Gal' | 'HexA' | 'OGlcNAc' | 'OGlc';

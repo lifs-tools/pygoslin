@@ -162,7 +162,7 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            
                            "H": FunctionalGroup("H", elements = {Element.H: 1}),
                            "OGlcNAc": FunctionalGroup("OGlcNAc", elements = {}),
-                           "OGlc": FunctionalGroup("OGlc", elements = {}),
+                           "OGlc": FunctionalGroup("OGlc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
                            "NeuAc2": FunctionalGroup("NeuAc2", elements = {}),
                            "O": FunctionalGroup("O", elements = {Element.O: 1})}
 
@@ -175,26 +175,24 @@ def get_functional_group(name):
 
 
     
-class HeadGroupDecorator(FunctionalGroup):
+class HeadgroupDecorator(FunctionalGroup):
     def __init__(self, name, position = -1, count = 1, elements = None, suffix = False):
         super().__init__(name, position = position, count = count, elements = elements)
         self.suffix = suffix
         
     def to_string(self, level):
-        if self.suffix:
-            if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
-                decorator_string = "(%s)" % self.functional_groups["decorator_alkyl"][0].to_string(level)
-                
-            elif "decorator_acyl" in self.functional_groups and len(self.functional_groups["decorator_acyl"]) > 0:
-                decorator_string = "(FA %s)" % self.functional_groups["decorator_acyl"][0].to_string(level)
-                
-            else:
-                decorator_string = ""
+        if not self.suffix: return self.name
         
+        if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
+            decorator_string = self.functional_groups["decorator_alkyl"][0].to_string(level)
+            
+        elif "decorator_acyl" in self.functional_groups and len(self.functional_groups["decorator_acyl"]) > 0:
+            decorator_string = "FA %s" % self.functional_groups["decorator_acyl"][0].to_string(level)
+            
         else:
-            decorator_string = "%s-" % self.name
-        
-        return decorator_string
+            decorator_string = self.name
+
+        return "(%s)" % decorator_string
     
     
 

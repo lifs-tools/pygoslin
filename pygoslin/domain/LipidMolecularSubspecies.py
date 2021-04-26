@@ -76,10 +76,14 @@ class LipidMolecularSubspecies(LipidSpecies):
             head_group.append("(1)")
             
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            head_group = ["%s-" % hgd.to_string(level) for hgd in self.headgroup_decorators] + head_group
+            prefix = ["%s-" % hgd.to_string(level) for hgd in self.headgroup_decorators if not hgd.suffix]
+            suffix = [hgd.to_string(level) for hgd in self.headgroup_decorators if hgd.suffix]
+            head_group = prefix + head_group + suffix
                 
         else:
-            head_group = sorted(hgd.to_string(level) for hgd in self.headgroup_decorators) + head_group
+            prefix = sorted(hgd.to_string(level) for hgd in self.headgroup_decorators if not hgd.suffix)
+            suffix = [hgd.to_string(level) for hgd in self.headgroup_decorators if hgd.suffix]
+            head_group = prefix + head_group + suffix
         
         return "".join(head_group) + fa_string
     
