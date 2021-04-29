@@ -44,6 +44,8 @@ class LipidSpecies:
         
         self.info = LipidSpeciesInfo()
         self.info.level = LipidLevel.SPECIES
+        
+        
     
         for fas in fa: self.info.add(fas)
         
@@ -78,9 +80,7 @@ class LipidSpecies:
         
         elif level == None or level == LipidLevel.SPECIES:
             lipid_string = [all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group]
-            if self.info != None and self.info.num_carbon > 0:
-                #special_case = self.lipid_class in self.special_cases
-                special_case = self.lipid_category == LipidCategory.GP
+            if self.info != None and self.info.elements[Element.C] > 0:
                 
                 lipid_string += " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
                 lipid_string += self.info.to_string()
@@ -91,12 +91,26 @@ class LipidSpecies:
         
         
         
-    def get_elements(self):
-        if self.use_head_group or self.info.level not in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+    def get_elements_headgroup(self):
+        if self.use_head_group or self.info.level not in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.SPECIES, LipidLevel.MOLECULAR_SUBSPECIES}:
             raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
         dummy = FunctionalGroup("dummy", elements = all_lipids[self.lipid_class]["elements"])
         for hgd in self.headgroup_decorators: dummy += hgd
+        
+        return dummy.elements
+        
+        
+    def get_elements(self):
+        
+        dummy = FunctionalGroup("dummy", elements = self.get_elements_headgroup())
+        dummy += self.info
+        
+        # since only one FA info is provided, we have to treat this single information as
+        # if we would have the complete information about all possible FAs in that lipid
+        additional_fa = all_lipids[self.lipid_class]["max_fa"] - self.info.num_fa
+        dummy.elements[Element.O] += additional_fa
+        dummy.elements[Element.H] -= additional_fa
         
         return dummy.elements
         

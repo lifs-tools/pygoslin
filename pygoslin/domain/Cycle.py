@@ -37,7 +37,7 @@ class Cycle(FunctionalGroup):
         self.cycle = cycle
         self.start = start
         self.end = end
-        self.double_bonds = double_bonds
+        self.double_bonds = double_bonds if double_bonds != None else 0
         self.elements[Element.H] = -2
         
         if type(start) != type(end):
@@ -50,6 +50,10 @@ class Cycle(FunctionalGroup):
         
     def clone(self, cyc):
         pass
+    
+    
+    def get_double_bonds(self):
+        return 1 + (self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds))
     
     
     def compute_elements(self):

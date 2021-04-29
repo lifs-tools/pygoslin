@@ -90,15 +90,15 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     
     def get_elements(self):
-        dummy = FunctionalGroup("dummy", elements = super().get_elements()) # get elements from head group + all decorators
-        # add elements from all fatty acyl chains
+        dummy = FunctionalGroup("dummy", elements = super().get_elements_headgroup()) # get elements from head group + all decorators
         
         head_group = (all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group)
         if self.lipid_category == LipidCategory.SP and head_group == "Cer" and len(self.headgroup_decorators) == 0:
             dummy.elements[Element.O] -= 1
         
+        
+        # add elements from all fatty acyl chains
         for fa in self.fa_list:
-            fa.compute_elements()
             dummy += fa
         
         return dummy.elements

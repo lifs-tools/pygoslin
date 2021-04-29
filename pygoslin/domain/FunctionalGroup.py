@@ -28,12 +28,13 @@ from pygoslin.domain.Element import *
 from pygoslin.domain.LipidLevel import LipidLevel
 
 class FunctionalGroup:
-    def __init__(self, name, position = -1, count = 1, stereochemistry = None, elements = None, functional_groups = None):
+    def __init__(self, name, position = -1, count = 1, double_bonds = 0, stereochemistry = None, elements = None, functional_groups = None):
         self.name = name
         self.position = position
         self.count = count
         self.stereochemistry = stereochemistry
         self.ring_stereo = ""
+        self.double_bonds = double_bonds
         self.elements = {e: 0 for e in Element} if elements == None else {k: v for k, v in elements.items()}
         self.functional_groups = functional_groups if functional_groups != None else {}
         
@@ -44,7 +45,7 @@ class FunctionalGroup:
         
         
     def copy(self):
-        functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
+        functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, double_bonds = self.double_bonds, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
         for fg, fg_list in self.functional_groups.items():
             if fg not in functional_group.functional_groups: functional_group.functional_groups[fg] = []
             for func_group in fg_list:
@@ -54,20 +55,34 @@ class FunctionalGroup:
         
         
     def get_elements(self):
-        elements = {k: v * self.count for k, v in self.elements.items()}
+        self.compute_elements()
+        elements = {e: 0 for e in Element}
+        for k, v in self.elements.items(): elements[k] = v
+        for k, v in self.get_functional_group_elements().items(): elements[k] += v
+        return elements
+    
+    
+    
+    
+    def get_functional_group_elements(self):
+        elements = {e: 0 for e in Element}
+        
         for fg, fg_list in self.functional_groups.items():
             for func_group in fg_list:
-                func_group.compute_elements()
                 for k, v in func_group.get_elements().items():
                     if k not in elements: elements[k] = 0
                     elements[k] += v * func_group.count
+                    
         return elements
+    
     
     
     def compute_elements(self):
         for fg, fg_list in self.functional_groups.items():
             for func_group in fg_list:
                 func_group.compute_elements()
+        
+        
         
         
     def to_string(self, level):
@@ -95,17 +110,32 @@ class FunctionalGroup:
     
     
     
-    def __iadd__(self, fg):
-        for k, v in fg.elements.items():
-            if k not in self.elements: self.elements[k] = 0
-            self.elements[k] += v * fg.count
-        
-        for fg, fg_list in fg.functional_groups.items():
+    def get_double_bonds(self):
+        db = self.count * (self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds))
+        for fg, fg_list in self.functional_groups.items():
             for func_group in fg_list:
-                func_group.compute_elements()
+                db += func_group.get_double_bonds()
+                
+        return db
+    
+    
+    def __iadd__(self, fgroup):
+        
+        fgroup.compute_elements()
+        
+        for e in Element:
+            if e not in self.elements: self.elements[e] = 0
+        
+        
+        for k, v in fgroup.elements.items():
+            self.elements[k] += v * fgroup.count
+            
+        
+        for fg, fg_list in fgroup.functional_groups.items():
+            for func_group in fg_list:
                 for k, v in func_group.get_elements().items():
-                    if k not in self.elements: self.elements[k] = 0
                     self.elements[k] += v * func_group.count
+                 
         
         return self
     
@@ -114,7 +144,7 @@ class FunctionalGroup:
 _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1}), # hydroxyl
                            "Me": FunctionalGroup("Me", elements = {Element.C: 1, Element.H: 2}), # methyl
                            "dMe": FunctionalGroup("dMe", elements = {Element.C: 1}), # methylen
-                           "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}), # keto
+                           "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
                            "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}), # carboxyl
                            "Ep": FunctionalGroup("Ep", elements = {Element.O: 1, Element.H: -2}), # epoxy
                            "OO": FunctionalGroup("OO", elements = {Element.O: 2}),  # peroxy
@@ -164,7 +194,8 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "OGlcNAc": FunctionalGroup("OGlcNAc", elements = {}),
                            "OGlc": FunctionalGroup("OGlc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
                            "NeuAc2": FunctionalGroup("NeuAc2", elements = {}),
-                           "O": FunctionalGroup("O", elements = {Element.O: 1})}
+                           "O": FunctionalGroup("O", elements = {Element.O: 1})
+                           }
 
 
 
@@ -172,6 +203,8 @@ def get_functional_group(name):
     if name in _known_functional_groups:
         return _known_functional_groups[name].copy()
     raise Exception("Name '%s' not registered in functional group list" % name)
+
+
 
 
     
@@ -196,12 +229,18 @@ class HeadgroupDecorator(FunctionalGroup):
     
     
 
+
+
     
 class AcylAlkylGroup(FunctionalGroup):
     def __init__(self, fa, position = -1, count = 1, alkyl = False):
         super().__init__("O", position = position, count = count)
-        if fa != None: self.funcional_groups["alkyl" if alkyl else "acyl"] = [fa]
+        if fa != None: self.functional_groups["alkyl" if self.alkyl else "acyl"] = [fa]
         self.alkyl = alkyl
+        self.double_bonds = 1
+        self.elements[Element.O] = 0 if self.alkyl else 1
+        self.elements[Element.H] = -1
+        
 
     def to_string(self, level):
         acyl_alkyl_string = []

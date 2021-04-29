@@ -72,6 +72,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["sl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_hg_species_pre_event"] = self.set_species_level
         
+        self.registered_events["pl_single_pre_event"] = self.set_molecular_level
+        
         ## set head groups events
         self.registered_events["med_hg_single_pre_event"] = self.set_headgroup_name
         self.registered_events["med_hg_double_pre_event"] = self.set_headgroup_name
@@ -239,6 +241,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         if len(special_type) > 0:
             fg_acyl_alkyl = self.current_fa.pop()
+            fg_acyl_alkyl.name = special_type
             if special_type not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[special_type] = []
             self.current_fa[-1].functional_groups[special_type].append(fg_acyl_alkyl)
             
@@ -467,7 +470,13 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def set_species_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.SPECIES.value else LipidLevel.SPECIES
+        self.set_lipid_level(LipidLevel.SPECIES)
+        
+        
+        
+    def set_molecular_level(self, node):
+        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+        
         
     
     def set_carbon(self, node):

@@ -33,10 +33,9 @@ from pygoslin.domain.LipidLevel import LipidLevel
 class FattyAcid(FunctionalGroup):
 
     def __init__(self, name, num_carbon = 0, double_bonds = 0, functional_groups = None, lipid_FA_bond_type = LipidFaBondType.ESTER, lcb = False, position = 0):
-        super().__init__(name, functional_groups if functional_groups != None else {})
+        super().__init__(name, double_bonds = double_bonds)
         self.position = position
         self.num_carbon = num_carbon
-        self.double_bonds = double_bonds
         self.lipid_FA_bond_type = lipid_FA_bond_type
         self.lcb = lcb
         
@@ -72,7 +71,16 @@ class FattyAcid(FunctionalGroup):
     def to_string(self, level):
         
         fa_string = [self.lipid_FA_bond_type.prefix()]
-        fa_string.append("%i" % self.num_carbon)
+        
+        num_carbon = self.num_carbon
+        
+        if level not in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+            for fg, fg_list in self.functional_groups.items():
+                for fg_item in fg_list:
+                    fg_item.compute_elements()
+                    num_carbon += fg_item.elements[Element.C] if Element.C in fg_item.elements else 0
+        
+        fa_string.append("%i" % num_carbon)
         
         if type(self.double_bonds) != int:
             fa_string.append(":%i" % len(self.double_bonds))
@@ -109,10 +117,11 @@ class FattyAcid(FunctionalGroup):
                         else: fa_string.append(";%s" % fg)
         
         else:
-            num_oxygen = self.get_num_oxygens()
+            num_oxygen = self.get_functional_group_elements()[Element.O]
             if num_oxygen > 0: fa_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
         
         return "".join(fa_string)
+    
     
 
 
@@ -141,4 +150,6 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
             self.elements[Element.N] = 1 # nitrogen
             self.elements[Element.O] = 1
+            
+        
         
