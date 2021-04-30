@@ -86,13 +86,14 @@ class FattyAcid(FunctionalGroup):
             num_oxygen = self.get_functional_group_elements()[Element.O]
             
 
-        
+        """
         if level not in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
             for fg, fg_list in self.functional_groups.items():
                 for fg_item in fg_list:
                     fg_item.compute_elements()
                     num_carbon += fg_item.elements[Element.C] if Element.C in fg_item.elements else 0
-        
+            print(num_carbon)
+        """
         fa_string.append("%i" % num_carbon)
         
         if type(double_bonds) != int:

@@ -74,6 +74,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         self.registered_events["pl_single_pre_event"] = self.set_molecular_level
         self.registered_events["unsorted_fa_separator_pre_event"] = self.set_molecular_level
+        self.registered_events["ether_num_pre_event"] = self.set_ether_num
         
         ## set head groups events
         self.registered_events["med_hg_single_pre_event"] = self.set_headgroup_name
@@ -470,6 +471,14 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         elif ether_type == "P-": self.current_fa[-1].lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         
         
+    def set_ether_num(self, node):
+        num_ethers, ether = 0, node.get_text()
+        if ether == "d": num_ethers = 2
+        elif ether == "t": num_ethers = 3
+        elif ether == "e": num_ethers = 4
+        self.tmp["num_ethers"] = num_ethers
+        
+        
     def set_species_level(self, node):
         self.set_lipid_level(LipidLevel.SPECIES)
         
@@ -506,6 +515,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.lipid.lipid = lipid_level_class(self.headgroup, self.fa_list)
         for hgd in self.headgroup_decorators:
             self.lipid.lipid.add_decorator(hgd)
+            
+        if "num_ethers" in self.tmp: self.lipid.lipid.info.num_ethers = self.tmp["num_ethers"]
         
         self.content = self.lipid
         

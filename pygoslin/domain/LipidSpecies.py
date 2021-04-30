@@ -124,8 +124,8 @@ class LipidSpecies:
         # since only one FA info is provided, we have to treat this single information as
         # if we would have the complete information about all possible FAs in that lipid
         additional_fa = all_lipids[self.lipid_class]["poss_fa"] - 1
-        dummy.elements[Element.O] += additional_fa
-        dummy.elements[Element.H] -= additional_fa
+        dummy.elements[Element.O] += additional_fa - (self.info.num_ethers - 1)
+        dummy.elements[Element.H] -= additional_fa - 2 * (self.info.num_ethers - 1)
         
         return dummy.elements
         
