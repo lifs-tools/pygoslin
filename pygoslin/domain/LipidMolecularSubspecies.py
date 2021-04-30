@@ -58,7 +58,8 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     
 
-    def build_lipid_subspecies_name(self, fa_separator, level):
+    def build_lipid_subspecies_name(self, level):
+        fa_separator = "/" if level != LipidLevel.MOLECULAR_SUBSPECIES or all_lipids[self.lipid_class]["category"] == LipidCategory.SP else "_"
 
         fa_headgroup_separator = " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
         
@@ -106,7 +107,7 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
-            return self.build_lipid_subspecies_name("_", LipidLevel.MOLECULAR_SUBSPECIES)
+            return self.build_lipid_subspecies_name(LipidLevel.MOLECULAR_SUBSPECIES)
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)

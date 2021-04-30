@@ -58,7 +58,7 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
     def get_lipid_string(self, level = None):
         
         if level == None or level == LipidLevel.ISOMERIC_SUBSPECIES:
-            return self.build_lipid_subspecies_name("/", LipidLevel.ISOMERIC_SUBSPECIES)
+            return self.build_lipid_subspecies_name(LipidLevel.ISOMERIC_SUBSPECIES)
         
         elif level in (LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)

@@ -53,7 +53,7 @@ class Cycle(FunctionalGroup):
     
     
     def get_double_bonds(self):
-        return 1 + (self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds))
+        return super().get_double_bonds() + 1
     
     
     def compute_elements(self):
@@ -93,7 +93,7 @@ class Cycle(FunctionalGroup):
                         if len(fg_summary) > 0: cycle_string.append(";%s" % fg_summary)
                 
                     else:
-                        fg_count = sum([func_group.cycle for func_group in fg_list])
+                        fg_count = sum([func_group.count for func_group in fg_list])
                         if fg_count > 1: cycle_string.append(";(%s)%i" % (fg, fg_count))
                         else: cycle_string.append(";%s" % fg)
                     

@@ -73,6 +73,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_hg_species_pre_event"] = self.set_species_level
         
         self.registered_events["pl_single_pre_event"] = self.set_molecular_level
+        self.registered_events["unsorted_fa_separator_pre_event"] = self.set_molecular_level
         
         ## set head groups events
         self.registered_events["med_hg_single_pre_event"] = self.set_headgroup_name
@@ -503,7 +504,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.lipid = LipidAdduct()
         self.lipid.adduct = self.adduct
         self.lipid.lipid = lipid_level_class(self.headgroup, self.fa_list)
-        self.lipid.lipid.headgroup_decorators = self.headgroup_decorators
+        for hgd in self.headgroup_decorators:
+            self.lipid.lipid.add_decorator(hgd)
         
         self.content = self.lipid
         

@@ -38,16 +38,12 @@ class LipidSpeciesInfo(FattyAcid):
         self.level = None
         self.num_oxygen = 0
         self.num_esters = 0
-        self.num_fa = 0
         self.ester_prefix = ["", "O-", "dO-", "tO-", "eO-"]
         
         
         
     def add(self, fa):
-        self.num_fa += 1
-        self.num_carbon += fa.num_carbon
         self.double_bonds += fa.get_double_bonds()
-        print(fa.name, fa.get_double_bonds())
         if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
             self.num_esters += 1
             
@@ -55,7 +51,16 @@ class LipidSpeciesInfo(FattyAcid):
                 self.lipid_FA_bond_type = fa.lipid_FA_bond_type
                 
         self += fa
-        self.elements[Element.O] -= 1
+        
+        for fg, fg_list in fa.functional_groups.items():
+            if fg not in self.functional_groups: self.functional_groups[fg] = []
+            for func_group in fg_list:
+                self.functional_groups[fg].append(func_group)
+                
+        self.num_carbon += fa.get_elements()[Element.C]
+        if fa.lipid_FA_bond_type not in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
+            self.elements[Element.O] -= 1
+        
         
         
     

@@ -67,12 +67,25 @@ class FattyAcid(FunctionalGroup):
                 self.function_groups[fg].append(func_group)
                 
                 
+    def get_double_bonds(self):
+        return super().get_double_bonds() + (self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL)
+        
+                
+                
         
     def to_string(self, level):
         
         fa_string = [self.lipid_FA_bond_type.prefix()]
-        
         num_carbon = self.num_carbon
+        double_bonds = self.double_bonds
+        num_oxygen = 0
+        
+        if level == LipidLevel.MOLECULAR_SUBSPECIES:
+            num_carbon = self.get_elements()[Element.C]
+            double_bonds = self.get_double_bonds() - (self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL)
+            num_oxygen = self.get_functional_group_elements()[Element.O]
+            
+
         
         if level not in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
             for fg, fg_list in self.functional_groups.items():
@@ -82,19 +95,19 @@ class FattyAcid(FunctionalGroup):
         
         fa_string.append("%i" % num_carbon)
         
-        if type(self.double_bonds) != int:
-            fa_string.append(":%i" % len(self.double_bonds))
+        if type(double_bonds) != int:
+            fa_string.append(":%i" % len(double_bonds))
             if level == LipidLevel.ISOMERIC_SUBSPECIES:
-                db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
-                db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
+                db_positions = ["%i%s" % (k, double_bonds[k]) for k in sorted(double_bonds.keys())]
+                db_pos = "(%s)" % ",".join(db_positions) if len (double_bonds) > 0 else ""
                 fa_string.append(db_pos)
             elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
-                db_positions = ["%i" % k for k in sorted(self.double_bonds.keys())]
-                db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
+                db_positions = ["%i" % k for k in sorted(double_bonds.keys())]
+                db_pos = "(%s)" % ",".join(db_positions) if len (double_bonds) > 0 else ""
                 fa_string.append(db_pos)
             
         else:
-            fa_string.append(":%i" % self.double_bonds)
+            fa_string.append(":%i" % double_bonds)
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
             for fg in sorted(self.functional_groups):
@@ -117,7 +130,6 @@ class FattyAcid(FunctionalGroup):
                         else: fa_string.append(";%s" % fg)
         
         else:
-            num_oxygen = self.get_functional_group_elements()[Element.O]
             if num_oxygen > 0: fa_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
         
         return "".join(fa_string)
@@ -127,6 +139,7 @@ class FattyAcid(FunctionalGroup):
 
     def compute_elements(self):
         num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
+        if self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL: num_double_bonds += 1
         if not self.lcb:
             if self.num_carbon > 0 or num_double_bonds > 0:
                 

@@ -45,8 +45,9 @@ class LipidSpecies:
         self.info = LipidSpeciesInfo()
         self.info.level = LipidLevel.SPECIES
         
+        if self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] not in {"Cer", "SPB"}:
+            self.info.elements[Element.O] += 1
         
-    
         for fas in fa: self.info.add(fas)
         
         
@@ -57,6 +58,12 @@ class LipidSpecies:
         self.info = LipidSpeciesInfo(fa)
         self.use_head_group = fa.use_head_group
         
+        
+        
+    def add_decorator(self, decorator):
+        self.headgroup_decorators.append(decorator)
+        if decorator.name in {"decorator_alkyl", "decorator_acyl"}:
+            self.info += decorator
         
         
     def get_extended_class(self):
@@ -80,10 +87,17 @@ class LipidSpecies:
         
         elif level == None or level == LipidLevel.SPECIES:
             lipid_string = [all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group]
-            if self.info != None and self.info.elements[Element.C] > 0:
                 
+            prefix = sorted(hgd.to_string(level) for hgd in self.headgroup_decorators if not hgd.suffix)
+            suffix = [hgd.to_string(level) for hgd in self.headgroup_decorators if hgd.suffix]
+            lipid_string = prefix + lipid_string + suffix
+            
+            
+            
+            if self.info != None and self.info.elements[Element.C] > 0:
                 lipid_string += " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
                 lipid_string += self.info.to_string()
+                
             return "".join(lipid_string)
         
         else:
@@ -99,6 +113,7 @@ class LipidSpecies:
         for hgd in self.headgroup_decorators: dummy += hgd
         
         return dummy.elements
+    
         
         
     def get_elements(self):
@@ -108,7 +123,7 @@ class LipidSpecies:
         
         # since only one FA info is provided, we have to treat this single information as
         # if we would have the complete information about all possible FAs in that lipid
-        additional_fa = all_lipids[self.lipid_class]["max_fa"] - self.info.num_fa
+        additional_fa = all_lipids[self.lipid_class]["poss_fa"] - 1
         dummy.elements[Element.O] += additional_fa
         dummy.elements[Element.H] -= additional_fa
         
