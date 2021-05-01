@@ -62,7 +62,6 @@ class LipidSpeciesInfo(FattyAcid):
             self.elements[Element.O] -= 1
         
         
-        
     
     def to_string(self):
         info_string = [self.ester_prefix[self.num_ethers]]

@@ -49,6 +49,8 @@ class FattyAcid(FunctionalGroup):
         if position < 0:
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
         
+        
+        
 
         
     def clone(self, fa):
@@ -65,6 +67,7 @@ class FattyAcid(FunctionalGroup):
                 func_group = FunctionalGroup("")
                 func_group.clone(fg_item)
                 self.function_groups[fg].append(func_group)
+                
                 
                 
     def get_double_bonds(self):
@@ -151,9 +154,11 @@ class FattyAcid(FunctionalGroup):
                 
                 elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
                     self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
+                    self.elements[Element.O] = 0
                 
                 elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
                     self.elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
+                    self.elements[Element.O] = 0
                     
                 else:
                     raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
@@ -165,5 +170,4 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.N] = 1 # nitrogen
             self.elements[Element.O] = 1
             
-        
         
