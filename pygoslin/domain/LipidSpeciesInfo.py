@@ -27,6 +27,8 @@ from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.Element import Element
 
+ester_prefix = ["", "O-", "dO-", "tO-", "eO-"] 
+        
 class LipidSpeciesInfo(FattyAcid):
     
     def __init__(self, fa = None):
@@ -35,14 +37,14 @@ class LipidSpeciesInfo(FattyAcid):
         else:
             super().__init__("info")
         
-        self.level = None
-        self.num_oxygen = 0
-        self.num_ethers = 0
-        self.ester_prefix = ["", "O-", "dO-", "tO-", "eO-"]
+        self.level = None if fa == None else fa.level
+        self.num_oxygen = 0 if fa == None else fa.num_oxygen
+        self.num_ethers = 0 if fa == None else fa.num_ethers
         
         
         
     def add(self, fa):
+        self.lcb |= fa.lcb
         self.double_bonds += fa.get_double_bonds()
         if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
             self.num_ethers += 1
@@ -64,9 +66,12 @@ class LipidSpeciesInfo(FattyAcid):
         
     
     def to_string(self):
-        info_string = [self.ester_prefix[self.num_ethers]]
+        global ester_prefix
+
+        self.compute_elements()
+        info_string = [ester_prefix[self.num_ethers]]
         info_string.append("%i:%i" % (self.elements[Element.C], self.double_bonds))
-        num_oxygen = self.elements[Element.O]
+        num_oxygen = self.num_oxygen + self.elements[Element.O]
         if num_oxygen > 0:
             info_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
             

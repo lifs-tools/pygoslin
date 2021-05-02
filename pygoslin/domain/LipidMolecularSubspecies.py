@@ -39,7 +39,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         super().__init__(head_group)
         self.fa = {}
         self.fa_list = []
-        self.info = LipidSpeciesInfo()
+        
         self.info.level = LipidLevel.MOLECULAR_SUBSPECIES
         
         for fas in fa:

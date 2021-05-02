@@ -27,6 +27,8 @@ SOFTWARE.
 from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidCategory import LipidCategory
+from pygoslin.domain.LipidClass import all_lipids
 from pygoslin.domain.Adduct import Adduct
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
@@ -510,6 +512,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
         if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
+        
         self.lipid = LipidAdduct()
         self.lipid.adduct = self.adduct
         self.lipid.lipid = lipid_level_class(self.headgroup, self.fa_list)
@@ -517,7 +520,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
             self.lipid.lipid.add_decorator(hgd)
             
         if "num_ethers" in self.tmp: self.lipid.lipid.info.num_ethers = self.tmp["num_ethers"]
-        
+        l = self.lipid.lipid
+        if self.level == LipidLevel.SPECIES and l.lipid_category == LipidCategory.SP and all_lipids[l.lipid_class]["name"] not in {"Cer", "SPB"} and "O" in l.info.functional_groups:
+            l.info.functional_groups["O"][0].count -= 1
+            
         self.content = self.lipid
         
         

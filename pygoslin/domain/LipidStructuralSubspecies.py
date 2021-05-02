@@ -37,7 +37,6 @@ class LipidStructuralSubspecies(LipidMolecularSubspecies):
     def __init__(self, head_group, fa = []):
         super().__init__(head_group)
         
-        self.info = LipidSpeciesInfo()
         self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES
         
         for fas in fa:

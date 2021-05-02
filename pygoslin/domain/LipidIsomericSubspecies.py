@@ -37,7 +37,6 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
     def __init__(self, head_group, fa = []):
         super().__init__(head_group)
                 
-        self.info = LipidSpeciesInfo()
         self.info.level = LipidLevel.ISOMERIC_SUBSPECIES
         
         for fas in fa:

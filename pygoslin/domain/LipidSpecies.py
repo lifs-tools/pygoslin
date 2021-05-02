@@ -44,19 +44,10 @@ class LipidSpecies:
         
         self.info = LipidSpeciesInfo()
         self.info.level = LipidLevel.SPECIES
-        
         if self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] not in {"Cer", "SPB"}:
-            self.info.elements[Element.O] += 1
+            self.info.num_oxygen = 1
         
         for fas in fa: self.info.add(fas)
-        
-        
-    def clone(self, fa):
-        self.head_group = fa.head_group
-        self.lipid_category = fa.lipid_category
-        self.lipid_class = fa.lipid_class
-        self.info = LipidSpeciesInfo(fa)
-        self.use_head_group = fa.use_head_group
         
         
         
@@ -94,7 +85,7 @@ class LipidSpecies:
             
             
             
-            if self.info != None and self.info.elements[Element.C] > 0:
+            if self.info != None and (self.info.elements[Element.C] > 0 or self.info.num_carbon > 0):
                 lipid_string += " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
                 lipid_string += self.info.to_string()
                 

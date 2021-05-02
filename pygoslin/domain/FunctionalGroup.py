@@ -98,7 +98,7 @@ class FunctionalGroup:
         return fg_string
     
     
-    
+    """
     def get_num_oxygens(self):
         num_oxygens = self.elements[Element.O] * self.count if Element.O in self.elements else 0
         for fg, fg_list in self.functional_groups.items():
@@ -107,7 +107,7 @@ class FunctionalGroup:
                 if Element.O in func_group.elements:
                     num_oxygens += func_group.elements[Element.O] * func_group.count
         return num_oxygens
-    
+    """
     
     
     def get_double_bonds(self):
