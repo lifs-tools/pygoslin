@@ -26,52 +26,60 @@ SOFTWARE.
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.Element import Element
+from pygoslin.domain.LipidClass import all_lipids
+from pygoslin.domain.FunctionalGroup import FunctionalGroup
 
 ester_prefix = ["", "O-", "dO-", "tO-", "eO-"] 
         
 class LipidSpeciesInfo(FattyAcid):
     
-    def __init__(self, fa = None):
-        if fa != None:
-            super().__init__(fa.name, fa.num_carbon, fa.double_bonds, fa.functional_groups, fa.lipid_FA_bond_type, fa.lcb, fa.position)
-        else:
-            super().__init__("info")
+    def __init__(self, lipid_class):
+        super().__init__("info")
         
-        self.level = None if fa == None else fa.level
-        self.num_oxygen = 0 if fa == None else fa.num_oxygen
-        self.num_ethers = 0 if fa == None else fa.num_ethers
-        
+        self.level = None
+        self.num_oxygen = 0
+        self.num_ethers = 0
+        self.num_specified_fa = 0
+        self.total_fa = all_lipids[lipid_class]["poss_fa"]
         
         
     def add(self, fa):
+        
         self.lcb |= fa.lcb
-        self.double_bonds += fa.get_double_bonds()
         if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
             self.num_ethers += 1
-            
-            if self.lipid_FA_bond_type in {LipidFaBondType.ESTER, LipidFaBondType.ETHER_PLASMENYL}:
-                self.lipid_FA_bond_type = fa.lipid_FA_bond_type
+            self.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
                 
-        self += fa
+        else:
+            self.num_specified_fa += 1
         
         for fg, fg_list in fa.functional_groups.items():
             if fg not in self.functional_groups: self.functional_groups[fg] = []
             for func_group in fg_list:
                 self.functional_groups[fg].append(func_group)
-                
+         
         self.num_carbon += fa.get_elements()[Element.C]
-        if fa.lipid_FA_bond_type not in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
-            self.elements[Element.O] -= 1
+        self.double_bonds += fa.get_double_bonds()
+        
+        
+        
+    def get_elements(self):
+        elements = super().get_elements()
+        elements[Element.O] -= (self.num_ethers == 0)
+        elements[Element.H] += 2 * (self.num_ethers == 0)
+        
+        return elements
         
         
     
     def to_string(self):
         global ester_prefix
 
-        self.compute_elements()
+        elements = self.get_elements()
+        num_oxygen = elements[Element.O]
+        
         info_string = [ester_prefix[self.num_ethers]]
-        info_string.append("%i:%i" % (self.elements[Element.C], self.double_bonds))
-        num_oxygen = self.num_oxygen + self.elements[Element.O]
+        info_string.append("%i:%i" % (self.num_carbon, self.double_bonds))
         if num_oxygen > 0:
             info_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
             

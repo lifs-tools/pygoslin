@@ -54,6 +54,7 @@ class FunctionalGroup:
         return functional_group
         
         
+        
     def get_elements(self):
         self.compute_elements()
         elements = {e: 0 for e in Element}
@@ -98,18 +99,6 @@ class FunctionalGroup:
         return fg_string
     
     
-    """
-    def get_num_oxygens(self):
-        num_oxygens = self.elements[Element.O] * self.count if Element.O in self.elements else 0
-        for fg, fg_list in self.functional_groups.items():
-            for func_group in fg_list:
-                func_group.compute_elements()
-                if Element.O in func_group.elements:
-                    num_oxygens += func_group.elements[Element.O] * func_group.count
-        return num_oxygens
-    """
-    
-    
     def get_double_bonds(self):
         db = self.count * (self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds))
         for fg, fg_list in self.functional_groups.items():
@@ -121,20 +110,11 @@ class FunctionalGroup:
     
     def __iadd__(self, fgroup):
         
-        fgroup.compute_elements()
-        
         for e in Element:
             if e not in self.elements: self.elements[e] = 0
         
-        
-        for k, v in fgroup.elements.items():
+        for k, v in fgroup.get_elements().items():
             self.elements[k] += v * fgroup.count
-            
-        
-        for fg, fg_list in fgroup.functional_groups.items():
-            for func_group in fg_list:
-                for k, v in func_group.get_elements().items():
-                    self.elements[k] += v * func_group.count
                  
         
         return self

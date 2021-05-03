@@ -42,10 +42,11 @@ class LipidSpecies:
         self.use_head_group = False
         self.headgroup_decorators = []
         
-        self.info = LipidSpeciesInfo()
+        self.info = LipidSpeciesInfo(self.lipid_class)
         self.info.level = LipidLevel.SPECIES
         if self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] not in {"Cer", "SPB"}:
-            self.info.num_oxygen = 1
+            if "OH" not in self.info.functional_groups: self.info.functional_groups["OH"] = []
+            self.info.functional_groups["OH"].append(get_functional_group("OH").copy())
         
         for fas in fa: self.info.add(fas)
         
@@ -54,7 +55,11 @@ class LipidSpecies:
     def add_decorator(self, decorator):
         self.headgroup_decorators.append(decorator)
         if decorator.name in {"decorator_alkyl", "decorator_acyl"}:
-            self.info += decorator
+            if decorator.name not in self.info.functional_groups: self.info.functional_groups[decorator.name] = []
+            self.info.functional_groups[decorator.name].append(decorator)
+            
+            self.info.num_carbon += decorator.get_elements()[Element.C]
+            self.info.double_bonds += decorator.get_double_bonds()
         
         
     def get_extended_class(self):
@@ -114,9 +119,10 @@ class LipidSpecies:
         
         # since only one FA info is provided, we have to treat this single information as
         # if we would have the complete information about all possible FAs in that lipid
-        additional_fa = all_lipids[self.lipid_class]["poss_fa"] - 1
-        dummy.elements[Element.O] += additional_fa - max(0, self.info.num_ethers - 1)
-        dummy.elements[Element.H] -= additional_fa - 2 * max(0, self.info.num_ethers - 1)
+        additional_fa = all_lipids[self.lipid_class]["poss_fa"]
+        is_sp = self.lipid_category == LipidCategory.SP
+        dummy.elements[Element.O] += additional_fa - max(0, self.info.num_ethers) - (self.lipid_category == LipidCategory.SP)
+        dummy.elements[Element.H] -= additional_fa - 2 * max(0, self.info.num_ethers) + (self.lipid_category == LipidCategory.SP)
         
         return dummy.elements
         
