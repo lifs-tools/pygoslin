@@ -30,6 +30,7 @@ from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
 from pygoslin.domain.LipidClass import all_lipids
 from pygoslin.domain.Adduct import Adduct
+from pygoslin.domain.HeadGroup import HeadGroup
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
@@ -512,18 +513,20 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
         if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
+        headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
         
         self.lipid = LipidAdduct()
         self.lipid.adduct = self.adduct
-        self.lipid.lipid = lipid_level_class(self.headgroup, self.fa_list)
-        for hgd in self.headgroup_decorators:
-            self.lipid.lipid.add_decorator(hgd)
+        self.lipid.lipid = lipid_level_class(headgroup, self.fa_list)
             
         if "num_ethers" in self.tmp: self.lipid.lipid.info.num_ethers = self.tmp["num_ethers"]
         l = self.lipid.lipid
-        if self.level == LipidLevel.SPECIES and l.lipid_category == LipidCategory.SP and all_lipids[l.lipid_class]["name"] not in {"Cer", "SPB"} and "O" in l.info.functional_groups:
+        
+        
+        if self.level == LipidLevel.SPECIES and l.headgroup.sp_exception and "O" in l.info.functional_groups:
             l.info.functional_groups["O"][0].count -= 1
-            
+        
+        
         self.content = self.lipid
         
         

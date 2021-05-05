@@ -118,80 +118,17 @@ class FunctionalGroup:
                  
         
         return self
-    
-    
-    
-_known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1}), # hydroxyl
-                           "Me": FunctionalGroup("Me", elements = {Element.C: 1, Element.H: 2}), # methyl
-                           "dMe": FunctionalGroup("dMe", elements = {Element.C: 1}), # methylen
-                           "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
-                           "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}), # carboxyl
-                           "Ep": FunctionalGroup("Ep", elements = {Element.O: 1, Element.H: -2}), # epoxy
-                           "OO": FunctionalGroup("OO", elements = {Element.O: 2}),  # peroxy
-                           "OMe": FunctionalGroup("OMe", elements = {Element.O: 1, Element.C: 1, Element.H: 2}), # methoxy
-                           "oxy": FunctionalGroup("oxy", elements = {Element.O: 1}), # Alkoxy / ether
-                           "Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 4}), # ethyl
-                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1}),
-                           "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
-                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
-                           "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
-                           "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 1}),
-                           "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}),
-                           "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),
-                           "SH": FunctionalGroup("SH", elements = {Element.S: 1}),
-                           "CN": FunctionalGroup("CN", elements = {Element.C: 1, Element.N: 1, Element.H: -1}),
-                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.O: 4, Element.H: 1}),
-                           "S": FunctionalGroup("S", elements = {Element.S: 1, Element.O: 4}),
-                           "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
-                           "G": FunctionalGroup("G", elements = {Element.N: 1, Element.H: 1}),
-                           "Hex": FunctionalGroup("Hex", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
-                           "Gal": FunctionalGroup("Gal", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
-                           "Glc": FunctionalGroup("Glc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
-                           "NeuAc": FunctionalGroup("NeuAc", elements = {Element.O: 8, Element.N: 1, Element.C: 11, Element.H: 17}),
-                           "SGal": FunctionalGroup("SGal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
-                           "S(3')Gal": FunctionalGroup("S(3')Gal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
-                           "S(3′)Gal": FunctionalGroup("S(3')Gal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
-                           "SHex": FunctionalGroup("SHex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
-                           "S(3')Hex": FunctionalGroup("S(3')Hex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
-                           "S(3′)Hex": FunctionalGroup("S(3')Hex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
-                           "GlcA": FunctionalGroup("GlcA", elements = {Element.C: 6, Element.O: 6, Element.H: 8}),
-                           "HexA": FunctionalGroup("HexA", elements = {Element.C: 6, Element.O: 6, Element.H: 8}),
-                           "HexNAc": FunctionalGroup("NexNAc", elements = {Element.C: 8, Element.H: 13, Element.O: 5, Element.N: 1}),
-                           "GalNAc": FunctionalGroup("GalNAc", elements = {Element.C: 8, Element.H: 13, Element.O: 5, Element.N: 1}),
-                           "GlcNAc": FunctionalGroup("GlcNAc", elements = {Element.C: 8, Element.H: 13, Element.O: 5, Element.N: 1}),
-                           "Man": FunctionalGroup("Man", elements = {Element.C: 6, Element.H: 9, Element.O: 5}),
-                           "Neu": FunctionalGroup("Neu", elements = {Element.C: 9, Element.H: 14, Element.O: 7, Element.N: 1}),
-                           "NeuGc": FunctionalGroup("NeuGc", elements = {Element.C: 11, Element.H: 17, Element.N: 1, Element.O: 9}),
-                           "NAc": FunctionalGroup("NAc", elements = {Element.C: 5, Element.H: 7, Element.N: 1, Element.O: 2, Element.S: 1}),
-                           "Nac": FunctionalGroup("Nac", elements = {Element.C: 5, Element.H: 7, Element.N: 1, Element.O: 2, Element.S: 1}),
-                           "Fuc": FunctionalGroup("Fuc", elements = {Element.C: 6, Element.H: 10, Element.O: 4}),
-                           "Kdn": FunctionalGroup("Kdn", elements = {Element.C: 9, Element.H: 14, Element.O: 8}),
-                           "Xyl": FunctionalGroup("Xyl", elements = {Element.C: 29, Element.H: 52, Element.O: 26}),
-                           "COG": FunctionalGroup("COG", elements = {Element.C: 18, Element.H: 19, Element.N: 5, Element.O: 1}),
-                           "COT": FunctionalGroup("COT", elements = {Element.C: 6, Element.H: 14, Element.N: 2, Element.O: 2}),
-                           
-                           "H": FunctionalGroup("H", elements = {Element.H: 1}),
-                           "OGlcNAc": FunctionalGroup("OGlcNAc", elements = {}),
-                           "OGlc": FunctionalGroup("OGlc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
-                           "NeuAc2": FunctionalGroup("NeuAc2", elements = {}),
-                           "O": FunctionalGroup("O", elements = {Element.O: 1})
-                           }
-
-
-
-def get_functional_group(name):
-    if name in _known_functional_groups:
-        return _known_functional_groups[name].copy()
-    raise Exception("Name '%s' not registered in functional group list" % name)
-
-
-
 
     
 class HeadgroupDecorator(FunctionalGroup):
     def __init__(self, name, position = -1, count = 1, elements = None, suffix = False):
         super().__init__(name, position = position, count = count, elements = elements)
         self.suffix = suffix
+        
+        
+    def copy(self):
+        return HeadgroupDecorator(self.name, position = self.position, count = self.count, elements = self.elements, suffix = self.suffix)
+        
         
     def to_string(self, level):
         if not self.suffix: return self.name
@@ -233,6 +170,74 @@ class AcylAlkylGroup(FunctionalGroup):
         acyl_alkyl_string.append(")")
         
         return "".join(acyl_alkyl_string)
+    
+    
+    
+_known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1}), # hydroxyl
+                           "Me": FunctionalGroup("Me", elements = {Element.C: 1, Element.H: 2}), # methyl
+                           "dMe": FunctionalGroup("dMe", elements = {Element.C: 1}), # methylen
+                           "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
+                           "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}), # carboxyl
+                           "Ep": FunctionalGroup("Ep", elements = {Element.O: 1, Element.H: -2}), # epoxy
+                           "OO": FunctionalGroup("OO", elements = {Element.O: 2}),  # peroxy
+                           "OMe": FunctionalGroup("OMe", elements = {Element.O: 1, Element.C: 1, Element.H: 2}), # methoxy
+                           "oxy": FunctionalGroup("oxy", elements = {Element.O: 1}), # Alkoxy / ether
+                           "Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 4}), # ethyl
+                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1}),
+                           "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
+                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
+                           "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
+                           "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 1}),
+                           "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}),
+                           "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),
+                           "SH": FunctionalGroup("SH", elements = {Element.S: 1}),
+                           "CN": FunctionalGroup("CN", elements = {Element.C: 1, Element.N: 1, Element.H: -1}),
+                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.O: 4, Element.H: 1}),
+                           "S": FunctionalGroup("S", elements = {Element.S: 1, Element.O: 4}),
+                           "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
+                           "G": FunctionalGroup("G", elements = {Element.N: 1, Element.H: 1}),
+                           "Hex": HeadgroupDecorator("Hex", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "Gal": HeadgroupDecorator("Gal", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "Glc": HeadgroupDecorator("Glc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "NeuAc": HeadgroupDecorator("NeuAc", elements = {Element.O: 8, Element.N: 1, Element.C: 11, Element.H: 17}),
+                           "SGal": HeadgroupDecorator("SGal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3')Gal": HeadgroupDecorator("S(3')Gal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3′)Gal": HeadgroupDecorator("S(3')Gal", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "SHex": HeadgroupDecorator("SHex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3')Hex": HeadgroupDecorator("S(3')Hex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "S(3′)Hex": HeadgroupDecorator("S(3')Hex", elements = {Element.O: 8, Element.H: 10, Element.C: 6, Element.S: 1}),
+                           "GlcA": HeadgroupDecorator("GlcA", elements = {Element.C: 6, Element.O: 6, Element.H: 8}),
+                           "HexA": HeadgroupDecorator("HexA", elements = {Element.C: 6, Element.O: 6, Element.H: 8}),
+                           "HexNAc": HeadgroupDecorator("NexNAc", elements = {Element.C: 8, Element.H: 13, Element.O: 5, Element.N: 1}),
+                           "GalNAc": HeadgroupDecorator("GalNAc", elements = {Element.C: 8, Element.H: 13, Element.O: 5, Element.N: 1}),
+                           "GlcNAc": HeadgroupDecorator("GlcNAc", elements = {Element.C: 8, Element.H: 13, Element.O: 5, Element.N: 1}),
+                           "Man": HeadgroupDecorator("Man", elements = {Element.C: 6, Element.H: 9, Element.O: 5}),
+                           "Neu": HeadgroupDecorator("Neu", elements = {Element.C: 9, Element.H: 14, Element.O: 7, Element.N: 1}),
+                           "NeuGc": HeadgroupDecorator("NeuGc", elements = {Element.C: 11, Element.H: 17, Element.N: 1, Element.O: 9}),
+                           "NAc": HeadgroupDecorator("NAc", elements = {Element.C: 5, Element.H: 7, Element.N: 1, Element.O: 2, Element.S: 1}),
+                           "Nac": HeadgroupDecorator("Nac", elements = {Element.C: 5, Element.H: 7, Element.N: 1, Element.O: 2, Element.S: 1}),
+                           "Fuc": HeadgroupDecorator("Fuc", elements = {Element.C: 6, Element.H: 10, Element.O: 4}),
+                           "Kdn": HeadgroupDecorator("Kdn", elements = {Element.C: 9, Element.H: 14, Element.O: 8}),
+                           "Xyl": HeadgroupDecorator("Xyl", elements = {Element.C: 29, Element.H: 52, Element.O: 26}),
+                           "COG": HeadgroupDecorator("COG", elements = {Element.C: 18, Element.H: 19, Element.N: 5, Element.O: 1}),
+                           "COT": HeadgroupDecorator("COT", elements = {Element.C: 6, Element.H: 14, Element.N: 2, Element.O: 2}),
+                           
+                           "H": FunctionalGroup("H", elements = {Element.H: 1}),
+                           "OGlcNAc": HeadgroupDecorator("OGlcNAc", elements = {}),
+                           "OGlc": HeadgroupDecorator("OGlc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "NeuAc2": HeadgroupDecorator("NeuAc2", elements = {}),
+                           "O": FunctionalGroup("O", elements = {Element.O: 1})
+                           }
+
+
+
+def get_functional_group(name):
+    if name in _known_functional_groups:
+        return _known_functional_groups[name].copy()
+    raise Exception("Name '%s' not registered in functional group list" % name)
+
+
+
         
         
         

@@ -66,7 +66,7 @@ class LipidSpeciesInfo(FattyAcid):
     def get_elements(self):
         elements = super().get_elements()
         elements[Element.O] -= (self.num_ethers == 0)
-        elements[Element.H] += 2 * (self.num_ethers == 0)
+        elements[Element.H] += 1 if self.num_ethers == 0 else -1
         
         return elements
         

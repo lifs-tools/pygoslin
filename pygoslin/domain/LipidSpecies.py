@@ -32,66 +32,51 @@ from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidClass import *
 from pygoslin.domain.LipidFaBondType import *
+from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.Element import Element
 
 class LipidSpecies:
-    def __init__(self, head_group, fa = []):
-        self.head_group = head_group.strip(" ")
-        self.lipid_category = get_category(self.head_group)
-        self.lipid_class = get_class(self.head_group)
-        self.use_head_group = False
-        self.headgroup_decorators = []
+    def __init__(self, headgroup, fa = []):
+        self.headgroup = headgroup
         
-        self.info = LipidSpeciesInfo(self.lipid_class)
+        self.info = LipidSpeciesInfo(self.headgroup.lipid_class)
         self.info.level = LipidLevel.SPECIES
-        if self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] not in {"Cer", "SPB"}:
+        for fas in fa:
+            self.info.add(fas)
+        
+        
+        if self.headgroup.sp_exception:
             if "OH" not in self.info.functional_groups: self.info.functional_groups["OH"] = []
             self.info.functional_groups["OH"].append(get_functional_group("OH").copy())
         
-        for fas in fa: self.info.add(fas)
         
-        
-        
-    def add_decorator(self, decorator):
-        self.headgroup_decorators.append(decorator)
-        if decorator.name in {"decorator_alkyl", "decorator_acyl"}:
-            if decorator.name not in self.info.functional_groups: self.info.functional_groups[decorator.name] = []
-            self.info.functional_groups[decorator.name].append(decorator)
-            
-            self.info.num_carbon += decorator.get_elements()[Element.C]
-            self.info.double_bonds += decorator.get_double_bonds()
+        for decorator in self.headgroup.decorators:
+            if decorator.name in {"decorator_alkyl", "decorator_acyl"}:
+                self.info.num_carbon += decorator.get_elements()[Element.C]
+                self.info.double_bonds += decorator.get_double_bonds()
         
         
     def get_extended_class(self):
         special_case = self.lipid_category == LipidCategory.GP if self.info != None and self.info.num_carbon > 0 else False
         if special_case and self.info.lipid_FA_bond_type in [LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_UNSPECIFIED]:
-            return all_lipids[self.lipid_class]["name"] + "-O"
+            return all_lipids[self.headgroup.lipid_class]["name"] + "-O"
         
         if special_case and self.info.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
-            return all_lipids[self.lipid_class]["name"] + "-p"
+            return all_lipids[self.headgroup.lipid_class]["name"] + "-p"
         
-        return all_lipids[self.lipid_class]["name"]
+        return all_lipids[self.headgroup.lipid_class]["name"]
             
 
 
     def get_lipid_string(self, level = None):
-        if level == LipidLevel.CATEGORY:
-            return self.lipid_category.name
-        
-        elif level == LipidLevel.CLASS:
-            return all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group
+        if level in {LipidLevel.CATEGORY, LipidLevel.CLASS}:
+            return self.headgroup.get_lipid_string(level)
         
         elif level == None or level == LipidLevel.SPECIES:
-            lipid_string = [all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group]
-                
-            prefix = sorted(hgd.to_string(level) for hgd in self.headgroup_decorators if not hgd.suffix)
-            suffix = [hgd.to_string(level) for hgd in self.headgroup_decorators if hgd.suffix]
-            lipid_string = prefix + lipid_string + suffix
-            
-            
+            lipid_string = [self.headgroup.get_lipid_string(level)]
             
             if self.info != None and (self.info.elements[Element.C] > 0 or self.info.num_carbon > 0):
-                lipid_string += " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
+                lipid_string += " " if all_lipids[self.headgroup.lipid_class]["category"] != LipidCategory.ST else "/"
                 lipid_string += self.info.to_string()
                 
             return "".join(lipid_string)
@@ -101,28 +86,19 @@ class LipidSpecies:
         
         
         
-    def get_elements_headgroup(self):
-        if self.use_head_group or self.info.level not in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.SPECIES, LipidLevel.MOLECULAR_SUBSPECIES}:
-            raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
-        
-        dummy = FunctionalGroup("dummy", elements = all_lipids[self.lipid_class]["elements"])
-        for hgd in self.headgroup_decorators: dummy += hgd
-        
-        return dummy.elements
-    
-        
         
     def get_elements(self):
+        if self.info.level not in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.SPECIES, LipidLevel.MOLECULAR_SUBSPECIES}:
+            raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
-        dummy = FunctionalGroup("dummy", elements = self.get_elements_headgroup())
+        dummy = FunctionalGroup("dummy", elements = self.headgroup.get_elements())
         dummy += self.info
         
         # since only one FA info is provided, we have to treat this single information as
         # if we would have the complete information about all possible FAs in that lipid
-        additional_fa = all_lipids[self.lipid_class]["poss_fa"]
-        is_sp = self.lipid_category == LipidCategory.SP
-        dummy.elements[Element.O] += additional_fa - max(0, self.info.num_ethers) - (self.lipid_category == LipidCategory.SP)
-        dummy.elements[Element.H] -= additional_fa - 2 * max(0, self.info.num_ethers) + (self.lipid_category == LipidCategory.SP)
+        additional_fa = all_lipids[self.headgroup.lipid_class]["poss_fa"]
+        dummy.elements[Element.O] += additional_fa - self.info.num_ethers - self.headgroup.sp_exception
+        dummy.elements[Element.H] -= additional_fa - 2 * self.info.num_ethers
         
         return dummy.elements
         

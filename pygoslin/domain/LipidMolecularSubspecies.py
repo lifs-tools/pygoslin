@@ -59,9 +59,9 @@ class LipidMolecularSubspecies(LipidSpecies):
     
 
     def build_lipid_subspecies_name(self, level):
-        fa_separator = "/" if level != LipidLevel.MOLECULAR_SUBSPECIES or all_lipids[self.lipid_class]["category"] == LipidCategory.SP else "_"
+        fa_separator = "/" if level != LipidLevel.MOLECULAR_SUBSPECIES or all_lipids[self.headgroup.lipid_class]["category"] == LipidCategory.SP else "_"
 
-        fa_headgroup_separator = " " if all_lipids[self.lipid_class]["category"] != LipidCategory.ST else "/"
+        fa_headgroup_separator = " " if all_lipids[self.headgroup.lipid_class]["category"] != LipidCategory.ST else "/"
         
         if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
             fa_string = fa_separator.join(fatty_acid.to_string(level) for fatty_acid in self.fa_list)
@@ -70,33 +70,12 @@ class LipidMolecularSubspecies(LipidSpecies):
             fa_string = fa_separator.join(fatty_acid.to_string(level) for fatty_acid in self.fa_list if fatty_acid.num_carbon > 0)
             if len(fa_string) > 0: fa_string = fa_headgroup_separator + fa_string
             
-        head_group = [(all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group)]
-        
-        
-        if level == LipidLevel.ISOMERIC_SUBSPECIES and self.lipid_category == LipidCategory.SP and head_group[0] not in {"Cer", "SPB"}:
-            head_group.append("(1)")
-            
-        if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            prefix = ["%s-" % hgd.to_string(level) for hgd in self.headgroup_decorators if not hgd.suffix]
-            suffix = [hgd.to_string(level) for hgd in self.headgroup_decorators if hgd.suffix]
-            head_group = prefix + head_group + suffix
-                
-        else:
-            prefix = sorted(hgd.to_string(level) for hgd in self.headgroup_decorators if not hgd.suffix)
-            suffix = [hgd.to_string(level) for hgd in self.headgroup_decorators if hgd.suffix]
-            head_group = prefix + head_group + suffix
-        
-        return "".join(head_group) + fa_string
+        return self.headgroup.get_lipid_string(level) + fa_string
     
     
     
     def get_elements(self):
-        dummy = FunctionalGroup("dummy", elements = super().get_elements_headgroup()) # get elements from head group + all decorators
-        
-        head_group = (all_lipids[self.lipid_class]["name"] if not self.use_head_group else self.head_group)
-        if self.lipid_category == LipidCategory.SP and head_group == "Cer" and len(self.headgroup_decorators) == 0:
-            dummy.elements[Element.O] -= 1
-        
+        dummy = FunctionalGroup("headgroup", elements = self.headgroup.get_elements())
         
         # add elements from all fatty acyl chains
         for fa in self.fa_list:
