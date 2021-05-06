@@ -49,7 +49,7 @@ adduct2 : character | character character;
 med : med_species | med_subspecies;
 med_species : med_hg_double fatty_acyl_chain;
 med_subspecies : med_hg_single fatty_acyl_chain | med_hg_single headgroup_separator fatty_acyl_chain | med_hg_double headgroup_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain | med_hg_triple headgroup_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain unsorted_fa_separator fatty_acyl_chain | med_hg_triple headgroup_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain;
-med_hg_single : 'FA' | 'FOH' | 'FAL' | 'CAR' | 'CoA' | 'NAE' | 'NAT';
+med_hg_single : 'FA' | 'FOH' | 'FAL' | 'CAR' | 'CoA' | 'NAE' | 'NAT' | 'WD';
 med_hg_double : 'WE' | 'NA' | 'FAHFA';
 med_hg_triple : 'WD';
 
@@ -58,9 +58,11 @@ med_hg_triple : 'WD';
 
 /* fatty acyl chain */
 lcb : fatty_acyl_chain;
-fatty_acyl_chain : fa_pure | ether fa_pure | fatty_acyl_linkage | fatty_alkyl_linkage;
-fatty_alkyl_linkage : fatty_linkage_number 'O' ROB fatty_acyl_chain RCB | 'O' ROB fatty_acyl_chain RCB;
-fatty_acyl_linkage : fatty_linkage_number 'O' ROB med RCB | 'O' ROB med RCB;
+fatty_acyl_chain : fatty_acyl | fatty_acyl stereo;
+fatty_acyl : fa_pure | ether fa_pure | fatty_acyl_linkage | fatty_alkyl_linkage;
+fatty_alkyl_linkage : fatty_linkage_number fatty_acyl_linkage_sign ROB fatty_acyl_chain RCB | fatty_acyl_linkage_sign ROB fatty_acyl_chain RCB;
+fatty_acyl_linkage : fatty_linkage_number fatty_acyl_linkage_sign ROB med RCB | fatty_acyl_linkage_sign ROB med RCB;
+fatty_acyl_linkage_sign : 'O';
 fatty_linkage_number : number;
 fa_pure : fa_pure_structure | fa_pure_structure stereo | fa_pure_structure sn;
 sn : ROB 'sn-' sn_pos RCB;
@@ -68,7 +70,8 @@ sn_pos : number;
 fa_pure_structure : carbon carbon_db_separator db | carbon carbon_db_separator db db_funcgroup_separator func_group;
 ether : ether_num ether_type | ether_type;
 ether_num : 'm' | 'd' | 't' | 'e';
-ether_type: 'O' plasmalogen_separator | 'P' plasmalogen_separator;
+ether_type: ether_types plasmalogen_separator | ether_types plasmalogen_separator;
+ether_types: 'O' | 'P';
 carbon : number;
 db : db_count | db_count db_positions;
 db_count : number;
@@ -152,8 +155,8 @@ pl_hg_single : 'LPA' | 'LPC' | 'LPE' | 'LPG' | 'LPI' | 'LPS' | hg_lpim | 'CPA' |
 pl_hg_double_all : pl_hg_double_fa | pl_hg_double;
 pl_hg_double_fa : pl_hg_double_fa_hg ROB pl_hg_fa RCB | pl_hg_double_fa_hg ROB pl_hg_alk RCB;
 pl_hg_double_fa_hg : 'PS-N' | 'PE-N';
-pl_hg_double : 'CDP-DAG' | 'DMPE' | 'MMPE' | 'PA' | 'PC' | 'PE' | 'PEt' | 'PG' | 'PI' | hg_pip | 'PS' | 'LBPA' | 'PGP' | 'PPA' | 'Glc-GP' | '6-Ac-Glc-GP' | hg_pim | 'PnC' | 'PnE' | 'PT' | 'PE-NMe2' | 'PE-NMe' | 'PIMIP' | 'CDPDAG' | 'PS-CAP' | 'PS-MDA' | 'PE-CAP' | 'PE-Glc' | 'PE-GlcA' | 'PE-GlcK' | 'PE-CM' | 'PE-CE' | 'PE-FA' | 'PE-CA' | 'PE-MDA' | 'PE-HNE' | 'PS-N(Alk)' | 'PS-N(FA)' | pl_hg_species;
-pl_hg_species : 'PE-N(Alk)' | 'PE-N(FA)';
+pl_hg_double : 'CDP-DAG' | 'DMPE' | 'MMPE' | 'PA' | 'PC' | 'PE' | 'PEt' | 'PG' | 'PI' | hg_pip | 'PS' | 'LBPA' | 'PGP' | 'PPA' | 'Glc-GP' | '6-Ac-Glc-GP' | hg_pim | 'PnC' | 'PnE' | 'PT' | 'PE-NMe2' | 'PE-NMe' | 'PIMIP' | 'CDPDAG' | 'PS-CAP' | 'PS-MDA' | 'PE-CAP' | 'PE-Glc' | 'PE-GlcA' | 'PE-GlcK' | 'PE-CM' | 'PE-CE' | 'PE-FA' | 'PE-CA' | 'PE-MDA' | 'PE-HNE' | pl_hg_species;
+pl_hg_species : 'PE-N(Alk)' | 'PE-N(FA)' | 'PS-N(Alk)' | 'PS-N(FA)';
 pl_hg_triple : 'LCL';
 pl_hg_quadro : 'BMP' | 'CL';
 hg_pip : hg_pip_pure | hg_pip_pure hg_pip_m | hg_pip_pure hg_pip_d | hg_pip_pure hg_pip_t;
@@ -166,7 +169,7 @@ hg_pim_number : number;
 hg_lpim : 'LPIM' hg_lpim_number;
 hg_lpim_number : number;
 pl_hg_fa : med;
-pl_hg_alk : fa_pure;
+pl_hg_alk : fatty_acyl_chain;
 
 
 carbohydrate : 'Hex' | 'Gal' | 'Glc' | 'Man' | 'Neu' | 'HexNAc' | 'GalNAc' | 'GlcNAc' | 'NeuAc' | 'NeuGc' | 'Kdn' | 'GlcA' | 'Xyl' | 'Fuc' | 'NeuAc2' | 'SHex' | 'S(3' apostroph ')Hex' | 'NAc' | 'Nac' | 'SGal' | 'S(3' apostroph ')Gal' | 'HexA' | 'OGlcNAc' | 'OGlc';

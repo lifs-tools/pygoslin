@@ -243,20 +243,25 @@ class Parser:
         
         
         
-        
         for rule_index, values in self.NTtoNT.items():
-            for rule in values:
-                for rule_top in top_nodes(rule):
-                    chain = self.collect_backwards(rule, rule_top)
-                    if chain == None: continue
-                    chain = [rule_top] + chain + [rule]
-                    while len(chain) > 1:
-                        top = chain[0]
-                        chain = chain[1:]
-                        self.substitution[rule_index + (top << 16)] = chain
+            for rule in set(values) | set([rule_index]):
+                
+                for rule_top in set(top_nodes(rule)):
+                    chains = self.collect_backwards(rule, rule_top)
+                    if chains == None: continue
+                    
+                    for chain in chains:
+                        while len(chain) > 1:
+                            top = chain[0]
+                            chain = chain[1:]
+                            self.substitution[(rule_index, top)] = chain
+                        
+                    
                     
         for k, v in self.TtoNT.items():
             self.OTtoNT[k] = list(v)[0]
+            
+            
         
         
         for d in [self.TtoNT, self.NTtoNT]:
@@ -276,7 +281,10 @@ class Parser:
             self.left_pair[key & self.MASK].add(key)
            
            
-           
+
+    
+    
+    
     
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
         grammar, sb,current_position = "", [], 0
@@ -483,19 +491,25 @@ class Parser:
     
     
     
-    def collect_backwards(self, child_rule_index, parent_rule_index):
-        if child_rule_index not in self.NTtoNT: return None
+    def collect_backwards(self, child_rule_index, parent_rule_index, visited = None, path = None, collection = None):
+        if visited == None: visited, path, collection = set(), [], []
         
-        for previous_index in self.NTtoNT[child_rule_index]:
-            if previous_index == parent_rule_index:
-                return []
-            
-            elif previous_index in self.NTtoNT:
-                collection = self.collect_backwards(previous_index, parent_rule_index)
-                if collection != None:
-                    collection.append(previous_index)
-                    return collection
-        return None
+        if child_rule_index not in self.NTtoNT: return collection
+        visited.add(child_rule_index)
+        path.append(child_rule_index)
+        
+        for previous_rule in self.NTtoNT[child_rule_index]:
+            if previous_rule not in visited:
+                
+                if previous_rule == parent_rule_index:
+                    collection.append(list(path + [parent_rule_index])[::-1])
+                
+                else:
+                    collection = self.collect_backwards(previous_rule, parent_rule_index, visited, path, collection)
+                      
+        path.pop()
+        visited.remove(child_rule_index)
+        return collection
         
         
         
@@ -528,8 +542,9 @@ class Parser:
             top_rule = parse_content[2]
             bottom_rule = self.OTtoNT[parse_content[0]]
         
-        
-        s_key = bottom_rule + (top_rule << 16)
+
+            
+        s_key = (bottom_rule, top_rule)
         if bottom_rule != top_rule and s_key in self.substitution:
             for rule_index in self.substitution[s_key]:
                 node.left = TreeNode(rule_index, rule_index in self.NTtoRule)
@@ -590,6 +605,7 @@ class Parser:
         n = len(text_to_parse)
         rgt = self.right_pair
         lft = self.left_pair
+        
         
         
         DP = [[{} for j in range(n - i)] for i in range(n)]

@@ -39,10 +39,6 @@ class FunctionalGroup:
         self.functional_groups = functional_groups if functional_groups != None else {}
         
         
-    def clone(self, fg):
-        self.name = fg.name
-        self.elements = {k: v for k, v in fg.elements.items()}
-        
         
     def copy(self):
         functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, double_bonds = self.double_bonds, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
@@ -125,15 +121,15 @@ class HeadgroupDecorator(FunctionalGroup):
         super().__init__(name, position = position, count = count, elements = elements)
         self.suffix = suffix
         
-        
     def copy(self):
         return HeadgroupDecorator(self.name, position = self.position, count = self.count, elements = self.elements, suffix = self.suffix)
+        
+        
         
         
     def to_string(self, level):
         if not self.suffix: return self.name
     
-        
         if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
             decorator_string = self.functional_groups["decorator_alkyl"][0].to_string(level) if level != LipidLevel.SPECIES else "Alk"
             
@@ -142,7 +138,7 @@ class HeadgroupDecorator(FunctionalGroup):
             
         else:
             decorator_string = self.name
-
+            
         return "(%s)" % decorator_string
     
     

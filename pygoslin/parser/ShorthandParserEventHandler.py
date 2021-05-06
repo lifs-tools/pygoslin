@@ -136,7 +136,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["cycle_db_position_cis_trans_pre_event"] = self.set_cycle_db_position_cistrans
         
         ## set linkage events
-        
         self.registered_events["fatty_acyl_linkage_pre_event"] = self.set_acyl_linkage
         self.registered_events["fatty_acyl_linkage_post_event"] = self.add_acyl_linkage
         self.registered_events["fatty_alkyl_linkage_pre_event"] = self.set_alkyl_linkage
@@ -225,10 +224,9 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def add_fatty_acyl_chain(self, node):
-        
         fg_i = "fa%i" % (len(self.current_fa) - 2)
         special_type = ""
-        if len(self.current_fa) >= 2 and "fg_name" in self.tmp[fg_i]:
+        if len(self.current_fa) >= 2 and fg_i in self.tmp and "fg_name" in self.tmp[fg_i]:
             if self.tmp[fg_i]["fg_name"] in {"acyl", "alkyl", "decorator_acyl", "decorator_alkyl"}:
                 special_type = self.tmp[fg_i]["fg_name"]
                 
@@ -329,9 +327,9 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.tmp["fa%i" % len(self.current_fa)] = {}
         
     
+    
     def add_hg_alkyl(self, node):
         del self.tmp["fa%i" % len(self.current_fa)]
-        
         self.headgroup_decorators.append(self.current_fa.pop())
         del self.tmp["fa%i" % len(self.current_fa)]
         

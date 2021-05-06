@@ -53,7 +53,10 @@ class HeadGroup:
         
         headgoup_string = [all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup]
                 
-        prefix = sorted(hgd.to_string(level) for hgd in self.decorators if not hgd.suffix)
+        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+            prefix = sorted(hgd.to_string(level) for hgd in self.decorators if not hgd.suffix)
+        else:
+            prefix = ["%s-" % hgd.to_string(level) for hgd in self.decorators if not hgd.suffix]
         suffix = [hgd.to_string(level) for hgd in self.decorators if hgd.suffix]
         return "".join(prefix + headgoup_string + suffix)
         
