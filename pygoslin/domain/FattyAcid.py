@@ -119,9 +119,6 @@ class FattyAcid(FunctionalGroup):
                         fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
                         if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
                     
-                    elif len(fg_list) == 1:
-                        fa_string.append(";%s" % func_group.to_string(level))
-                        
                     else:
                         fg_count = sum([func_group.count for func_group in fg_list])
                         if fg_count > 1: fa_string.append(";(%s)%i" % (fg, fg_count))

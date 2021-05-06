@@ -161,7 +161,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.current_fa = []
         self.headgroup_decorators = []
         self.tmp = {}
-        
         #self.debug = "full"
         
         
