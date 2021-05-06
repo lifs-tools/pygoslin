@@ -243,8 +243,11 @@ class Parser:
         
         
         
+        visited = set()
         for rule_index, values in self.NTtoNT.items():
-            for rule in set(values) | set([rule_index]):
+            rules_to_visit = (set(values) | set([rule_index])) - visited
+            for rule in rules_to_visit:
+                visited.add(rule)
                 
                 for rule_top in set(top_nodes(rule)):
                     chains = self.collect_backwards(rule, rule_top)
@@ -255,7 +258,6 @@ class Parser:
                             top = chain[0]
                             chain = chain[1:]
                             self.substitution[(rule_index, top)] = chain
-                        
                     
                     
         for k, v in self.TtoNT.items():
@@ -492,6 +494,9 @@ class Parser:
     
     
     def collect_backwards(self, child_rule_index, parent_rule_index, visited = None, path = None, collection = None):
+        # provides all single linkage paths from a child rule to a parent rule,
+        # and yes, there can be several paths
+        
         if visited == None: visited, path, collection = set(), [], []
         
         if child_rule_index not in self.NTtoNT: return collection

@@ -77,7 +77,6 @@ class FattyAcid(FunctionalGroup):
                 
         
     def to_string(self, level):
-        
         fa_string = [self.lipid_FA_bond_type.prefix()]
         num_carbon = self.num_carbon
         double_bonds = self.double_bonds
@@ -89,14 +88,6 @@ class FattyAcid(FunctionalGroup):
             num_oxygen = self.get_functional_group_elements()[Element.O]
             
 
-        """
-        if level not in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
-            for fg, fg_list in self.functional_groups.items():
-                for fg_item in fg_list:
-                    fg_item.compute_elements()
-                    num_carbon += fg_item.elements[Element.C] if Element.C in fg_item.elements else 0
-            print(num_carbon)
-        """
         fa_string.append("%i" % num_carbon)
         
         if type(double_bonds) != int:
@@ -114,20 +105,23 @@ class FattyAcid(FunctionalGroup):
             fa_string.append(":%i" % double_bonds)
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            for fg in sorted(self.functional_groups):
+            for fg in sorted(self.functional_groups.keys()):
                 fg_list = self.functional_groups[fg]
                 fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
                 if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
         
         elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            for fg in sorted(self.functional_groups):
+            for fg in sorted(self.functional_groups.keys()):
                 fg_list = self.functional_groups[fg]
                 if len(fg_list) > 0:
                     
-                    if len(fg_list) == 1:
+                    if fg in {"acyl", "alkyl"}:
                         fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
                         if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
                     
+                    elif len(fg_list) == 1:
+                        fa_string.append(";%s" % func_group.to_string(level))
+                        
                     else:
                         fg_count = sum([func_group.count for func_group in fg_list])
                         if fg_count > 1: fa_string.append(";(%s)%i" % (fg, fg_count))
