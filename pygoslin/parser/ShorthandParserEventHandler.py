@@ -219,10 +219,9 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def add_pl_species_data(self, node):
         self.set_lipid_level(LipidLevel.SPECIES)
-        if node.get_text() in {"PE-N(FA)", "PS-N(FA)"}:
-            hgd = HeadgroupDecorator("")
-            hgd.elements[Element.O] += 1
-            hgd.elements[Element.H] -= 1
+        hgd = HeadgroupDecorator("")
+        hgd.elements[Element.O] += 1
+        hgd.elements[Element.H] -= 1
         self.headgroup_decorators.append(hgd)
     
         
