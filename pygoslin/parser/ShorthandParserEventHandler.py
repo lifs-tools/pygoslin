@@ -73,7 +73,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_species_double_pre_event"] = self.set_species_level
         self.registered_events["pl_species_triple_pre_event"] = self.set_species_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
-        self.registered_events["pl_hg_species_pre_event"] = self.set_species_level
         
         self.registered_events["pl_single_pre_event"] = self.set_molecular_level
         self.registered_events["unsorted_fa_separator_pre_event"] = self.set_molecular_level
@@ -148,6 +147,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_hg_fa_post_event"] = self.add_hg_acyl
         self.registered_events["pl_hg_alk_pre_event"] = self.set_hg_alkyl
         self.registered_events["pl_hg_alk_post_event"] = self.add_hg_alkyl
+        self.registered_events["pl_hg_species_pre_event"] = self.add_pl_species_data
         
 
 
@@ -215,6 +215,16 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
     def set_lcb(self, node):
         self.fa_list[-1].lcb = True
         self.fa_list[-1].name = "LCB"
+        
+        
+    def add_pl_species_data(self, node):
+        self.set_lipid_level(LipidLevel.SPECIES)
+        if node.get_text() in {"PE-N(FA)", "PS-N(FA)"}:
+            hgd = HeadgroupDecorator("")
+            hgd.elements[Element.O] += 1
+            hgd.elements[Element.H] -= 1
+        self.headgroup_decorators.append(hgd)
+    
         
     
     def new_fatty_acyl_chain(self, node):
