@@ -27,16 +27,21 @@ SOFTWARE.
 from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidClass import *
 from pygoslin.domain.Adduct import Adduct
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
+from pygoslin.domain.HeadGroup import HeadGroup
+from pygoslin.domain.FunctionalGroup import *
 
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
 from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
+
+from pygoslin.domain.LipidExceptions import *
 
 class GoslinParserEventHandler(BaseParserEventHandler):
     
@@ -113,6 +118,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.db_position = 0
         self.db_cistrans = ""
         self.unspecified_ether = False
+        self.db_numbers = -1
         
 
     def set_head_group_name(self, node):
@@ -134,7 +140,11 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
 
     def add_db_position(self, node):
-        if self.current_fa != None: self.current_fa.double_bond_positions[self.db_position] = self.db_cistrans
+        if self.current_fa != None:
+            if type(self.current_fa.double_bonds) == int:
+                self.db_numbers = self.current_fa.double_bonds
+                self.current_fa.double_bonds = {}
+            self.current_fa.double_bonds[self.db_position] = self.db_cistrans
         
 
     def add_db_position_number(self, node):
@@ -155,17 +165,16 @@ class GoslinParserEventHandler(BaseParserEventHandler):
             self.unspecified_ether = False
         else:
             lipid_FA_bond_type = LipidFaBondType.ESTER
-        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, lipid_FA_bond_type, False, 0, {})
+        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1))
 
         
             
     def append_fa(self, node):
         
-        current_fa = self.current_fa
-        if self.level == LipidLevel.SPECIES:
-            self.current_fa = LipidSpeciesInfo(current_fa)
-            
-        elif self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+            raise LipidException("Double bond count does not match with number of double bond positions")
+        
+        if self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
             self.current_fa.position = len(self.fa_list) + 1
             
             
@@ -177,16 +186,12 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         
     def new_lcb(self, node):
-        self.lcb = FattyAcid("LCB", 2, 0, 0, LipidFaBondType.ESTER, True, 1, {})
+        self.lcb = FattyAcid("LCB")
+        self.lcb.lcb = True
         self.current_fa = self.lcb
             
             
     def clean_lcb(self, node):
-        lcb = self.lcb
-        if self.level == LipidLevel.SPECIES:
-            self.lcb = LipidSpeciesInfo(lcb)
-            self.lcb.lipid_FA_bond_type = LipidFaBondType.ESTER
-
         
         self.current_fa = None
         
@@ -199,28 +204,19 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         lipid = None
         
+        headgroup = HeadGroup(self.head_group)
         
         
-        if self.level == LipidLevel.SPECIES:
-            if len(self.fa_list) > 0:
-                lipid_species_info = LipidSpeciesInfo(self.fa_list[0])
-                lipid_species_info.level = LipidLevel.SPECIES
-                lipid = LipidSpecies(self.head_group, lipid_species_info = lipid_species_info)
-            else:
-                lipid = LipidSpecies(self.head_group)
-            
-        elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
-            lipid = LipidMolecularSubspecies(self.head_group, self.fa_list)
-            
-        elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            lipid = LipidStructuralSubspecies(self.head_group, self.fa_list)
-            
-        elif self.level == LipidLevel.ISOMERIC_SUBSPECIES:
-            lipid = LipidIsomericSubspecies(self.head_group, self.fa_list)
-    
+        lipid_level_class = None
+        if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
+        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
+        if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
+        if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
+        
         self.lipid = LipidAdduct()
-        self.lipid.lipid = lipid
         self.lipid.adduct = self.adduct
+        self.lipid.lipid = lipid_level_class(headgroup, self.fa_list)
+        
         self.content = self.lipid
         
         
@@ -228,17 +224,30 @@ class GoslinParserEventHandler(BaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         if ether == "a": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "p": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+        elif ether == "p":
+            self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+            if type(self.current_fa.double_bonds) == int:
+                self.current_fa.double_bonds = max(0, self.current_fa.double_bonds - 1)
         
         
     def add_old_hydroxyl(self, node):
         old_hydroxyl = node.get_text()
-        if old_hydroxyl == "d": self.current_fa.num_hydroxyl = 2
-        if old_hydroxyl == "t": self.current_fa.num_hydroxyl = 3
+        
+        num_h = 0
+        if old_hydroxyl == "d": num_h = 2
+        if old_hydroxyl == "t": num_h = 3
+        
+        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        
+        functional_group = get_functional_group("OH").copy()
+        functional_group.count = num_h
+        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+        self.current_fa.functional_groups["OH"].append(functional_group)
+        
         
         
     def add_double_bonds(self, node):
-        self.current_fa.num_double_bonds = int(node.get_text())
+        self.current_fa.double_bonds = int(node.get_text())
         
         
     def add_carbon(self, node):
@@ -246,7 +255,13 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         
     def add_hydroxyl(self, node):
-        self.current_fa.num_hydroxyl = int(node.get_text())
+        num_h = int(node.get_text())
+        functional_group = get_functional_group("OH").copy()
+        
+        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        functional_group.count = num_h
+        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+        self.current_fa.functional_groups["OH"].append(functional_group)
         
         
     def new_adduct(self, node):

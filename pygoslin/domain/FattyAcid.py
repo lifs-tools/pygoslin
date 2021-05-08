@@ -136,22 +136,25 @@ class FattyAcid(FunctionalGroup):
         self.elements = {e: 0 for e in Element}
         num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
         if self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL: num_double_bonds += 1
+        
+        if self.num_carbon == 0 and num_double_bonds == 0:
+            return
+        
         if not self.lcb:
-            if self.num_carbon > 0 or num_double_bonds > 0:
+            
+            self.elements[Element.C] = self.num_carbon # carbon
+            if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
+                self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds) # hydrogen
+                self.elements[Element.O] = 1 # oxygen
+            
+            elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
+                self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
+            
+            elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
+                self.elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
                 
-                self.elements[Element.C] = self.num_carbon # carbon
-                if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
-                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds) # hydrogen
-                    self.elements[Element.O] = 1 # oxygen
-                
-                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
-                    self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
-                
-                elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
-                    self.elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
-                    
-                else:
-                    raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
+            else:
+                raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)
                 
         else:
             # long chain base

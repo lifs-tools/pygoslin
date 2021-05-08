@@ -125,9 +125,9 @@ fa4_unsorted : fa2_unsorted unsorted_fa_separator fa2_unsorted;
 
 
 /* glycero lipids */
-gl : gl_species | gl_subpsecies | gl_species_double;
+gl : gl_species | gl_subpsecies | gl_molecular_species_double;
 gl_species : gl_hg headgroup_separator fatty_acyl_chain;
-gl_species_double : gl_hg_triple headgroup_separator fatty_acyl_chain2;
+gl_molecular_species_double : gl_hg_triple headgroup_separator fatty_acyl_chain2;
 gl_subpsecies : gl_single | gl_double | gl_triple;
 gl_hg : gl_hg_double | gl_hg_triple;
 gl_hg_single : 'MG' | 'MGMG' | 'DGMG' | 'SQMG';
@@ -139,26 +139,23 @@ gl_full : gl_hg_single headgroup_separator fatty_acyl_chain3 | gl_hg_double head
 gl_triple : gl_hg_triple headgroup_separator fatty_acyl_chain3;
 
 
-pl : pl_species | pl_subspecies | pl_species_double | pl_species_triple;
+pl : pl_species | pl_subspecies | pl_molecular_species_double | pl_molecular_species_triple;
 pl_species : pl_hg headgroup_separator fatty_acyl_chain;
-pl_subspecies : pl_single | pl_double | pl_triple | pl_quadro;
-pl_species_double : pl_hg_triple headgroup_separator fatty_acyl_chain2 | pl_hg_quadro headgroup_separator fatty_acyl_chain2;
-pl_species_triple : pl_hg_quadro headgroup_separator fatty_acyl_chain3;
+pl_subspecies : pl_single | pl_double | pl_quadro;
+pl_molecular_species_double : pl_hg_triple headgroup_separator fatty_acyl_chain2 | pl_hg_quadro headgroup_separator fatty_acyl_chain2;
+pl_molecular_species_triple : pl_hg_quadro headgroup_separator fatty_acyl_chain3;
 pl_single : pl_hg_single headgroup_separator fatty_acyl_chain;
 pl_full : pl_hg_single headgroup_separator fatty_acyl_chain2;
 pl_double : pl_full | pl_hg_double_all headgroup_separator fatty_acyl_chain2;
-pl_triple : pl_hg_triple headgroup_separator fatty_acyl_chain3 | pl_full4;
 pl_quadro : pl_hg_quadro headgroup_separator fatty_acyl_chain4;
-pl_full4 : pl_hg_triple headgroup_separator fatty_acyl_chain4;
-pl_hg : pl_hg_double_all | pl_hg_triple | pl_hg_quadro;
+pl_hg : pl_hg_double_all | pl_hg_quadro;
 pl_hg_single : 'LPA' | 'LPC' | 'LPE' | 'LPG' | 'LPI' | 'LPS' | hg_lpim | 'CPA' | 'LCDPDAG' | 'LDMPE' | 'LMMPE' | 'LPIMIP' | 'LPIN' | 'PE-isoLG';
 pl_hg_double_all : pl_hg_double_fa | pl_hg_double;
 pl_hg_double_fa : pl_hg_double_fa_hg ROB pl_hg_fa RCB | pl_hg_double_fa_hg ROB pl_hg_alk RCB;
 pl_hg_double_fa_hg : 'PS-N' | 'PE-N';
 pl_hg_double : 'CDP-DAG' | 'DMPE' | 'MMPE' | 'PA' | 'PC' | 'PE' | 'PEt' | 'PG' | 'PI' | hg_pip | 'PS' | 'LBPA' | 'PGP' | 'PPA' | 'Glc-GP' | '6-Ac-Glc-GP' | hg_pim | 'PnC' | 'PnE' | 'PT' | 'PE-NMe2' | 'PE-NMe' | 'PIMIP' | 'CDPDAG' | 'PS-CAP' | 'PS-MDA' | 'PE-CAP' | 'PE-Glc' | 'PE-GlcA' | 'PE-GlcK' | 'PE-CM' | 'PE-CE' | 'PE-FA' | 'PE-CA' | 'PE-MDA' | 'PE-HNE' | pl_hg_species;
 pl_hg_species : 'PE-N(Alk)' | 'PE-N(FA)' | 'PS-N(Alk)' | 'PS-N(FA)';
-pl_hg_triple : 'LCL';
-pl_hg_quadro : 'BMP' | 'CL';
+pl_hg_quadro : 'BMP' | 'CL' | 'LCL';
 hg_pip : hg_pip_pure | hg_pip_pure hg_pip_m | hg_pip_pure hg_pip_d | hg_pip_pure hg_pip_t;
 hg_pip_pure : 'PIP';
 hg_pip_m : '(3' apostroph ')' | '(4' apostroph ')' | '(5' apostroph ')';

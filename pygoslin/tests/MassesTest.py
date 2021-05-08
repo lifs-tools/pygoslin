@@ -55,11 +55,11 @@ class TestFormulas(unittest.TestCase):
                     lipid = parser.parse(lipid_name)
                 except LipidException as e:
                     print(row[0], e)
-                    assert False
+                    assertTrue(False)
                  
-                assert lipid.get_lipid_string(LipidLevel.CLASS) == row[0]
-                assert compute_sum_formula(lipid.lipid.get_elements()) == row[2]
-                assert abs(lipid.get_mass() - float(row[4])) < 0.001
-                assert lipid.adduct.get_charge() == int(row[5])
+                self.assertEqual(lipid.get_lipid_string(LipidLevel.CLASS), row[0], "for lipid '%s'" % lipid_name)
+                self.assertEqual(compute_sum_formula(lipid.lipid.get_elements()), row[2], "for lipid '%s'" % lipid_name)
+                self.assertTrue(abs(lipid.get_mass() - float(row[4])) < 0.001, "for lipid '%s'" % lipid_name)
+                self.assertEqual(lipid.adduct.get_charge(), int(row[5]), "for lipid '%s'" % lipid_name)
 
 

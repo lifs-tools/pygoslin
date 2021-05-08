@@ -68,10 +68,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         ## set species events
         self.registered_events["med_species_pre_event"] = self.set_species_level
         self.registered_events["gl_species_pre_event"] = self.set_species_level
-        self.registered_events["gl_species_double_pre_event"] = self.set_species_level
+        self.registered_events["gl_molecular_species_double_pre_event"] = self.set_molecular_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
-        self.registered_events["pl_species_double_pre_event"] = self.set_species_level
-        self.registered_events["pl_species_triple_pre_event"] = self.set_species_level
+        self.registered_events["pl_molecular_species_double_pre_event"] = self.set_molecular_level
+        self.registered_events["pl_molecular_species_triple_pre_event"] = self.set_molecular_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
         
         self.registered_events["pl_single_pre_event"] = self.set_molecular_level
@@ -87,7 +87,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["gl_hg_triple_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_single_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_double_pre_event"] = self.set_headgroup_name
-        self.registered_events["pl_hg_triple_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_quadro_pre_event"] = self.set_headgroup_name
         self.registered_events["sl_hg_single_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_double_fa_hg_pre_event"] = self.set_headgroup_name
@@ -161,7 +160,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.current_fa = []
         self.headgroup_decorators = []
         self.tmp = {}
-        #self.debug = "full"
+        #self.debug = "fully"
         
         
     def set_lipid_level(self, level):
@@ -194,6 +193,11 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def set_carbohydrate_isomeric(self, node):
         self.tmp["func_group_head"] = True
+        
+    
+    def set_pl_hg_triple(self, node):
+        self.set_molecular_level(node)
+        self.set_headgroup_name(node)
         
         
     def pre_sphingolipid(self, node):
