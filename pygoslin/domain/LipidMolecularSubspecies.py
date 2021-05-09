@@ -79,7 +79,6 @@ class LipidMolecularSubspecies(LipidSpecies):
     def get_elements(self):
         dummy = FunctionalGroup("headgroup", elements = self.headgroup.get_elements())
         
-        #print(dummy.elements)
         
         # add elements from all fatty acyl chains
         for fa in self.fa_list:

@@ -44,13 +44,13 @@ data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_
         
         "SPB 18:0;1OH;3oxo": ["SPB 18:0;1OH;3oxo", "SPB 18:0;OH;oxo", "SPB 18:1;O2", "SPB 18:1;O2"], # SPB 18:1;O2
         
-        "PIP(3') 16:0/18:1(9Z)": ["PIP(3') 16:0/18:1(9Z)", "PIP(3') 16:0/18:1(9)", "PIP(3') 16:0_18:1", "PIP(3') 34:1"], # PIP 34:1
+        "PIP(3') 16:0/18:1(9Z)": ["PIP(3') 16:0/18:1(9Z)", "PIP(3') 16:0/18:1(9)", "PIP(3') 16:0_18:1", "PIP 34:1"], # PIP 34:1
         
         "Cer 18:0;1OH,3OH,4OH/26:0;2OH,3OH": ["Cer 18:0;1OH,3OH,4OH/26:0;2OH,3OH", "Cer 18:0;(OH)3/26:0;(OH)2", "Cer 18:0;O3/26:0;O2", "Cer 44:0;O5"], # Cer 44:0;O5
         
         "Cer 18:1(5Z);1OH,3OH/14:0": ["Cer 18:1(5Z);1OH,3OH/14:0", "Cer 18:1(5);(OH)2/14:0", "Cer 18:1;O2/14:0", "Cer 32:1;O2", "C32H63NO3"], # Cer 32:1;O2 / C32H63NO3
         
-        "PIP2(3',5') 17:0/20:4(5Z,8Z,11Z,14Z)": ["PIP2(3',5') 17:0/20:4(5Z,8Z,11Z,14Z)", "PIP2(3',5') 17:0/20:4(5,8,11,14)", "PIP2(3',5') 17:0_20:4", "PIP2(3',5') 37:4", "C46H83O19P3"], # PIP2 37:4 / C46H83O19P3
+        "PIP2(3',5') 17:0/20:4(5Z,8Z,11Z,14Z)": ["PIP2(3',5') 17:0/20:4(5Z,8Z,11Z,14Z)", "PIP2(3',5') 17:0/20:4(5,8,11,14)", "PIP2(3',5') 17:0_20:4", "PIP2 37:4", "C46H83O19P3"], # PIP2 37:4 / C46H83O19P3
         
         "PE O-16:0/18:2(9Z,12Z)": ["PE O-16:0/18:2(9Z,12Z)", "PE O-16:0/18:2(9,12)", "PE O-16:0_18:2", "PE O-34:2", "C39H76NO7P"], # PE O-34:2 / C39H76NO7P
         
@@ -78,11 +78,13 @@ data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_
         
         "LCL 18:2(9Z,12Z)/18:2(9Z,12Z)/18:2(9Z,12Z)/0:0": ["LCL 18:2(9Z,12Z)/18:2(9Z,12Z)/18:2(9Z,12Z)/0:0", "LCL 18:2(9,12)/18:2(9,12)/18:2(9,12)/0:0", "LCL 18:2_18:2_18:2", "LCL 54:6", "C63H112O16P2"],
         
-        "MIPC(1) 20:0;3OH,4OH/20:0;2OH": ["MIPC(1) 20:0;3OH,4OH/20:0;2OH", "MIPC 20:0;(OH)2/20:0;OH", "MIPC 20:0;O2/20:0;O", "MIPC 40:0;O4", "C28H56NO7P"],
+        "MIPC(1) 20:0;3OH,4OH/20:0;2OH": ["MIPC(1) 20:0;3OH,4OH/20:0;2OH", "MIPC 20:0;(OH)2/20:0;OH", "MIPC 20:0;O2/20:0;O", "MIPC 40:0;O4", "C52H102NO18P"],
 
         "LPC 20:1(11Z)/0:0": ["LPC 20:1(11Z)/0:0", "LPC 20:1(11)/0:0", "LPC 20:1", "LPC 20:1", "C28H56NO7P"],
         
-        "SPB 18:0;1OH,3OH": ["SPB 18:0;1OH,3OH", "SPB 18:0;(OH)2", "SPB 18:0;O2", "SPB 18:0;O2", "C18H39NO2"]
+        "SPB 18:0;1OH,3OH": ["SPB 18:0;1OH,3OH", "SPB 18:0;(OH)2", "SPB 18:0;O2", "SPB 18:0;O2", "C18H39NO2"],
+        
+        "LPIM1 19:1(9Z)/0:0": ["LPIM1 19:1(9Z)/0:0", "LPIM1 19:1(9)/0:0", "LPIM1 19:1", "LPIM1 19:1", "C34H63O17P"]
 
         }
 
@@ -121,17 +123,29 @@ class ShorthandTest(unittest.TestCase):
         
         
         
-    def teest_performance(self):
-        cycles, parser = 100, ShorthandParser()
+    def test_performance(self):
+        cycles, parser = 50, ShorthandParser()
+        length = 0
         
         start = time.time()
         for lipid_name in data:
             for i in range(cycles):
                 lipid = parser.parse(lipid_name)
-                lipid = parser.parse(lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES))
-                lipid = parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES))
-                lipid = parser.parse(lipid.get_lipid_string(LipidLevel.SPECIES))
-            
+                length += len(lipid_name)
+                
+                lipid_name2 = lipid.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES)
+                lipid = parser.parse(lipid_name2)
+                length += len(lipid_name2)
+                
+                lipid_name2 = lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES)
+                lipid = parser.parse(lipid_name2)
+                length += len(lipid_name2)
+                
+                lipid_name2 = lipid.get_lipid_string(LipidLevel.SPECIES)
+                lipid = parser.parse(lipid_name2)
+                length += len(lipid_name2)
+                
         elapsed = time.time() - start
         print("time elapsed: %f" % elapsed)
         print("lipid / second: %f" % (len(data) * cycles * 4 / elapsed))
+        print("Avg. lipid name length: %f" % (length / (len(data) * cycles * 4)))

@@ -117,12 +117,13 @@ class FunctionalGroup:
 
     
 class HeadgroupDecorator(FunctionalGroup):
-    def __init__(self, name, position = -1, count = 1, elements = None, suffix = False):
+    def __init__(self, name, position = -1, count = 1, elements = None, suffix = False, level = None):
         super().__init__(name, position = position, count = count, elements = elements)
         self.suffix = suffix
+        self.lowest_visible_level = level
         
     def copy(self):
-        return HeadgroupDecorator(self.name, position = self.position, count = self.count, elements = self.elements, suffix = self.suffix)
+        return HeadgroupDecorator(self.name, position = self.position, count = self.count, elements = self.elements, suffix = self.suffix, level = self.lowest_visible_level)
         
         
         
@@ -130,16 +131,22 @@ class HeadgroupDecorator(FunctionalGroup):
     def to_string(self, level):
         if not self.suffix: return self.name
     
-        if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
-            decorator_string = self.functional_groups["decorator_alkyl"][0].to_string(level) if level != LipidLevel.SPECIES else "Alk"
+        decorator_string = ""
+    
+        if self.lowest_visible_level == None or self.lowest_visible_level.value < level.value:
+        
+            if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
+                decorator_string = self.functional_groups["decorator_alkyl"][0].to_string(level) if level != LipidLevel.SPECIES else "Alk"
+                
+            elif "decorator_acyl" in self.functional_groups and len(self.functional_groups["decorator_acyl"]) > 0:
+                decorator_string = "FA %s" % self.functional_groups["decorator_acyl"][0].to_string(level) if level != LipidLevel.SPECIES else "FA"
+                
+            else:
+                decorator_string = self.name
+                
+            decorator_string = "(%s)" % decorator_string
             
-        elif "decorator_acyl" in self.functional_groups and len(self.functional_groups["decorator_acyl"]) > 0:
-            decorator_string = "FA %s" % self.functional_groups["decorator_acyl"][0].to_string(level) if level != LipidLevel.SPECIES else "FA"
-            
-        else:
-            decorator_string = self.name
-            
-        return "(%s)" % decorator_string
+        return decorator_string
     
     
 

@@ -93,6 +93,9 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["sl_hg_double_name_pre_event"] = self.set_headgroup_name
         self.registered_events["st_hg_pre_event"] = self.set_headgroup_name
         self.registered_events["st_hg_ester_pre_event"] = self.set_headgroup_name
+        self.registered_events["hg_pip_pure_m_pre_event"] = self.set_headgroup_name
+        self.registered_events["hg_pip_pure_d_pre_event"] = self.set_headgroup_name
+        self.registered_events["hg_pip_pure_t_pre_event"] = self.set_headgroup_name
 
         ## set head group headgroup_decorators
         self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
@@ -147,6 +150,9 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_hg_alk_pre_event"] = self.set_hg_alkyl
         self.registered_events["pl_hg_alk_post_event"] = self.add_hg_alkyl
         self.registered_events["pl_hg_species_pre_event"] = self.add_pl_species_data
+        self.registered_events["hg_pip_m_pre_event"] = self.pip_decorator
+        self.registered_events["hg_pip_d_pre_event"] = self.pip_decorator
+        self.registered_events["hg_pip_t_pre_event"] = self.pip_decorator
         
 
 
@@ -193,6 +199,11 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def set_carbohydrate_isomeric(self, node):
         self.tmp["func_group_head"] = True
+        
+        
+    def pip_decorator(self, node):
+        self.headgroup_decorators.append(HeadgroupDecorator(node.get_text(), suffix = True, level = LipidLevel.SPECIES))
+        
         
     
     def set_pl_hg_triple(self, node):
