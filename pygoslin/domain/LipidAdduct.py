@@ -40,7 +40,9 @@ class LipidAdduct:
     def get_lipid_string(self, level = None):
         lipid_name = []
         
-        if self.lipid != None: lipid_name.append(self.lipid.get_lipid_string(level))
+        if self.lipid != None:
+            if level == None: level = self.lipid.info.level
+            lipid_name.append(self.lipid.get_lipid_string(level))
         else: return ""
         
         if level == None or level not in {LipidLevel.CLASS, LipidLevel.CATEGORY}:

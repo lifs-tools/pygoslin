@@ -68,7 +68,8 @@ class LipidSpecies:
             
 
 
-    def get_lipid_string(self, level = None):
+    def get_lipid_string(self, level = None):        
+        
         if level in {LipidLevel.CATEGORY, LipidLevel.CLASS}:
             return self.headgroup.get_lipid_string(level)
         

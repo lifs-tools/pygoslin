@@ -160,6 +160,8 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         
     def new_fa(self, node):
+        self.db_numbers = -1
+        
         if self.unspecified_ether:
             lipid_FA_bond_type = LipidFaBondType.ETHER_UNSPECIFIED
             self.unspecified_ether = False
@@ -205,8 +207,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         lipid = None
         
         headgroup = HeadGroup(self.head_group)
-        
-        
+
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
         if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies

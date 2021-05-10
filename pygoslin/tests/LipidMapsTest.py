@@ -28,11 +28,13 @@ import unittest
 import os
 import csv
 
+
 try:
     import pyximport
     pyximport.install(setup_args = {"script_args" : ["--force"]}, language_level = 3)
 except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
+
 
 import pygoslin
 from pygoslin.parser.Parser import *
@@ -55,11 +57,11 @@ class LipidMapsTest(unittest.TestCase):
             try:
                 lipid = lipid_parser.parse(lipid_name[0])
                 lipid_class = lipid.get_lipid_string(LipidLevel.CLASS)
-                assert lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}
+                self.assertTrue(lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}, "testing lipid '%s' at position %i" % (lipid_name[0], i))
                 
             except Exception as e:
                 if len(lipid_name[1]) > 0:
                     print("hier: '%s' -> %i" % (lipid_name[0], i))
-                    assert(False)
+                    exit()
             
                 

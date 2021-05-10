@@ -96,6 +96,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_pip_pure_m_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_pip_pure_d_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_pip_pure_t_pre_event"] = self.set_headgroup_name
+        self.registered_events["hg_PE_PS_pre_event"] = self.set_headgroup_name
 
         ## set head group headgroup_decorators
         self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
@@ -150,9 +151,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["pl_hg_alk_pre_event"] = self.set_hg_alkyl
         self.registered_events["pl_hg_alk_post_event"] = self.add_hg_alkyl
         self.registered_events["pl_hg_species_pre_event"] = self.add_pl_species_data
-        self.registered_events["hg_pip_m_pre_event"] = self.pip_decorator
-        self.registered_events["hg_pip_d_pre_event"] = self.pip_decorator
-        self.registered_events["hg_pip_t_pre_event"] = self.pip_decorator
+        self.registered_events["hg_pip_m_pre_event"] = self.suffix_decorator_molecular
+        self.registered_events["hg_pip_d_pre_event"] = self.suffix_decorator_molecular
+        self.registered_events["hg_pip_t_pre_event"] = self.suffix_decorator_molecular
+        self.registered_events["hg_PE_PS_type_pre_event"] = self.suffix_decorator_species
         
 
 
@@ -201,7 +203,11 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.tmp["func_group_head"] = True
         
         
-    def pip_decorator(self, node):
+    def suffix_decorator_molecular(self, node):
+        self.headgroup_decorators.append(HeadgroupDecorator(node.get_text(), suffix = True, level = LipidLevel.MOLECULAR_SUBSPECIES))
+        
+        
+    def suffix_decorator_species(self, node):
         self.headgroup_decorators.append(HeadgroupDecorator(node.get_text(), suffix = True, level = LipidLevel.SPECIES))
         
         

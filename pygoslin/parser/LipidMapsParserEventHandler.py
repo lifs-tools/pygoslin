@@ -26,6 +26,7 @@ SOFTWARE.
 
 from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidClass import *
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
@@ -34,6 +35,10 @@ from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.HeadGroup import HeadGroup
+from pygoslin.domain.FunctionalGroup import *
+
 
 class LipidMapsParserEventHandler(BaseParserEventHandler):
     def __init__(self):
@@ -105,6 +110,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.omit_fa = False
         self.db_position = 0
         self.db_cistrans = ""
+        self.db_numbers = -1
         
         
     def set_molecular_subspecies_level(self, node):
@@ -116,6 +122,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.head_group = node.get_text()
         
         
+        
     def set_isomeric_level(self, node):
         self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.db_position = 0
@@ -123,7 +130,13 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
 
     def add_db_position(self, node):
-        if self.current_fa != None: self.current_fa.double_bond_positions[self.db_position] = self.db_cistrans
+        if self.current_fa != None:
+            if type(self.current_fa.double_bonds) == int:
+                self.db_numbers = self.current_fa.double_bonds
+                self.current_fa.double_bonds = {self.db_position: self.db_cistrans}
+            else:
+                self.current_fa.double_bonds[self.db_position] = self.db_cistrans
+            
         
 
     def add_db_position_number(self, node):
@@ -151,29 +164,27 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def increment_hydroxyl(self, node):
-        if node.get_text() == "OH":
-            self.current_fa.num_hydroxyl += 1
-        
+        functional_group = get_functional_group("OH").copy()
+        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+        self.current_fa.functional_groups["OH"].append(functional_group)
           
           
     def new_fa(self, node):
-        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1), 2, 0, 0, LipidFaBondType.ESTER, False, 0, {})
+        self.db_numbers = -1
+        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1))
 
         
             
     def append_fa(self, node):
+        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+            raise LipidException("Double bond count does not match with number of double bond positions")
         
-        current_fa = self.current_fa
-        if self.level == LipidLevel.SPECIES:
-            self.current_fa = LipidSpeciesInfo(current_fa)
-            
-        elif self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+        if self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
             self.current_fa.position = len(self.fa_list) + 1
             
-            
-        if self.current_fa.num_carbon > 0: self.fa_list.append(self.current_fa)
-        else: self.omit_fa = True
-
+        if self.current_fa.num_carbon == 0: self.omit_fa = True
+        self.fa_list.append(self.current_fa)
+        
         self.current_fa = None
         
         
@@ -181,40 +192,50 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def new_lcb(self, node):
-        self.lcb = FattyAcid("LCB", 2, 0, 0, LipidFaBondType.ESTER, True, 1, {})
+        self.lcb = FattyAcid("LCB")
         self.current_fa = self.lcb
             
             
     def clean_lcb(self, node):
-        lcb = self.lcb
-        if self.level == LipidLevel.SPECIES:
-            self.lcb = LipidSpeciesInfo(lcb)
-            self.lcb.lipid_FA_bond_type = LipidFaBondType.ESTER
-            
         self.current_fa = None
         
         
     def add_ether(self, node):
         ether = node.get_text()
+        
         if ether == "O-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "P-":
-            self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
-            self.current_fa.num_double_bonds += 1
+        elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         
         
         
     def add_hydroxyl(self, node):
-        self.current_fa.num_hydroxyl = int(node.get_text())
+        num_h = int(node.get_text())
+        functional_group = get_functional_group("OH").copy()
+        
+        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        functional_group.count = num_h
+        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+        self.current_fa.functional_groups["OH"].append(functional_group)
+        
+        
         
     def add_hydroxyl_lcb(self, node):
         hydroxyl = node.get_text()
-        if hydroxyl == "m": self.current_fa.num_hydroxyl = 1
-        elif hydroxyl == "d": self.current_fa.num_hydroxyl = 2
-        elif hydroxyl == "t": self.current_fa.num_hydroxyl = 3
+        num_h = 0
+        if hydroxyl == "m": num_h = 1
+        elif hydroxyl == "d": num_h = 2
+        elif hydroxyl == "t": num_h = 3
+        
+        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        
+        functional_group = get_functional_group("OH").copy()
+        functional_group.count = num_h
+        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+        self.current_fa.functional_groups["OH"].append(functional_group)
         
         
     def add_double_bonds(self, node):
-        self.current_fa.num_double_bonds += int(node.get_text())
+        self.current_fa.double_bonds += int(node.get_text())
         
         
     def add_carbon(self, node):
@@ -232,29 +253,18 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
         
-        lipid = None
+        headgroup = HeadGroup(self.head_group)
+        headgroup.use_headgroup = self.use_head_group
+
+        lipid_level_class = None
+        if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
+        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
+        if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
+        if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
-        if self.level == LipidLevel.SPECIES:
-            if len(self.fa_list) > 0:
-                lipid_species_info = LipidSpeciesInfo(self.fa_list[0])
-                lipid_species_info.level = LipidLevel.SPECIES
-                lipid = LipidSpecies(self.head_group, lipid_species_info = lipid_species_info)
-            else:
-                lipid = LipidSpecies(self.head_group)
-            
-        elif self.level == LipidLevel.MOLECULAR_SUBSPECIES:
-            lipid = LipidMolecularSubspecies(self.head_group, self.fa_list)
-            
-        elif self.level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            lipid = LipidStructuralSubspecies(self.head_group, self.fa_list)
-            
-        elif self.level == LipidLevel.ISOMERIC_SUBSPECIES:
-            lipid = LipidIsomericSubspecies(self.head_group, self.fa_list)
-        
-        lipid.use_head_group = self.use_head_group
-    
         self.lipid = LipidAdduct()
-        self.lipid.lipid = lipid
+        self.lipid.lipid = lipid_level_class(headgroup, self.fa_list)
+        
         self.content = self.lipid
         
         

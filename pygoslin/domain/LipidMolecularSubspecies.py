@@ -59,6 +59,7 @@ class LipidMolecularSubspecies(LipidSpecies):
     
 
     def build_lipid_subspecies_name(self, level):
+        if level == None: level = LipidLevel.MOLECULAR_SUBSPECIES
         fa_separator = "/" if level != LipidLevel.MOLECULAR_SUBSPECIES or all_lipids[self.headgroup.lipid_class]["category"] == LipidCategory.SP else "_"
 
         lipid_name = [self.headgroup.get_lipid_string(level)]
