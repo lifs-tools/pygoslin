@@ -253,8 +253,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
         
-        headgroup = HeadGroup(self.head_group)
-        headgroup.use_headgroup = self.use_head_group
+        headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
 
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies

@@ -35,11 +35,11 @@ from pygoslin.domain.LipidFaBondType import *
 from pygoslin.domain.Element import Element
 
 class HeadGroup:
-    def __init__(self, headgroup, decorators = None):
+    def __init__(self, headgroup, decorators = None, use_headgroup = None):
         self.headgroup = headgroup.strip(" ")
         self.lipid_category = get_category(self.headgroup)
         self.lipid_class = get_class(self.headgroup)
-        self.use_headgroup = False
+        self.use_headgroup = use_headgroup
         self.decorators = [d for d in decorators] if decorators != None else []
         self.sp_exception = self.lipid_category == LipidCategory.SP and (all_lipids[self.lipid_class]["name"] not in {"Cer", "SPB"} or len(self.decorators) > 0)
         

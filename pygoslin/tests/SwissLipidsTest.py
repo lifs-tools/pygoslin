@@ -58,8 +58,9 @@ class SwissLipidsParserTest(unittest.TestCase):
             try:
                 lipid = lipid_parser.parse(lipid_name)
                 lipid_class = lipid.get_lipid_string(LipidLevel.CLASS)
-                assert lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}
+                self.assertTrue(lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}, "testing lipid '%s' at position %i" % (lipid_name[0], i))
+                
             except Exception as e:
                 print("hier: '%s' -> %i" % (lipid_name, i))
                 print(e)
-                assert (False)
+                exit()
