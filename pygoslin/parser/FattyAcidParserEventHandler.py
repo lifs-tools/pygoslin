@@ -43,6 +43,7 @@ from pygoslin.domain.LipidClass import *
 last_numbers = {'un': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but': 4, 'tetra': 4, 'penta': 5, 'pent': 5, 'hexa': 6, 'hex': 6, 'hepta': 7, 'hept': 7, 'octa': 8, 'oct': 8, 'nona': 9, 'non': 9}
 second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40}
 special_numbers = {'buta': 4, 'deca': 10, 'eicosa': 20, 'heneicosa': 21, 'triaconta': 30, 'tetraconta': 40}
+func_groups = {'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me'}
 
 class FattyAcidParserEventHandler(BaseParserEventHandler):
     
@@ -59,10 +60,10 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["cistrans_post_event"] = self.set_cistrans
         
         ## lengths
-        self.registered_events["methly_length_pre_event"] = self.reset_length
+        self.registered_events["functional_length_pre_event"] = self.reset_length
         self.registered_events["db_length_pre_event"] = self.reset_length
         self.registered_events["fatty_length_pre_event"] = self.reset_length
-        self.registered_events["methly_length_post_event"] = self.set_methyl_length
+        self.registered_events["functional_length_post_event"] = self.set_functional_length
         self.registered_events["db_length_post_event"] = self.set_db_length
         self.registered_events["fatty_length_post_event"] = self.set_fatty_length
         
@@ -70,6 +71,14 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["notation_specials_pre_event"] = self.special_number
         self.registered_events["notation_last_digit_pre_event"] = self.last_number
         self.registered_events["notation_second_digit_pre_event"] = self.second_number
+        
+        ## functional groups
+        self.registered_events["functional_group_pre_event"] = self.set_functional_group
+        self.registered_events["functional_group_post_event"] = self.add_functional_group
+        self.registered_events["functional_pos_pre_event"] = self.set_functional_pos
+        self.registered_events["functional_group_type_pre_event"] = self.set_functional_type
+        
+        
         
         
     def reset_lipid(self, node):
@@ -79,6 +88,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.current_fa = [FattyAcid("FA")]
         self.db_numbers = -1
         self.tmp = {"fa1": {}}
+        #self.debug = "full"
         
         
     def set_double_bond_position(self, node):
@@ -108,21 +118,25 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def set_cistrans(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["db_cistrans"] = node.get_text()
         
+        
     def set_fatty_acyl_type(self, node):
         t = node.get_text()
-        
         if t == "nol": self.headgroup = "FOH"
         elif t == "noic acid": self.headgroup = "FA"
         elif t == "nal": self.headgroup = "FAL"
         
+        
+    def set_lipid_level(self, level):
+        self.level = self.level if self.level.value < level.value else level
         
     
     def reset_length(self, node):
         self.tmp["length"] = 0
     
     
-    def set_methyl_length(self, node):
-        pass 
+    def set_functional_length(self, node):
+        if self.tmp["length"] != len(self.tmp["fg_pos"]):
+            raise LipidException("Length of functional group '%i' does not match with number of its positions '%i'" % (self.tmp["length"], len(self.tmp["fg_pos"])))
     
     
     def set_fatty_length(self, node):
@@ -137,11 +151,39 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def special_number(self, node):
         self.tmp["length"] = special_numbers[node.get_text()]
         
+        
     def last_number(self, node):
         self.tmp["length"] += last_numbers[node.get_text()]
         
+        
     def second_number(self, node):
         self.tmp["length"] += second_numbers[node.get_text()]
+        
+        
+    def set_functional_group(self, node):
+        self.tmp["fg_pos"] = []
+        self.tmp["fg_type"] = ""
+        
+        
+    def add_functional_group(self, node):
+        t = self.tmp["fg_type"]
+        if t not in func_groups: raise LipidException("Unknown functional group: '%s'" % t)
+        t = func_groups[t]
+    
+        fg = get_functional_group(t)
+        if t not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[t] = []
+        for pos in self.tmp["fg_pos"]:
+            fg_insert = fg.copy()
+            fg_insert.position = pos
+            self.current_fa[-1].functional_groups[t].append(fg_insert)
+        
+        
+    def set_functional_pos(self, node):
+        self.tmp["fg_pos"].append(int(node.get_text()))
+        
+        
+    def set_functional_type(self, node):
+        self.tmp["fg_type"] = node.get_text()
         
         
     def build_lipid(self, node):

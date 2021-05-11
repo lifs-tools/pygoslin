@@ -46,24 +46,21 @@ db_num: DASH double_bond_positions DASH db_length 'e' | db_length 'e' | 'e';
 db_length: notation_last_digit;
 
 additional_descriptions : additional_descriptions additional_descriptions | additional_description;
-additional_description : additional_desciption_single DASH | additional_desciption_single;
-additional_desciption_single : functional_group | double_bond_positions;
-functional_group : methyl | ethyl | propyl | hydroxy | oxo | bromo;
+additional_description : functional_group | functional_group DASH | double_bond_positions DASH;
+functional_group : multi_functional_group | single_functional_group;
 double_bond_positions : double_bond_positions pos_separator double_bond_positions | double_bond_position;
 double_bond_position : db_number | db_number cistrans;
 cistrans : 'E' | 'Z';
 db_number : number;
 
-methyl : functional_pos DASH 'methyl' | functional_positions DASH methly_length 'methyl';
-methly_length : notation_last_digit | notation_second_digit | notation_last_digit notation_second_digit;
-functional_positions : functional_positions pos_separator functional_positions | functional_pos;
-ethyl : functional_pos DASH 'ethyl';
-propyl : functional_pos DASH 'propyl';
-hydroxy : functional_pos DASH 'hydroxy';
-oxo : functional_pos DASH 'oxo';
-bromo : functional_pos DASH 'bromo';
+multi_functional_group : functional_positions DASH functional_length functional_group_type;
+functional_length : notation_last_digit | notation_second_digit | notation_last_digit notation_second_digit;
+functional_positions : functional_positions pos_separator functional_positions | functional_position;
+single_functional_group : functional_position DASH functional_group_type;
+functional_group_type : 'ethyl' | 'propyl' | 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'methyl';
 
-functional_pos : number | number stereo;
+functional_position : functional_pos | functional_pos stereo;
+functional_pos : number;
 stereo : 'R' | 'S';
 
 /* separators */
