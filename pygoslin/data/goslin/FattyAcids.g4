@@ -39,7 +39,8 @@ notation_last_digit : 'un' | 'do' | 'di' | 'tri' | 'buta' | 'but' | 'tetra' | 'p
 /* 0, 10, 10, 20, 20, 30 */
 notation_second_digit: 'deca' | 'dec' | 'cosa' | 'cos' | 'triaconta' | 'triacont' | 'tetraconta'  | 'tetracont';
 /* 4, 10, 20, 21, 21, 30, 30 */
-notation_specials: 'buta' | 'deca' | 'eicosa' | 'heneicosa' | 'triaconta' | 'tetraconta' | 'prosta';
+notation_specials: 'buta' | 'but' | 'deca' | 'dec' | 'eicosa' | 'eicos' | 'heneicosa' | 'heneicos' | 'triaconta' | 'triacont' | 'tetraconta' | 'tetracont' | prosta;
+prosta : 'prosta' | 'prost';
 
 acid_type: db_num acid_single_type | acid_single_type;
 acid_single_type: 'nol' | 'noic acid' | 'nal' | dioic | 'nyl acetate';
@@ -50,7 +51,7 @@ dioic : DASH functional_pos pos_separator functional_pos DASH dioic_acid | dioic
 dioic_acid : 'dioic acid';
 
 additional_descriptions : additional_descriptions additional_descriptions | additional_description;
-additional_description : functional_group | functional_group DASH | double_bond_positions DASH | ROB double_bond_positions RCB DASH | '(+/-)-';
+additional_description : functional_group | functional_group DASH | double_bond_positions DASH | ROB double_bond_positions RCB DASH | '(+/-)-' | reduction | reduction DASH;
 functional_group : multi_functional_group | single_functional_group | epoxy;
 double_bond_positions : double_bond_positions pos_separator double_bond_positions | double_bond_position;
 double_bond_position : db_number | db_number cistrans;
@@ -60,13 +61,14 @@ db_number : number;
 multi_functional_group : functional_positions DASH functional_length functional_group_type;
 functional_length : notation_last_digit | notation_second_digit | notation_last_digit notation_second_digit;
 functional_positions : functional_positions pos_separator functional_positions | functional_position;
-single_functional_group : functional_position DASH functional_group_type;
+single_functional_group : functional_position DASH functional_group_type | functional_position functional_group_type;
 functional_group_type : 'ethyl' | 'propyl' | 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | 'homo' | 'fluoro';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy';
 
 functional_position : functional_pos | functional_pos stereo;
 functional_pos : number;
 stereo : 'r' | 's' | 'a' | 'b';
+reduction : functional_position DASH 'nor' | functional_positions DASH functional_length 'nor';
 
 cyclo : '-cyclo' SOB functional_position pos_separator functional_position SCB;
 
