@@ -65,6 +65,8 @@ class FattyAcidParser(Parser):
         file_name = path.join(dir_name, "data", "goslin", "FattyAcids.g4")
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
+    def parse(self, lipid_name):
+        return super().parse(lipid_name.lower())
         
         
 class GoslinFragmentParser(Parser):

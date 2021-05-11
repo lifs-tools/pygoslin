@@ -32,7 +32,7 @@ from pygoslin.domain.LipidLevel import LipidLevel
 
 class Cycle(FunctionalGroup):
     def __init__(self, cycle, start = None, end = None, double_bonds = None, functional_groups = None):
-        super().__init__("cy", functional_groups)
+        super().__init__("cy", functional_groups = functional_groups)
         self.count = 1
         self.cycle = cycle
         self.start = start

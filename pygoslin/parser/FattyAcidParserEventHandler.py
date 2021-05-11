@@ -39,11 +39,12 @@ from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
 from pygoslin.domain.LipidClass import *
+from pygoslin.domain.Cycle import *
 
 last_numbers = {'un': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but': 4, 'tetra': 4, 'penta': 5, 'pent': 5, 'hexa': 6, 'hex': 6, 'hepta': 7, 'hept': 7, 'octa': 8, 'oct': 8, 'nona': 9, 'non': 9}
 second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40}
-special_numbers = {'buta': 4, 'deca': 10, 'eicosa': 20, 'heneicosa': 21, 'triaconta': 30, 'tetraconta': 40}
-func_groups = {'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me'}
+special_numbers = {'buta': 4, 'deca': 10, 'eicosa': 20, 'heneicosa': 21, 'triaconta': 30, 'tetraconta': 40, 'prosta': 20}
+func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F'}
 
 class FattyAcidParserEventHandler(BaseParserEventHandler):
     
@@ -78,6 +79,16 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["functional_pos_pre_event"] = self.set_functional_pos
         self.registered_events["functional_group_type_pre_event"] = self.set_functional_type
         
+        ## cyclo / epoxy
+        self.registered_events["cyclo_pre_event"] = self.set_functional_group
+        self.registered_events["cyclo_post_event"] = self.add_cyclo
+        self.registered_events["epoxy_pre_event"] = self.set_functional_group
+        self.registered_events["epoxy_post_event"] = self.add_epoxy
+        
+        ## dioic
+        self.registered_events["dioic_pre_event"] = self.set_functional_group
+        self.registered_events["dioic_post_event"] = self.set_dioic
+        self.registered_events["dioic_acid_pre_event"] = self.set_fatty_acyl_type
         
         
         
@@ -91,9 +102,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         #self.debug = "full"
         
         
+        
     def set_double_bond_position(self, node):
         fa_i = "fa%i" % len(self.current_fa)
         self.tmp[fa_i]["db_position"] = int(node.get_text())
+        
         
         
     def set_double_bond_information(self, node):
@@ -102,36 +115,53 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp[fa_i]["db_cistrans"] = ""
         
         
+        
     def add_double_bond_information(self, node):
         fa_i = "fa%i" % len(self.current_fa)
         pos = self.tmp[fa_i]["db_position"]
-        cistrans = self.tmp[fa_i]["db_cistrans"]
-        
-        if cistrans == "": self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        cistrans = self.tmp[fa_i]["db_cistrans"].upper()
         
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
         if type(self.current_fa[-1].double_bonds) == int: self.current_fa[-1].double_bonds = {}
-        self.current_fa[-1].double_bonds[pos] = cistrans
+        if pos not in self.current_fa[-1].double_bonds or len(self.current_fa[-1].double_bonds[pos]) == 0:
+            self.current_fa[-1].double_bonds[pos] = cistrans
+        
+        
+        
+    def set_dioic(self, node):
+        pos = self.tmp["fg_pos"][1] if len(self.tmp["fg_pos"]) == 2 else self.current_fa[-1].num_carbon
+        for fg in {"OH", "oxo"}:
+            func_group = get_functional_group(fg)
+            func_group.position = pos
+            if fg not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[fg] = []
+            self.current_fa[-1].functional_groups[fg].append(func_group)
+        self.headgroup = "FA"
+        
         
         
     def set_cistrans(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["db_cistrans"] = node.get_text()
         
         
+        
     def set_fatty_acyl_type(self, node):
         t = node.get_text()
         if t == "nol": self.headgroup = "FOH"
-        elif t == "noic acid": self.headgroup = "FA"
+        elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
         elif t == "nal": self.headgroup = "FAL"
+        elif t == "nyl acetate": self.headgroup = "WE"
+        
         
         
     def set_lipid_level(self, level):
         self.level = self.level if self.level.value < level.value else level
         
+        
     
     def reset_length(self, node):
         self.tmp["length"] = 0
+    
     
     
     def set_functional_length(self, node):
@@ -139,8 +169,48 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             raise LipidException("Length of functional group '%i' does not match with number of its positions '%i'" % (self.tmp["length"], len(self.tmp["fg_pos"])))
     
     
+    
     def set_fatty_length(self, node):
         self.current_fa[-1].num_carbon = self.tmp["length"]
+        
+        
+        
+    def add_cyclo(self, node):
+        start = self.tmp["fg_pos"][0]
+        end = self.tmp["fg_pos"][1]
+        
+        cyclo_db = None
+        # check double bonds
+        if type(self.current_fa[-1].double_bonds) == dict and len(self.current_fa[-1].double_bonds) > 0:
+            cyclo_db = {db_pos: val for db_pos, val in self.current_fa[-1].double_bonds.items() if start <= db_pos <= end}
+            
+            for pos in cyclo_db:
+                del self.current_fa[-1].double_bonds[pos]
+                
+        # check functional_groups
+        cyclo_fg = {}
+        for fg, fg_list in self.current_fa[-1].functional_groups.items():
+            remove_list = []
+            for i, func_group in enumerate(fg_list):
+                if start <= func_group.position <= end:
+                    if fg not in cyclo_fg: cyclo_fg[fg] = []
+                    cyclo_fg[fg].append(func_group)
+                    remove_list.append(i)
+                
+            for i in remove_list[::-1]: del fg_list[i]
+                
+            
+        cycle = Cycle(end - start + 1, start = start, end = end, double_bonds = cyclo_db, functional_groups = cyclo_fg)
+        
+        if "cy" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["cy"] = []
+        self.current_fa[-1].functional_groups["cy"].append(cycle)
+        
+        
+        
+    def add_epoxy(self, node):
+        self.tmp["fg_pos"] = self.tmp["fg_pos"][:1]
+        self.tmp["fg_type"] = "Epoxy"
+        
         
         
     def set_db_length(self, node):
@@ -148,16 +218,20 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             raise LipidException("Double bond count does not match with number of double bond positions")
         
     
+    
     def special_number(self, node):
         self.tmp["length"] = special_numbers[node.get_text()]
+        
         
         
     def last_number(self, node):
         self.tmp["length"] += last_numbers[node.get_text()]
         
         
+        
     def second_number(self, node):
         self.tmp["length"] += second_numbers[node.get_text()]
+        
         
         
     def set_functional_group(self, node):
@@ -165,10 +239,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp["fg_type"] = ""
         
         
+        
     def add_functional_group(self, node):
         t = self.tmp["fg_type"]
         if t not in func_groups: raise LipidException("Unknown functional group: '%s'" % t)
         t = func_groups[t]
+        
+        if len(t) == 0: return
     
         fg = get_functional_group(t)
         if t not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[t] = []
@@ -178,15 +255,24 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             self.current_fa[-1].functional_groups[t].append(fg_insert)
         
         
+        
     def set_functional_pos(self, node):
         self.tmp["fg_pos"].append(int(node.get_text()))
+        
         
         
     def set_functional_type(self, node):
         self.tmp["fg_type"] = node.get_text()
         
         
+        
     def build_lipid(self, node):
+        
+        if type(self.current_fa[-1].double_bonds) == dict and len(self.current_fa[-1].double_bonds) > 0:
+            if sum(len(ct) > 0 for p, ct in self.current_fa[-1].double_bonds.items()) != len(self.current_fa[-1].double_bonds):
+                self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        
+        
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
         if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies

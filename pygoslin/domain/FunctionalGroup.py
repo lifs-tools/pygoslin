@@ -39,7 +39,6 @@ class FunctionalGroup:
         self.functional_groups = functional_groups if functional_groups != None else {}
         
         
-        
     def copy(self):
         functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, double_bonds = self.double_bonds, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
         for fg, fg_list in self.functional_groups.items():

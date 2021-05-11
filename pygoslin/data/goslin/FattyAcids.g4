@@ -30,7 +30,8 @@ grammar FattyAcids;
 lipid : lipid_eof EOF;
 
 
-lipid_eof : fatty_length acid_type | additional_descriptions fatty_length acid_type;
+lipid_eof : fatty_length acid_description | additional_descriptions fatty_length acid_description;
+acid_description : acid_type | acid_type cyclo;
 
 fatty_length : notation_specials | notation_last_digit | notation_last_digit notation_second_digit;
 /* 1, 2, 2, 3, 4, 4, 4, 5, 6, 7, 8, 9 */
@@ -38,30 +39,36 @@ notation_last_digit : 'un' | 'do' | 'di' | 'tri' | 'buta' | 'but' | 'tetra' | 'p
 /* 0, 10, 10, 20, 20, 30 */
 notation_second_digit: 'deca' | 'dec' | 'cosa' | 'cos' | 'triaconta' | 'triacont' | 'tetraconta'  | 'tetracont';
 /* 4, 10, 20, 21, 21, 30, 30 */
-notation_specials: 'buta' | 'deca' | 'eicosa' | 'heneicosa' | 'triaconta' | 'tetraconta';
+notation_specials: 'buta' | 'deca' | 'eicosa' | 'heneicosa' | 'triaconta' | 'tetraconta' | 'prosta';
 
 acid_type: db_num acid_single_type | acid_single_type;
-acid_single_type: 'nol' | 'noic acid' | 'nal';
-db_num: DASH double_bond_positions DASH db_length 'e' | db_length 'e' | 'e';
+acid_single_type: 'nol' | 'noic acid' | 'nal' | dioic | 'nyl acetate';
+db_num: DASH double_bond_positions DASH db_length db_suffix | db_length db_suffix | db_suffix;
+db_suffix : 'e' | 'ne' | 'ene';
 db_length: notation_last_digit;
+dioic : DASH functional_pos pos_separator functional_pos DASH dioic_acid | dioic_acid;
+dioic_acid : 'dioic acid';
 
 additional_descriptions : additional_descriptions additional_descriptions | additional_description;
-additional_description : functional_group | functional_group DASH | double_bond_positions DASH;
-functional_group : multi_functional_group | single_functional_group;
+additional_description : functional_group | functional_group DASH | double_bond_positions DASH | ROB double_bond_positions RCB DASH | '(+/-)-';
+functional_group : multi_functional_group | single_functional_group | epoxy;
 double_bond_positions : double_bond_positions pos_separator double_bond_positions | double_bond_position;
 double_bond_position : db_number | db_number cistrans;
-cistrans : 'E' | 'Z';
+cistrans : 'e' | 'z';
 db_number : number;
 
 multi_functional_group : functional_positions DASH functional_length functional_group_type;
 functional_length : notation_last_digit | notation_second_digit | notation_last_digit notation_second_digit;
 functional_positions : functional_positions pos_separator functional_positions | functional_position;
 single_functional_group : functional_position DASH functional_group_type;
-functional_group_type : 'ethyl' | 'propyl' | 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'methyl';
+functional_group_type : 'ethyl' | 'propyl' | 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | 'homo' | 'fluoro';
+epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy';
 
 functional_position : functional_pos | functional_pos stereo;
 functional_pos : number;
-stereo : 'R' | 'S';
+stereo : 'r' | 's' | 'a' | 'b';
+
+cyclo : '-cyclo' SOB functional_position pos_separator functional_position SCB;
 
 /* separators */
 SPACE : ' ';
