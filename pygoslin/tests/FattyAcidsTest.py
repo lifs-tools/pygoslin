@@ -55,13 +55,14 @@ class LipidMapsTest(unittest.TestCase):
     
         failed = 0
         for i, lipid_name in enumerate(lipidnames):
-            if i and i % 100 == 0: print(i)
+            #if i and i % 100 == 0: print(i)
             try:
                 lipid = lipid_parser.parse(lipid_name[3])
                 
                 
             except Exception as e:
                 failed += 1
+                print(lipid_name)
                 
                 
         print("In the test, %i of %i lipids failed" % (failed, len(lipidnames)))

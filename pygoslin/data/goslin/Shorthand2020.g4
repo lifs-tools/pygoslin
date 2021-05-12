@@ -95,7 +95,7 @@ stereo_type : 'R' | 'S';
 func_group_placeholder : 'O' | 'O' func_group_placeholder_number;
 func_group_placeholder_number : number;
 func_group_ext_name : round_open_bracket func_group_name round_close_bracket | func_group_name;
-func_group_name : 'Et' | 'Me' | 'Br' | 'Cl' | 'F' | 'I' | 'NO2' | 'Ep' | 'OO' | 'dMe' | 'OMe' | 'oxy' | 'NH2' | 'OOH' | 'SH' | 'OH' | 'oxo' | 'CN' | 'P' | 'S' | 'COOH' | 'G' | 'T' | 'COG' | 'COT' | carbohydrate | 'H' | 'O' carbohydrate | med;
+func_group_name : 'Et' | 'Me' | 'Br' | 'Cl' | 'F' | 'I' | 'NO2' | 'My' | 'Ep' | 'OO' | 'dMe' | 'OMe' | 'oxy' | 'NH2' | 'OOH' | 'SH' | 'OH' | 'oxo' | 'CN' | 'P' | 'S' | 'COOH' | 'G' | 'T' | 'COG' | 'COT' | carbohydrate | 'H' | 'O' carbohydrate | med;
 func_group_cycle : SOB cycle_base SCB | SOB cycle_base funcgroup_separator cycle_func_group_data SCB;
 cycle_base : cycle_def | cycle_def carbon_db_separator cycle_db;
 cycle_def : cycle_start cycle_separator cycle_end cycle_token cycle_number | cycle_token cycle_number;

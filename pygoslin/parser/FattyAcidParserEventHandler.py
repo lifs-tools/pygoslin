@@ -42,9 +42,9 @@ from pygoslin.domain.LipidClass import *
 from pygoslin.domain.Cycle import *
 
 last_numbers = {'un': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but': 4, 'tetra': 4, 'penta': 5, 'pent': 5, 'hexa': 6, 'hex': 6, 'hepta': 7, 'hept': 7, 'octa': 8, 'oct': 8, 'nona': 9, 'non': 9}
-second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40}
-special_numbers = {'buta': 4, 'deca': 10, 'eicosa': 20, 'heneicosa': 21, 'triaconta': 30, 'tetraconta': 40, 'prosta': 20, 'prost': 20, 'prostan': 20}
-func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F'}
+second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50}
+special_numbers = {'buta': 4, 'but': 4, 'eicosa': 20, 'eicos': 20, 'heneicosa': 21, 'heneicos': 21, 'prosta': 20, 'prost': 20, 'prostan': 20}
+func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'S', 'amino': 'NH2'}
 
 class FattyAcidParserEventHandler(BaseParserEventHandler):
     
@@ -53,6 +53,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
+        self.registered_events["fatty_acid_post_event"] = self.set_fatty_acid
         
         self.registered_events["acid_single_type_pre_event"] = self.set_fatty_acyl_type
         self.registered_events["double_bond_position_pre_event"] = self.set_double_bond_information
@@ -96,10 +97,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["reduction_pre_event"] = self.set_functional_group
         self.registered_events["reduction_post_event"] = self.reduction
         
-        ## fahfa
-        self.registered_events["fahfa_description_pre_event"] = self.set_fahfa
-        self.registered_events["fahfa_description_post_event"] = self.add_fahfa
-        self.registered_events["fahfa_pos_pre_event"] = self.set_fahfa_pos
+        ## recursion
+        self.registered_events["recursion_description_pre_event"] = self.set_recursion
+        self.registered_events["recursion_description_post_event"] = self.add_recursion
+        self.registered_events["recursion_pos_pre_event"] = self.set_recursion_pos
+        
+        
         
         
     def reset_lipid(self, node):
@@ -109,7 +112,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.current_fa = [FattyAcid("FA")]
         self.db_numbers = -1
         self.tmp = {"fa1": {}}
-        #self.debug = "fully"
+        #self.debug = "full"
         
         
         
@@ -119,28 +122,52 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp[fa_i]["db_position"] = pos - (sum([1 for p in self.tmp["reduction"] if p < pos]) if "reduction" in self.tmp else 0)
         
         
-    def set_fahfa_pos(self, node):
+    def set_recursion_pos(self, node):
         fa_i = "fa%i" % len(self.current_fa)
-        self.tmp[fa_i]["fahfa_pos"] = int(node.get_text())
+        self.tmp[fa_i]["recursion_pos"] = int(node.get_text())
         
         
-    def set_fahfa(self, node):
+    def set_recursion(self, node):
         self.current_fa.append(FattyAcid("FA"))
         fa_i = "fa%i" % len(self.current_fa)
-        self.tmp[fa_i] = {"fahfa_pos": 0}
+        self.tmp[fa_i] = {"recursion_pos": 0}
         
         
-    def add_fahfa(self, node):
-        if len(self.headgroup) == 0: self.headgroup = "FAHFA"
+    def add_recursion(self, node):
         fa_i = "fa%i" % len(self.current_fa)
-        pos = self.tmp[fa_i]["fahfa_pos"]
+        pos = self.tmp[fa_i]["recursion_pos"]
         
-        acyl = AcylAlkylGroup(self.current_fa.pop())
-        acyl.position = pos
+        fa = self.current_fa.pop()
+        fa.position = pos
         
-        if "acyl" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["acyl"] = []
-        self.current_fa[-1].functional_groups["acyl"].append(acyl)
+        if self.headgroup not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[self.headgroup] = []
+        self.current_fa[-1].functional_groups[self.headgroup].append(fa)
         
+        
+        
+        
+    def set_fatty_acid(self, node):
+        if "noyloxy" in self.current_fa[-1].functional_groups and self.headgroup == "FA":
+            self.headgroup = "FAHFA"
+            
+            acyl = AcylAlkylGroup(self.current_fa[-1].functional_groups["noyloxy"][0])
+            acyl.position = fa.position
+            del self.current_fa[-1].functional_groups["noyloxy"]
+            
+            if "acyl" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["acyl"] = []
+            self.current_fa[-1].functional_groups["acyl"].append(acyl)
+                
+        elif "-1-yl" in self.current_fa[-1].functional_groups and self.headgroup == "cyclopentyl":
+            self.current_fa[-1] += self.current_fa[-1].functional_groups["-1-yl"][0]
+            del self.current_fa[-1].functional_groups["-1-yl"]
+            
+        elif "cyclopentyl" in self.current_fa[-1].functional_groups and self.headgroup == "FA":
+            self.current_fa[-1] += self.current_fa[-1].functional_groups["cyclopentyl"][0]
+            del self.current_fa[-1].functional_groups["cyclopentyl"]
+        
+        
+        #else: 
+        #    raise LipidException("Unknown nested lipid name structure")
         
         
     def set_double_bond_information(self, node):
@@ -158,6 +185,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         fa_i = "fa%i" % len(self.current_fa)
         pos = self.tmp[fa_i]["db_position"]
         cistrans = self.tmp[fa_i]["db_cistrans"].upper()
+        if cistrans  in {'R', 'S', 'A', 'B'}: return
         
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
@@ -168,7 +196,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def set_dioic(self, node):
-        if len(self.headgroup) == 0: self.headgroup = "FA"
+        self.headgroup = "FA"
         
         pos = self.tmp["fg_pos"][1] if len(self.tmp["fg_pos"]) == 2 else self.current_fa[-1].num_carbon
         for fg in {"OH", "oxo"}:
@@ -186,11 +214,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def set_fatty_acyl_type(self, node):
         t = node.get_text()
-        if len(self.headgroup) > 0: return
+        
         if t == "nol": self.headgroup = "FOH"
         elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
         elif t == "nal": self.headgroup = "FAL"
         elif t == "nyl acetate": self.headgroup = "WE"
+        else: self.headgroup = t
         
         
         

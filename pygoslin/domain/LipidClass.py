@@ -55,7 +55,8 @@ all_lipids = [{"name": "UNDEFINED",
                 "description": "Undefined lipid class",
                 "max_fa": 0,
                 "poss_fa": set(),
-                "synonyms": []}]
+                "synonyms": [],
+                "elements": {}}]
 
 
 all_lipids_dir_name = path.dirname(pygoslin.__file__)
