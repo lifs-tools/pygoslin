@@ -145,26 +145,70 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
         
+    
+        
+        
         
     def set_fatty_acid(self, node):
-        if "noyloxy" in self.current_fa[-1].functional_groups and self.headgroup == "FA":
+        def shift_position(func_group, shift):
+            func_group.position += shift
+            for fg_name, fg_list in func_group.functional_groups.items():
+                for fg in fg_list:
+                    shift_position(fg, shift)
+        
+        def switch_position(func_group, switch):
+            func_group.position = switch - func_group.position
+            for fg_name, fg_list in func_group.functional_groups.items():
+                for fg in fg_list:
+                    switch_position(fg, switch)
+            
+        curr_fa = self.current_fa[-1]
+        if "noyloxy" in curr_fa.functional_groups and self.headgroup == "FA":
             self.headgroup = "FAHFA"
             
-            acyl = AcylAlkylGroup(self.current_fa[-1].functional_groups["noyloxy"][0])
+            acyl = AcylAlkylGroup(curr_fa.functional_groups["noyloxy"][0])
             acyl.position = fa.position
-            del self.current_fa[-1].functional_groups["noyloxy"]
+            del curr_fa.functional_groups["noyloxy"]
             
-            if "acyl" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["acyl"] = []
-            self.current_fa[-1].functional_groups["acyl"].append(acyl)
+            if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
+            curr_fa.functional_groups["acyl"].append(acyl)
                 
-        elif "-1-yl" in self.current_fa[-1].functional_groups and self.headgroup == "cyclopentyl":
-            self.current_fa[-1] += self.current_fa[-1].functional_groups["-1-yl"][0]
-            del self.current_fa[-1].functional_groups["-1-yl"]
+        elif "-1-yl" in curr_fa.functional_groups and self.headgroup == "cyclopentyl":
+            fa = curr_fa.functional_groups["-1-yl"][0]
+            switch_position(curr_fa, 7)
+            shift_position(fa, 5)
             
-        elif "cyclopentyl" in self.current_fa[-1].functional_groups and self.headgroup == "FA":
-            self.current_fa[-1] += self.current_fa[-1].functional_groups["cyclopentyl"][0]
-            del self.current_fa[-1].functional_groups["cyclopentyl"]
-        
+            for fg, fg_list in fa.functional_groups.items():
+                if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
+                else: curr_fa.functional_groups[fg] += fg_list
+            curr_fa.num_carbon = 5 + fa.num_carbon
+            
+            if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = {}
+            if type(fa.double_bonds) == dict:
+                for pos, ez in fa.double_bonds.items():
+                    curr_fa.double_bonds[pos + 5] = ez
+                    
+            del curr_fa.functional_groups["-1-yl"]
+            
+        elif "cyclopentyl" in curr_fa.functional_groups and self.headgroup == "FA":
+            fa = curr_fa.functional_groups["cyclopentyl"][0]
+            start_pos, end_pos = curr_fa.num_carbon + 1, curr_fa.num_carbon + 5
+            shift_position(fa, start_pos - 2)
+            for fg, fg_list in fa.functional_groups.items():
+                if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
+                else: curr_fa.functional_groups[fg] += fg_list
+            curr_fa.num_carbon += fa.num_carbon
+            
+            if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = {}
+            if type(fa.double_bonds) == dict:
+                for pos, ez in fa.double_bonds.items():
+                    curr_fa.double_bonds[pos + start_pos - 1] = ez
+                    
+            del curr_fa.functional_groups["cyclopentyl"]
+            self.tmp["fg_pos"] = [start_pos, end_pos]
+            
+            
+            self.add_cyclo(node)
         
         #else: 
         #    raise LipidException("Unknown nested lipid name structure")
@@ -185,7 +229,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         fa_i = "fa%i" % len(self.current_fa)
         pos = self.tmp[fa_i]["db_position"]
         cistrans = self.tmp[fa_i]["db_cistrans"].upper()
-        if cistrans  in {'R', 'S', 'A', 'B'}: return
+        if cistrans  in {'R', 'S', 'A', 'B'} or pos == 0: return
         
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
@@ -245,7 +289,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def add_cyclo(self, node):
-        
         start = self.tmp["fg_pos"][0]
         end = self.tmp["fg_pos"][1]
         
@@ -274,7 +317,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         if "cy" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["cy"] = []
         self.current_fa[-1].functional_groups["cy"].append(cycle)
-        
         
         
     def add_epoxy(self, node):
