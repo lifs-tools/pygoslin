@@ -105,7 +105,7 @@ class HmdbParser(Parser):
         
 class LipidParser:
     def __init__(self):
-        self.parser_list = [GoslinParser(), ShorthandParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser(), GoslinFragmentParser()]
+        self.parser_list = [ShorthandParser(), GoslinParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
         
     def parse(self, lipid_name):
         for parser in self.parser_list:

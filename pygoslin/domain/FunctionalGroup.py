@@ -155,8 +155,8 @@ class AcylAlkylGroup(FunctionalGroup):
     def __init__(self, fa, position = -1, count = 1, alkyl = False):
         
         super().__init__("O", position = position, count = count)
-        if fa != None: self.functional_groups["alkyl" if self.alkyl else "acyl"] = [fa]
         self.alkyl = alkyl
+        if fa != None: self.functional_groups["alkyl" if self.alkyl else "acyl"] = [fa]
         self.double_bonds = 1
         self.elements[Element.O] = 0 if self.alkyl else 1
         self.elements[Element.H] = -1
