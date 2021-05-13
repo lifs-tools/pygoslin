@@ -79,9 +79,9 @@ class Cycle(FunctionalGroup):
         
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
-            for fg in sorted(self.functional_groups.keys()):
+            for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):
                 fg_list = self.functional_groups[fg]
-                fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
+                fg_summary = ",".join([func_group.to_string(level) for func_group in sorted(fg_list, key = lambda x: x.position)])
                 if len(fg_summary) > 0: cycle_string.append(";%s" % fg_summary)
         
         elif level == LipidLevel.STRUCTURAL_SUBSPECIES:

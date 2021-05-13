@@ -43,8 +43,8 @@ from pygoslin.domain.Cycle import *
 
 last_numbers = {'un': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but': 4, 'tetra': 4, 'penta': 5, 'pent': 5, 'hexa': 6, 'hex': 6, 'hepta': 7, 'hept': 7, 'octa': 8, 'oct': 8, 'nona': 9, 'non': 9}
 second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50}
-special_numbers = {'buta': 4, 'but': 4, 'eicosa': 20, 'eicos': 20, 'heneicosa': 21, 'heneicos': 21, 'prosta': 20, 'prost': 20, 'prostan': 20}
-func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'S', 'amino': 'NH2'}
+special_numbers = {'etha': 2, 'eth': 2,  'propa': 3, 'prop': 3, 'buta': 4, 'but': 4, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'heneicosa': 21, 'heneicos': 21, 'prosta': 20, 'prost': 20, 'prostan': 20}
+func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'S', 'amino': 'NH2', 'sulfanyl': 'SH'}
 
 class FattyAcidParserEventHandler(BaseParserEventHandler):
     
@@ -85,6 +85,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["cyclo_post_event"] = self.add_cyclo
         self.registered_events["epoxy_pre_event"] = self.set_functional_group
         self.registered_events["epoxy_post_event"] = self.add_epoxy
+        self.registered_events["cycle_pre_event"] = self.set_cycle
         
         ## dioic
         self.registered_events["dioic_pre_event"] = self.set_functional_group
@@ -102,7 +103,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["recursion_description_post_event"] = self.add_recursion
         self.registered_events["recursion_pos_pre_event"] = self.set_recursion_pos
         
-        
+        self.registered_events["hydroxyl_number_pre_event"] = self.add_hydroxyl
+        self.registered_events["ol_pre_event"] = self.setup_hydroxyl
+        self.registered_events["ol_post_event"] = self.add_hydroxyls
         
         
     def reset_lipid(self, node):
@@ -114,6 +117,25 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp = {"fa1": {}}
         #self.debug = "full"
         
+        
+        
+    def add_hydroxyl(self, node):
+        self.tmp["hydroxyl_pos"].append(int(node.get_text()))
+    
+    
+    
+    def setup_hydroxyl(self, node):
+        self.tmp["hydroxyl_pos"] = []
+        
+    
+    def add_hydroxyls(self, node):
+        if len(self.tmp["hydroxyl_pos"]) > 1:
+            fg_oh = get_functional_group("OH")
+            for pos in sorted(self.tmp["hydroxyl_pos"], reverse = True)[:-1]:
+                fg_insert = fg_oh.copy()
+                fg_insert.position = pos
+                if "OH" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["OH"] = []
+                self.current_fa[-1].functional_groups["OH"].append(fg_insert)
         
         
     def set_double_bond_position(self, node):
@@ -128,6 +150,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def set_recursion(self, node):
+        self.tmp["fg_pos"] = []
+        self.tmp["fg_type"] = ""
         self.current_fa.append(FattyAcid("FA"))
         fa_i = "fa%i" % len(self.current_fa)
         self.tmp[fa_i] = {"recursion_pos": 0}
@@ -145,7 +169,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
         
-    
+    def set_cycle(self, node):
+        self.tmp["cyclo"] = True
         
         
         
@@ -173,27 +198,31 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
             curr_fa.functional_groups["acyl"].append(acyl)
                 
-        elif "-1-yl" in curr_fa.functional_groups and self.headgroup == "cyclopentyl":
-            fa = curr_fa.functional_groups["-1-yl"][0]
-            switch_position(curr_fa, 7)
-            shift_position(fa, 5)
+        elif ("-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups) and self.headgroup == "cyclo":
+            yl = "-1-yl" if "-1-yl" in curr_fa.functional_groups else "yl"
+            fa = curr_fa.functional_groups[yl][0]
+            del curr_fa.functional_groups[yl]
+            cyclo_len = curr_fa.num_carbon
+            self.tmp['cyclo_len'] = cyclo_len
+            switch_position(curr_fa, 2 + cyclo_len)
+            shift_position(fa, cyclo_len)
             
             for fg, fg_list in fa.functional_groups.items():
                 if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
                 else: curr_fa.functional_groups[fg] += fg_list
-            curr_fa.num_carbon = 5 + fa.num_carbon
+            curr_fa.num_carbon = cyclo_len + fa.num_carbon
             
             if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = {}
             if type(fa.double_bonds) == dict:
                 for pos, ez in fa.double_bonds.items():
-                    curr_fa.double_bonds[pos + 5] = ez
+                    curr_fa.double_bonds[pos + cyclo_len] = ez
                     
-            del curr_fa.functional_groups["-1-yl"]
             
-        elif "cyclopentyl" in curr_fa.functional_groups and self.headgroup == "FA":
-            fa = curr_fa.functional_groups["cyclopentyl"][0]
-            start_pos, end_pos = curr_fa.num_carbon + 1, curr_fa.num_carbon + 5
-            shift_position(fa, start_pos - 2)
+        elif "cyclo" in curr_fa.functional_groups and self.headgroup == "FA":
+            fa = curr_fa.functional_groups["cyclo"][0]
+            del curr_fa.functional_groups["cyclo"]
+            start_pos, end_pos = curr_fa.num_carbon + 1, curr_fa.num_carbon + (self.tmp["cyclo_len"] if 'cyclo_len' in self.tmp else 5)
+            shift_position(fa, start_pos - 1)
             for fg, fg_list in fa.functional_groups.items():
                 if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
                 else: curr_fa.functional_groups[fg] += fg_list
@@ -204,7 +233,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 for pos, ez in fa.double_bonds.items():
                     curr_fa.double_bonds[pos + start_pos - 1] = ez
                     
-            del curr_fa.functional_groups["cyclopentyl"]
             self.tmp["fg_pos"] = [start_pos, end_pos]
             
             
@@ -259,7 +287,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def set_fatty_acyl_type(self, node):
         t = node.get_text()
         
-        if t == "nol": self.headgroup = "FOH"
+        if "cyclo" in self.tmp:
+            self.headgroup = "cyclo"
+            del self.tmp["cyclo"]
+            return
+        
+        if t[-2:] == "ol": self.headgroup = "FOH"
         elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
         elif t == "nal": self.headgroup = "FAL"
         elif t == "nyl acetate": self.headgroup = "WE"
