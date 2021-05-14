@@ -45,11 +45,11 @@ last_numbers = {'un': 1, 'hen': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but':
 
 second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50}
 
-special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'prop': 3, 'propi': 3, 'buta': 4, 'but': 4, 'butr': 4, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20, 'heneicosa': 21, 'heneicos': 21}
+special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20, 'heneicosa': 21, 'heneicos': 21}
 
 func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'S', 'amino': 'NH2', 'sulfanyl': 'SH', 'methoxy': 'OMe', 'iodo': 'I', 'cyano': 'CN', 'nitro': 'NO2', 'OH': 'OH', 'thio': 'SH', 'mercapto': 'SH'}
 
-ate = {'formate': 1, 'acetate': 2, 'butyrate': 4, 'propionate': 3, 'valerate': 5}
+ate = {'formate': 1, 'acetate': 2, 'butyrate': 4, 'propionate': 3, 'valerate': 5, 'isobutyrate': 4}
 
 class FattyAcidParserEventHandler(BaseParserEventHandler):
     
@@ -119,6 +119,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["wax_ester_pre_event"] = self.set_recursion
         self.registered_events["wax_ester_post_event"] = self.add_wax_ester
         self.registered_events["ate_post_event"] = self.set_ate
+        self.registered_events["isoprop_post_event"] = self.set_iso
+        self.registered_events["isobut_post_event"] = self.set_iso
         
         
     def reset_lipid(self, node):
@@ -141,8 +143,18 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp["hydroxyl_pos"] = []
         
         
+    def set_iso(self, node):
+        curr_fa = self.current_fa[-1]
+        curr_fa.num_carbon -= 1
+        fg = get_functional_group("Me")
+        fg.position = 1
+        if "Me" not in curr_fa.functional_groups: curr_fa.functional_groups["Me"] = []
+        curr_fa.functional_groups["Me"].append(fg)
+        
+        
+        
     def set_ate(self, node):
-        self.current_fa[-1].num_carbon = ate[node.get_text()]
+        self.current_fa[-1].num_carbon += ate[node.get_text()]
         self.headgroup = "WE"
         
         
@@ -227,8 +239,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
             curr_fa.functional_groups["acyl"].append(acyl)
                 
-        elif ("-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups) and self.headgroup == "cyclo":
-            yl = "-1-yl" if "-1-yl" in curr_fa.functional_groups else "yl"
+        elif ("-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups or "nyl" in curr_fa.functional_groups) and self.headgroup == "cyclo":
+            if "-1-yl" in curr_fa.functional_groups: yl = "-1-yl"
+            elif "yl" in curr_fa.functional_groups: yl = "yl"
+            elif "nyl" in curr_fa.functional_groups: yl = "nyl"
+            
             fa = curr_fa.functional_groups[yl][0]
             del curr_fa.functional_groups[yl]
             cyclo_len = curr_fa.num_carbon

@@ -42,12 +42,12 @@ notation_last_digit : 'un' | 'hen' | 'do' | 'di' | 'tri' | 'buta' | 'but' | 'tet
 /* 0, 10, 10, 20, 20, 30 */
 notation_second_digit: 'deca' | 'dec' | 'cosa' | 'cos' | 'triaconta' | 'triacont' | 'tetraconta'  | 'tetracont' | 'pentaconta' | 'pantacont';
 /* 4, 10, 20, 21, 21, 30, 30 */
-notation_specials: 'meth' | 'etha' | 'eth' | 'buta' | 'but' | 'butr' | 'valer' | 'propa' | 'propi' | 'prop' | 'eicosa' | 'eicos' | 'icosa' | 'icos' | 'heneicosa' | 'heneicos' | prosta;
+notation_specials: 'meth' | 'etha' | 'eth' | 'buta' | 'but' | 'butr' | 'valer' | 'propa' | 'propi' | 'propio' | 'prop' | 'eicosa' | 'eicos' | 'icosa' | 'icos' | 'heneicosa' | 'heneicos' | prosta | isoprop;
+isoprop: 'isoprop';
 prosta : 'prosta' | 'prost' | 'prostan';
-acetate : ;
 
 acid_type: db_num acid_single_type | acid_single_type;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'yl' | 'ne' | ol | dial | 'noate';
+acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'nyl' | 'yl' | 'ne' | ol | dial | 'noate';
 db_num: DASH double_bond_positions DASH db_length db_suffix | DASH double_bond_positions DASH db_suffix | db_length db_suffix | db_suffix;
 db_suffix : 'e' | 'ne' | 'ene' | 'en' | 'n';
 dial : 'dial';
@@ -56,7 +56,8 @@ dioic : DASH functional_pos pos_separator functional_pos DASH dioic_acid | dioic
 dioic_acid : 'dioic acid';
 ol : 'nol' | db_suffix DASH hydroxyl_positions DASH notation_regular 'ol' | db_suffix DASH hydroxyl_position DASH 'ol' | DASH hydroxyl_positions DASH notation_regular 'ol' | DASH hydroxyl_position DASH 'ol';
 ate_type : ate | additional_descriptions ate;
-ate : 'formate' | 'acetate' | 'butyrate' | 'propionate' | 'valerate';
+ate : 'formate' | 'acetate' | 'butyrate' | 'propionate' | 'valerate' | isobut;
+isobut : 'isobutyrate';
 
 
 hydroxyl_positions : hydroxyl_positions pos_separator hydroxyl_positions | hydroxyl_position;
