@@ -31,9 +31,10 @@ lipid : lipid_eof EOF;
 
 
 lipid_eof : fatty_acid;
-fatty_acid: fatty_acid_type | additional_descriptions fatty_acid_type | wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type;
+fatty_acid: regular_fatty_acid | wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type;
+regular_fatty_acid : fatty_acid_type | additional_descriptions fatty_acid_type;
 fatty_acid_type : fatty_length acid_description | cycle fatty_length acid_description | ate_type;
-acid_description : acid_type | acid_type cyclo;
+acid_description : acid_type | acid_type cyclo | acid_type CoA;
 
 fatty_length : notation_specials | notation_regular;
 notation_regular : notation_last_digit | notation_last_digit notation_second_digit | notation_second_digit;
@@ -42,12 +43,13 @@ notation_last_digit : 'un' | 'hen' | 'do' | 'di' | 'tri' | 'buta' | 'but' | 'tet
 /* 0, 10, 10, 20, 20, 30 */
 notation_second_digit: 'deca' | 'dec' | 'cosa' | 'cos' | 'triaconta' | 'triacont' | 'tetraconta'  | 'tetracont' | 'pentaconta' | 'pantacont';
 /* 4, 10, 20, 21, 21, 30, 30 */
-notation_specials: 'meth' | 'etha' | 'eth' | 'buta' | 'but' | 'butr' | 'valer' | 'propa' | 'propi' | 'propio' | 'prop' | 'eicosa' | 'eicos' | 'icosa' | 'icos' | 'heneicosa' | 'heneicos' | prosta | isoprop;
+notation_specials: 'etha' | 'eth' | 'buta' | 'but' | 'butr' | 'valer' | 'propa' | 'propi' | 'propio' | 'prop' | 'eicosa' | 'eicos' | 'icosa' | 'icos' | 'heneicosa' | 'heneicos' | prosta | isoprop;
 isoprop: 'isoprop';
 prosta : 'prosta' | 'prost' | 'prostan';
+CoA : DASH 'coa';
 
 acid_type: db_num acid_single_type | acid_single_type;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'nyl' | 'yl' | 'ne' | ol | dial | 'noate';
+acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'noyl' | 'nyl' | 'yl' | 'ne' | ol | dial | 'noate';
 db_num: DASH double_bond_positions DASH db_length db_suffix | DASH double_bond_positions DASH db_suffix | db_length db_suffix | db_suffix;
 db_suffix : 'e' | 'ne' | 'ene' | 'en' | 'n';
 dial : 'dial';
@@ -79,7 +81,7 @@ functional_length : notation_last_digit | notation_second_digit | notation_last_
 functional_positions : functional_positions pos_separator functional_positions | functional_position;
 single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
-functional_group_type : 'ethyl' | 'propyl' | 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | 'homo' | 'fluoro' | 'chloro' | 'methylene' | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto';
+functional_group_type : 'ethyl' | 'propyl' | 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | 'homo' | 'fluoro' | 'chloro' | 'methylene' | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy';
 
 functional_position : functional_pos_pr | functional_pos stereo;
