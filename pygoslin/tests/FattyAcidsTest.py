@@ -62,7 +62,8 @@ class LipidMapsTest(unittest.TestCase):
                 
             except Exception as e:
                 failed += 1
-                if lipid_name[3].find("yn") < 0 and lipid_name[3].find("furan") < 0: print(lipid_name)
+                if lipid_name[3].find("yn") < 0 and lipid_name[3].find("furan") < 0: 
+                    print("'%s','%s',''" % (lipid_name[0], lipid_name[3].replace("'", "\\'")))
                 
                 
-        print("In the test, %i of %i lipids failed" % (failed, len(lipidnames)))
+        #print("In the test, %i of %i lipids failed" % (failed, len(lipidnames)))

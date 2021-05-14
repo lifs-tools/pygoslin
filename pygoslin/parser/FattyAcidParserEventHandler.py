@@ -41,10 +41,15 @@ from pygoslin.domain.FunctionalGroup import *
 from pygoslin.domain.LipidClass import *
 from pygoslin.domain.Cycle import *
 
-last_numbers = {'un': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but': 4, 'tetra': 4, 'penta': 5, 'pent': 5, 'hexa': 6, 'hex': 6, 'hepta': 7, 'hept': 7, 'octa': 8, 'oct': 8, 'nona': 9, 'non': 9}
+last_numbers = {'un': 1, 'hen': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but': 4, 'tetra': 4, 'penta': 5, 'pent': 5, 'hexa': 6, 'hex': 6, 'hepta': 7, 'hept': 7, 'octa': 8, 'oct': 8, 'nona': 9, 'non': 9}
+
 second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50}
-special_numbers = {'etha': 2, 'eth': 2,  'propa': 3, 'prop': 3, 'buta': 4, 'but': 4, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'heneicosa': 21, 'heneicos': 21, 'prosta': 20, 'prost': 20, 'prostan': 20}
-func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'S', 'amino': 'NH2', 'sulfanyl': 'SH'}
+
+special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'prop': 3, 'propi': 3, 'buta': 4, 'but': 4, 'butr': 4, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20, 'heneicosa': 21, 'heneicos': 21}
+
+func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'S', 'amino': 'NH2', 'sulfanyl': 'SH', 'methoxy': 'OMe', 'iodo': 'I', 'cyano': 'CN', 'nitro': 'NO2', 'OH': 'OH', 'thio': 'SH', 'mercapto': 'SH'}
+
+ate = {'formate': 1, 'acetate': 2, 'butyrate': 4, 'propionate': 3, 'valerate': 5}
 
 class FattyAcidParserEventHandler(BaseParserEventHandler):
     
@@ -91,6 +96,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["dioic_pre_event"] = self.set_functional_group
         self.registered_events["dioic_post_event"] = self.set_dioic
         self.registered_events["dioic_acid_pre_event"] = self.set_fatty_acyl_type
+        self.registered_events["dial_post_event"] = self.set_dial
+        
         
         ## prosta
         self.registered_events["prosta_pre_event"] = self.set_prosta
@@ -106,6 +113,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["hydroxyl_number_pre_event"] = self.add_hydroxyl
         self.registered_events["ol_pre_event"] = self.setup_hydroxyl
         self.registered_events["ol_post_event"] = self.add_hydroxyls
+        
+        
+        ## wax esters
+        self.registered_events["wax_ester_pre_event"] = self.set_recursion
+        self.registered_events["wax_ester_post_event"] = self.add_wax_ester
+        self.registered_events["ate_post_event"] = self.set_ate
         
         
     def reset_lipid(self, node):
@@ -126,6 +139,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     def setup_hydroxyl(self, node):
         self.tmp["hydroxyl_pos"] = []
+        
+        
+    def set_ate(self, node):
+        self.current_fa[-1].num_carbon = ate[node.get_text()]
+        self.headgroup = "WE"
+        
         
     
     def add_hydroxyls(self, node):
@@ -166,6 +185,16 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         if self.headgroup not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[self.headgroup] = []
         self.current_fa[-1].functional_groups[self.headgroup].append(fa)
+        
+        
+        
+    def add_wax_ester(self, node):
+        fa_i = "fa%i" % len(self.current_fa)
+        
+        fa = self.current_fa.pop()
+        
+        if "WE" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["WE"] = []
+        self.current_fa[-1].functional_groups["WE"].append(fa)
         
         
         
@@ -234,9 +263,15 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                     curr_fa.double_bonds[pos + start_pos - 1] = ez
                     
             self.tmp["fg_pos"] = [start_pos, end_pos]
-            
-            
             self.add_cyclo(node)
+            
+            
+        elif "WE" in curr_fa.functional_groups and self.headgroup == "WE":
+            fa = curr_fa.functional_groups["WE"][0]
+            fa.name += "1"
+            curr_fa.name += "2"
+            del curr_fa.functional_groups["WE"]
+            self.current_fa.insert(0, fa)
         
         #else: 
         #    raise LipidException("Unknown nested lipid name structure")
@@ -271,11 +306,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.headgroup = "FA"
         
         pos = self.tmp["fg_pos"][1] if len(self.tmp["fg_pos"]) == 2 else self.current_fa[-1].num_carbon
-        for fg in {"OH", "oxo"}:
-            func_group = get_functional_group(fg)
-            func_group.position = pos
-            if fg not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[fg] = []
-            self.current_fa[-1].functional_groups[fg].append(func_group)
+        self.current_fa[-1].num_carbon -= 1
+        func_group = get_functional_group("COOH")
+        func_group.position = pos - 1
+        if "COOH" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["COOH"] = []
+        self.current_fa[-1].functional_groups["COOH"].append(func_group)
         
         
         
@@ -294,14 +329,23 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         if t[-2:] == "ol": self.headgroup = "FOH"
         elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
-        elif t == "nal": self.headgroup = "FAL"
-        elif t == "nyl acetate": self.headgroup = "WE"
+        elif t in {"nal", "dial"}: self.headgroup = "FAL"
+        elif t in {"acetate", "noate"}: self.headgroup = "WE"
         else: self.headgroup = t
         
         
         
     def set_lipid_level(self, level):
         self.level = self.level if self.level.value < level.value else level
+        
+        
+    def set_dial(self, node):
+        curr_fa = self.current_fa[-1]
+        pos = curr_fa.num_carbon
+        fg = get_functional_group("oxo")
+        fg.position = pos
+        if "oxo" not in curr_fa.functional_groups: curr_fa.functional_groups["oxo"] = []
+        curr_fa.functional_groups["oxo"].append(fg)
         
         
     

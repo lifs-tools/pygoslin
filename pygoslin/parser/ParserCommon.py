@@ -569,6 +569,7 @@ class Parser:
     
     
     def parse(self, text_to_parse, raise_error = True):
+        text_to_parse = text_to_parse.strip(" ")
         old_lipid = text_to_parse
         if self.used_eof: text_to_parse += Parser.EOF_SIGN
         
