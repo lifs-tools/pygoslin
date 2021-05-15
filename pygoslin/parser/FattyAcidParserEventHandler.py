@@ -43,7 +43,7 @@ from pygoslin.domain.Cycle import *
 
 last_numbers = {'un': 1, 'hen': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but': 4, 'tetra': 4, 'penta': 5, 'pent': 5, 'hexa': 6, 'hex': 6, 'hepta': 7, 'hept': 7, 'octa': 8, 'oct': 8, 'nona': 9, 'non': 9}
 
-second_numbers = {'deca': 10, 'dec': 10, 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50}
+second_numbers = {'deca': 10, 'dec': 10, 'eicosa': 20, 'eicos': 20 , 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50}
 
 special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20, 'heneicosa': 21, 'heneicos': 21}
 
@@ -124,6 +124,15 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         ## CoA
         self.registered_events["CoA_post_event"] = self.set_coa
+        self.registered_events["methyl_pre_event"] = self.set_methyl
+        
+        ## CAR
+        self.registered_events["CAR_pre_event"] = self.set_car
+        self.registered_events["CAR_post_event"] = self.add_car
+        
+        
+        
+        
         
     def reset_lipid(self, node):
         self.level = LipidLevel.ISOMERIC_SUBSPECIES
@@ -132,7 +141,17 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.current_fa = [FattyAcid("FA")]
         self.db_numbers = -1
         self.tmp = {"fa1": {}}
-        #self.debug = "full"
+        #self.debug = "fully"
+        
+        
+    def set_car(self, node):
+        self.tmp["fg_pos"] = []
+        self.tmp["fg_type"] = ""
+        
+        
+        
+    def add_car(self, node):
+        self.headgroup = "CAR"
         
         
         
@@ -142,6 +161,10 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     def set_coa(self, node):
         self.headgroup = "CoA"
+        
+        
+    def set_methyl(self, node):
+        self.current_fa[-1].num_carbon += 1
     
     
     
@@ -237,6 +260,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         curr_fa = self.current_fa[-1]
         if "noyloxy" in curr_fa.functional_groups and self.headgroup == "FA":
             self.headgroup = "FAHFA"
+            fa = curr_fa.functional_groups["noyloxy"][0]
             
             acyl = AcylAlkylGroup(curr_fa.functional_groups["noyloxy"][0])
             acyl.position = fa.position
@@ -245,10 +269,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
             curr_fa.functional_groups["acyl"].append(acyl)
                 
-        elif ("-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups or "nyl" in curr_fa.functional_groups) and self.headgroup == "cyclo":
+        elif ("-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups or "nyl" in curr_fa.functional_groups or "methyl" in curr_fa.functional_groups) and self.headgroup == "cyclo":
             if "-1-yl" in curr_fa.functional_groups: yl = "-1-yl"
             elif "yl" in curr_fa.functional_groups: yl = "yl"
             elif "nyl" in curr_fa.functional_groups: yl = "nyl"
+            elif "methyl" in curr_fa.functional_groups: yl = "methyl"
             
             fa = curr_fa.functional_groups[yl][0]
             del curr_fa.functional_groups[yl]
@@ -351,7 +376,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         if t[-2:] == "ol": self.headgroup = "FOH"
         elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
         elif t in {"nal", "dial"}: self.headgroup = "FAL"
-        elif t in {"acetate", "noate"}: self.headgroup = "WE"
+        elif t in {"acetate", "noate", "nate"}: self.headgroup = "WE"
         else: self.headgroup = t
         
         
@@ -389,6 +414,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def add_cyclo(self, node):
         start = self.tmp["fg_pos"][0]
         end = self.tmp["fg_pos"][1]
+        if "cycle_added" in self.tmp["fa%i" % len(self.current_fa)]: return
+    
+        self.tmp["fa%i" % len(self.current_fa)]["cycle_added"] = True
         
         cyclo_db = None
         # check double bonds

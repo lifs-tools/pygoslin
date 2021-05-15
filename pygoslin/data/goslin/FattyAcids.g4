@@ -31,17 +31,18 @@ lipid : lipid_eof EOF;
 
 
 lipid_eof : fatty_acid;
-fatty_acid: regular_fatty_acid | wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type;
+fatty_acid: regular_fatty_acid | wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type | wax_ester fatty_acid_type | wax_ester additional_descriptions fatty_acid_type | CAR;
 regular_fatty_acid : fatty_acid_type | additional_descriptions fatty_acid_type;
-fatty_acid_type : fatty_length acid_description | cycle fatty_length acid_description | ate_type;
+fatty_acid_type : fatty_length acid_description | cycle fatty_length acid_description | ate_type | methyl;
 acid_description : acid_type | acid_type cyclo | acid_type CoA;
+methyl : 'methyl' SPACE;
 
 fatty_length : notation_specials | notation_regular;
 notation_regular : notation_last_digit | notation_last_digit notation_second_digit | notation_second_digit;
 /* 1, 2, 2, 3, 4, 4, 4, 5, 6, 7, 8, 9 */
 notation_last_digit : 'un' | 'hen' | 'do' | 'di' | 'tri' | 'buta' | 'but' | 'tetra' | 'penta' | 'pent' | 'hexa' | 'hex' | 'hepta' | 'hept' | 'octa' | 'oct' | 'nona' | 'non';
 /* 0, 10, 10, 20, 20, 30 */
-notation_second_digit: 'deca' | 'dec' | 'cosa' | 'cos' | 'triaconta' | 'triacont' | 'tetraconta'  | 'tetracont' | 'pentaconta' | 'pantacont';
+notation_second_digit: 'deca' | 'dec' | 'cosa' | 'cos' | 'eicosa' | 'eicos' | 'triaconta' | 'triacont' | 'tetraconta'  | 'tetracont' | 'pentaconta' | 'pantacont';
 /* 4, 10, 20, 21, 21, 30, 30 */
 notation_specials: 'etha' | 'eth' | 'buta' | 'but' | 'butr' | 'valer' | 'propa' | 'propi' | 'propio' | 'prop' | 'eicosa' | 'eicos' | 'icosa' | 'icos' | 'heneicosa' | 'heneicos' | prosta | isoprop;
 isoprop: 'isoprop';
@@ -49,7 +50,7 @@ prosta : 'prosta' | 'prost' | 'prostan';
 CoA : DASH 'coa';
 
 acid_type: db_num acid_single_type | acid_single_type;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'noyl' | 'nyl' | 'yl' | 'ne' | ol | dial | 'noate';
+acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'noyl' | 'nyl' | 'yl' | 'ne' | ol | dial | 'noate' | 'nate';
 db_num: DASH double_bond_positions DASH db_length db_suffix | DASH double_bond_positions DASH db_suffix | db_length db_suffix | db_suffix;
 db_suffix : 'e' | 'ne' | 'ene' | 'en' | 'n';
 dial : 'dial';
@@ -98,7 +99,9 @@ recursion : fatty_acid;
 recursion_position : ROB functional_positions RCB | recursion_pos | recursion_pos stereo;
 recursion_pos : number;
 
-wax_ester : fatty_acid;
+wax_ester : fatty_acid | ROB fatty_acid RCB;
+CAR : car_positions DASH SOB fatty_acid SCB '-4-(trimethylazaniumyl)butanoate';
+car_positions : functional_position | ROB car_position RCB DASH functional_position;
 
 /* yl : DASH number DASH 'yl' | 'yl'; */
 
@@ -108,7 +111,7 @@ wax_ester : fatty_acid;
 SPACE : ' ';
 COLON : ':';
 SEMICOLON : ';';
-DASH : '-';
+DASH : '-' | '‐';
 UNDERSCORE : '_';
 SLASH : '/';
 BACKSLASH : '\\';
