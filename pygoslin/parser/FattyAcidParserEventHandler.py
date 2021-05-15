@@ -130,6 +130,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["CAR_pre_event"] = self.set_car
         self.registered_events["CAR_post_event"] = self.add_car
         
+        ## ethanolamine
+        self.registered_events["ethanolamine_post_event"] = self.add_ethanolamine
+        
         
         
         
@@ -185,6 +188,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def set_ate(self, node):
         self.current_fa[-1].num_carbon += ate[node.get_text()]
         self.headgroup = "WE"
+        
+        
+        
+    def add_ethanolamine(self, node):
+        self.headgroup = "NAE"
         
         
     

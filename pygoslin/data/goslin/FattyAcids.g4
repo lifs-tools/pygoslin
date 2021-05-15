@@ -31,7 +31,7 @@ lipid : lipid_eof EOF;
 
 
 lipid_eof : fatty_acid;
-fatty_acid: regular_fatty_acid | wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type | wax_ester fatty_acid_type | wax_ester additional_descriptions fatty_acid_type | CAR;
+fatty_acid: regular_fatty_acid | wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type | wax_ester fatty_acid_type | wax_ester additional_descriptions fatty_acid_type | CAR | ethanolamine;
 regular_fatty_acid : fatty_acid_type | additional_descriptions fatty_acid_type;
 fatty_acid_type : fatty_length acid_description | cycle fatty_length acid_description | ate_type | methyl;
 acid_description : acid_type | acid_type cyclo | acid_type CoA;
@@ -102,8 +102,7 @@ recursion_pos : number;
 wax_ester : fatty_acid | ROB fatty_acid RCB;
 CAR : car_positions DASH SOB fatty_acid SCB '-4-(trimethylazaniumyl)butanoate';
 car_positions : functional_position | ROB car_position RCB DASH functional_position;
-
-/* yl : DASH number DASH 'yl' | 'yl'; */
+ethanolamine : 'n-' ROB fatty_acid RCB DASH 'ethanolamine';
 
 
 
