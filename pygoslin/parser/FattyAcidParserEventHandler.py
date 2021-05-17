@@ -65,6 +65,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["double_bond_position_post_event"] = self.add_double_bond_information
         self.registered_events["db_number_post_event"] = self.set_double_bond_position
         self.registered_events["cistrans_post_event"] = self.set_cistrans
+        self.registered_events["acid_type_double_post_event"] = self.check_db
         
         ## lengths
         self.registered_events["functional_length_pre_event"] = self.reset_length
@@ -166,7 +167,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def add_summary(self, node):
-        self.tmp["fg_pos_summary"] = {k: v for k, v in self.tmp["fg_pos_ext"].items()}
+        fa_i = "fa%i" % len(self.current_fa)
+        self.tmp[fa_i]["fg_pos_summary"] = {k: v.upper() for k, v in self.tmp["fg_pos_ext"].items()}
         
         
     def add_func_stereo(self, node):
@@ -179,7 +181,17 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             elif self.tmp["fg_pos"][0] > self.tmp["fg_pos"][1]: self.tmp["fg_pos"][0] += 1
             self.current_fa[-1].num_carbon += 1
             self.tmp["add_methylene"] = True
-        
+     
+    
+    def check_db(self, node):
+        fa_i = "fa%i" % len(self.current_fa)
+        curr_fa = self.current_fa[-1]
+        if "fg_pos_summary" in self.tmp[fa_i]:
+            if type(curr_fa.double_bonds) != dict: curr_fa.double_bonds = {}
+            for k, v in self.tmp[fa_i]["fg_pos_summary"].items():
+                if v in {"E", "Z"} and k > 0 and k not in curr_fa.double_bonds: curr_fa.double_bonds[k] = v
+                    
+    
         
         
     def add_car(self, node):
@@ -409,12 +421,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         fa_i = "fa%i" % len(self.current_fa)
         pos = self.tmp[fa_i]["db_position"]
         cistrans = self.tmp[fa_i]["db_cistrans"].upper()
-        if cistrans == "" and "fg_pos_summary" in self.tmp and pos in self.tmp["fg_pos_summary"]: cistrans = self.tmp["fg_pos_summary"][pos]
+        if cistrans == "" and "fg_pos_summary" in self.tmp[fa_i] and pos in self.tmp[fa_i]["fg_pos_summary"]: cistrans = self.tmp[fa_i]["fg_pos_summary"][pos]
         if pos == 0: return
         
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
         if type(self.current_fa[-1].double_bonds) == int: self.current_fa[-1].double_bonds = {}
+        
         if pos not in self.current_fa[-1].double_bonds or len(self.current_fa[-1].double_bonds[pos]) == 0:
             self.current_fa[-1].double_bonds[pos] = cistrans
         

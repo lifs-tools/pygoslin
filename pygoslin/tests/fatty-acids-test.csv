@@ -7752,7 +7752,7 @@ LMFA07050112,911.103336,C26H40N7O19P3S2,"5'-O-[({[4-({3-[(2-{[(2Z)-4-carboxy-2-s
 LMFA07050113,973.282284,C35H58N7O17P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-({3-oxo-3-[(2-{[(3E,5Z)-tetradeca-3,5-dienoyl]sulfanyl}ethyl)amino]propyl}amino)butyl] dihydrogen diphosphate}"
 LMFA07050114,933.214599,C31H50N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-({3-oxo-3-[(2-{[(3R)-6-oxo-3-(prop-1-en-2-yl)heptanoyl]sulfanyl}ethyl)amino]propyl}amino)butyl] dihydrogen diphosphate}"
 LMFA07050115,883.126179,C25H40N7O20P3S,"3'-phosphoadenosine 5'-{3-[(3R)-4-({3-[(2-{[(3S)-3-carboxy-3-hydroxypropanoyl]sulfanyl}ethyl)amino]-3-oxopropyl}amino)-3-hydroxy-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
-LMFA07050116,911.157479,C27H44N7O20P3S,3S-hydroxy-3-methyl-5-carboxypentanoyl-CoA
+LMFA07050116,911.157479,C27H44N7O20P3S,3S-hydroxy-3-methyl-4-carboxybutanoyl-CoA
 LMFA07050117,911.157479,C27H44N7O20P3S,"(4R)-6-{[2-(3-{3-[({[({[(2S,3R,4S,5S)-5-(6-amino-9H-purin-9-yl)-4-hydroxy-3-(phosphonooxy)oxolan-2-yl]methoxy}(hydroxy)phosphoryl)oxy](hydroxy)phosphoryl}oxy)methyl]-2-hydroxy-3-methylbutanamido}propanamido)ethyl]sulfanyl}-4-hydroxy-6-oxohexanoic acid"
 LMFA07050118,933.214599,C31H50N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-({3-oxo-3-[(2-{[(3S)-6-oxo-3-(prop-1-en-2-yl)heptanoyl]sulfanyl}ethyl)amino]propyl}amino)butyl] dihydrogen diphosphate}"
 LMFA07050119,897.141829,C26H42N7O20P3S,"3'-phosphoadenosine 5'-{3-[(3R)-4-({3-[(2-{[(3S)-3-carboxy-3-hydroxybutanoyl]sulfanyl}ethyl)amino]-3-oxopropyl}amino)-3-hydroxy-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
@@ -7798,7 +7798,6 @@ LMFA07050160,909.214599,C29H50N7O18P3S,3S-hydroxyoctanoyl-CoA
 LMFA07050161,1021.339799,C37H66N7O18P3S,3S-hydroxyhexadecanoyl-CoA
 LMFA07050162,910.209848,C28H49N8O18P3S,3S-hydroxy-5-trimethylammonio-pentanoyl-CoA
 LMFA07050164,867.131264,C25H40N7O19P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-({3-[(2-{[(2S)-2-methyl-3-oxopropanoyl]sulfanyl}ethyl)amino]-3-oxopropyl}amino)-4-oxobutyl] dihydrogen diphosphate}"
-LMFA07050165,893.146914,C27H42N7O19P3S,6-carboxy-2Z-hexenoyl-CoA
 LMFA07050166,931.198949,C31H48N7O18P3S,"[(1R)-2,2,3-trimethyl-5-oxocyclopent-3-enyl]acetyl-CoA"
 LMFA07050167,947.193864,C31H48N7O19P3S,"[(2R)-3,3,4-trimethyl-6-oxo-3,6-dihydro-1H-pyran-2-yl]acetyl-CoA"
 LMFA07050168,899.157479,C26H44N7O20P3S,"2'-(5-phospho-D-ribofuranosyl)adenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-({3-oxo-3-[(2-sulfanylethyl)amino]propyl}amino)butyl] dihydrogen diphosphate}"
@@ -7840,7 +7839,7 @@ LMFA07050211,911.157479,C27H44N7O20P3S,"3'-phosphoadenosine 5'-{3-[(3R)-4-{[3-({
 LMFA07050212,853.151999,C25H42N7O18P3S,3-hydroxybutanoyl-CoA
 LMFA07050214,889.151999,C28H42N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-4-{[3-({2-[(3-hydroxycyclohexa-1,5-diene-1-carbonyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
 LMFA07050215,1105.433699,C43H78N7O18P3S,3-hydroxydocosanoyl-CoA
-LMFA07050216,1161.496299,C47H86N7O18P3S,3S-hydroxyhexacosanoyl-Co
+LMFA07050216,1161.496299,C47H86N7O18P3S,3S-hydroxyhexacosanoyl-CoA
 LMFA07050217,1051.313979,C37H64N7O20P3S,"16-{[2-(3-{3-[({[({[(2R,3S,4R,5R)-5-(6-amino-9H-purin-9-yl)-4-hydroxy-3-(phosphonooxy)oxolan-2-yl]methoxy}(hydroxy)phosphoryl)oxy](hydroxy)phosphoryl}oxy)methyl]-2-hydroxy-3-methylbutanamido}propanamido)ethyl]sulfanyl}-14-hydroxy-16-oxohexadecanoic acid"
 LMFA07050218,1077.402399,C41H74N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-4-{[3-({2-[(3-hydroxyicosanoyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
 LMFA07050219,1035.355449,C38H68N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-4-{[3-({2-[(3-hydroxy-15-methylhexadecanoyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
@@ -7851,7 +7850,6 @@ LMFA07050224,925.173129,C28H46N7O20P3S,"3'-phosphoadenosine 5'-{3-[(3R)-4-{[3-({
 LMFA07050225,1063.386749,C40H72N7O18P3S,"3'-phosphoadenosine 5'-(3-{(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-[(3-oxo-3-{[2-(3-hydroxy-2,6,10,14-tetramethylpentadecanoylsulfanyl)ethyl]amino}propyl)amino]butyl} dihydrogen diphosphate)"
 LMFA07050226,839.136349,C24H40N7O18P3S,3-hydroxypropanoyl-CoA
 LMFA07050228,1133.464999,C45H82N7O18P3S,3-hydroxytetracosanoyl-CoA
-LMFA07050229,949.209514,C31H50N7O19P3S,3-isopropenyl-7-carboxy-heptanoyl-CoA
 LMFA07050231,877.188384,C28H46N7O17P3S,"S-[2-[3-[[(2R)-4-[[[(2R,3S,4R,5R)-5-(6-aminopurin-9-yl)-4-hydroxy-3-phosphonooxy-tetrahydrofuran-2-yl]methoxy-hydroxy-phosphoryl]oxy-hydroxy-phosphoryl]oxy-2-hydroxy-3,3-dimethyl-butanoyl]amino]propanoylamino]ethyl] 4-methyl-3-methylene-pentanethioate"
 LMFA07050232,849.157084,C26H42N7O17P3S,3-methyl-2-butenoyl-CoA
 LMFA07050233,849.157084,C26H42N7O17P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-{[3-({2-[(3-methylbut-3-enoyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-4-oxobutyl] dihydrogen diphosphate}"
@@ -7866,11 +7864,10 @@ LMFA07050243,1075.386749,C41H72N7O18P3S,3-oxoeicosanoyl-CoA
 LMFA07050244,1033.339799,C38H66N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-4-{[3-({2-[(13-methyl-3-oxohexadecanoyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
 LMFA07050245,1047.355449,C39H68N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-4-{[3-({2-[(16-methyl-3-oxoheptadecanoyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
 LMFA07050246,1005.308499,C36H62N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-4-{[3-({2-[(13-methyl-3-oxotetradecanoyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
-LMFA07050247,963.261549,C33H56N7O18P3S,3-oxodecanoyl-CoA
+LMFA07050247,963.261549,C33H56N7O18P3S,3-oxododecanoyl-CoA
 LMFA07050248,1047.355449,C39H68N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-{[3-oxo-3-({2-[(3-oxooctadecanoyl)sulfanyl]ethyl}amino)propyl]amino}butyl] dihydrogen diphosphate}"
 LMFA07050249,907.198949,C29H48N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-{[3-oxo-3-({2-[(3-oxooctanoyl)sulfanyl]ethyl}amino)propyl]amino}butyl] dihydrogen diphosphate}"
 LMFA07050250,1019.324149,C37H64N7O18P3S,3-oxohexadecanoyl-CoA
-LMFA07050251,923.157479,C28H44N7O20P3S,3-oxo-7-carboxy-heptanoyl-CoA
 LMFA07050253,1061.371099,C40H70N7O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-2,2-dimethyl-4-oxo-4-{[3-oxo-3-({2-[(2,6,10,14-tetramethyl-3-oxopentadecanoyl)sulfanyl]ethyl}amino)propyl]amino}butyl] dihydrogen diphosphate}"
 LMFA07050255,1131.449349,C45H80N7O18P3S,3-oxotetracosanoyl-CoA
 LMFA07050256,991.292849,C35H60N7O18P3S,3-oxotetradecanoyl-CoA
@@ -7949,7 +7946,6 @@ LMFA07050338,852.167983,C25H43N8O17P3S,3S-aminobutanoyl-CoA
 LMFA07050339,839.136349,C24H40N7O18P3S,"{[(2R,3S,4R,5R)-5-(6-amino-9H-purin-9-yl)-4-hydroxy-2-({[hydroxy({hydroxy[(3R)-3-hydroxy-3-{[2-({2-[(2-hydroxypropanoyl)sulfanyl]ethyl}carbamoyl)ethyl]carbamoyl}-2,2-dimethylpropoxy]phosphoryl}oxy)phosphoryl]oxy}methyl)oxolan-3-yl]oxy}phosphonic acid"
 LMFA07050340,949.282284,C33H58N7O17P3S,Dodecanoyl-CoA
 LMFA07050341,907.186373,C28H46N8O18P3S,"[5-(6-aminopurin-9-yl)-4-hydroxy-2-[[[[3-hydroxy-4-[[3-[2-[3-hydroxy-4-(trimethylammonio)butanoyl]sulfanylethylamino]-3-oxo-propyl]amino]-2,2-dimethyl-4-oxo-butoxy]-oxido-phosphoryl]oxy-oxido-phosphoryl]oxymethyl]tetrahydrofuran-3-yl] phosphate"
-LMFA07050342,897.141829,C26H42N7O20P3S,2S-methyl-3R-hydroxy-4-carboxybutanoyl-CoA
 LMFA07050343,1029.344884,C39H66N7O17P3S,9Z-12Z-octadecadienoyl-CoA
 LMFA07050344,852.131598,C24H39N8O18P3S,"3'-phosphoadenosine 5'-{3-[(3R)-4-{[3-({2-[(3-amino-3-oxopropanoyl)sulfanyl]ethyl}amino)-3-oxopropyl]amino}-3-hydroxy-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
 LMFA07050345,853.115614,C24H38N7O19P3S,Malonyl CoA
@@ -7984,7 +7980,6 @@ LMFA07050375,945.250984,C33H54N7O17P3S,"{[(2R,3R,5R)-5-(6-amino-9H-purin-9-yl)-2
 LMFA07050376,917.219684,C31H50N7O17P3S,"2E,4E-decadienoyl-CoA"
 LMFA07050377,889.188384,C29H46N7O17P3S,"2E,4E-octadienoyl-CoA"
 LMFA07050378,947.266634,C33H56N7O17P3S,"{[(2R,3S,4R,5R)-5-(6-amino-9H-purin-9-yl)-2-{[({[(3-{[2-({2-[(2E)-dodec-2-enoylsulfanyl]ethyl}carbamoyl)ethyl]carbamoyl}-3-hydroxy-2,2-dimethylpropoxy)(hydroxy)phosphoryl]oxy}(hydroxy)phosphoryl)oxy]methyl}-4-hydroxyoxolan-3-yl]oxy}phosphonic acid"
-LMFA07050379,893.146914,C27H42N7O19P3S,6-carboxy-2E-hexenoyl-CoA
 LMFA07050380,985.245899,C35H54N7O18P3S,
 LMFA07050381,1013.277199,C37H58N7O18P3S,
 LMFA07050382,1041.308499,C39H62N7O18P3S,
@@ -7994,7 +7989,6 @@ LMFA07050385,1031.360534,C39H68N7O17P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydro
 LMFA07050386,919.235334,C31H52N7O17P3S,"{[(2R,3S,4R,5R)-5-(6-amino-9H-purin-9-yl)-2-({[({[(3R)-3-{[2-({2-[(3E)-dec-3-enoylsulfanyl]ethyl}carbamoyl)ethyl]carbamoyl}-3-hydroxy-2,2-dimethylpropoxy](hydroxy)phosphoryl}oxy)(hydroxy)phosphoryl]oxy}methyl)-4-hydroxyoxolan-3-yl]oxy}phosphonic acid"
 LMFA07050387,863.172734,C27H44N7O17P3S,"{[(2R,3S,4R,5R)-5-(6-amino-9H-purin-9-yl)-2-{[({[(3-{[2-({2-[(3E)-hex-3-enoylsulfanyl]ethyl}carbamoyl)ethyl]carbamoyl}-3-hydroxy-2,2-dimethylpropoxy)(hydroxy)phosphoryl]oxy}(hydroxy)phosphoryl)oxy]methyl}-4-hydroxyoxolan-3-yl]oxy}phosphonic acid"
 LMFA07050388,893.146914,C27H42N7O19P3S,"3'-phosphoadenosine 5'-{3-[(3R)-4-({3-[(2-{[(3E)-4-carboxy-3-methylbut-3-enoyl]sulfanyl}ethyl)amino]-3-oxopropyl}amino)-3-hydroxy-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
-LMFA07050389,879.131264,C26H40N7O19P3S,4-carboxy-2E-butenoyl-CoA
 LMFA07050391,919.235334,C31H52N7O17P3S,"3'-phosphoadenosine 5'-[3-(4-{[3-({2-[(2E)-dec-2-noylsulfanyl]ethyl}amino)-3-oxopropyl]amino}-3-hydroxy-2,2-dimethyl-4-oxobutyl) dihydrogen diphosphate]"
 LMFA07050392,943.162564,C31H44N7O19P3S,"3'-phosphoadenosine 5'-{3-[(3R)-3-hydroxy-4-({3-[(2-{[(2E)-3-(4-hydroxy-3-methoxyphenyl)prop-2-enoyl]sulfanyl}ethyl)amino]-3-oxopropyl}amino)-2,2-dimethyl-4-oxobutyl] dihydrogen diphosphate}"
 LMFA07050393,863.172734,C27H44N7O17P3S,2E-hexenoyl-CoA
@@ -8727,7 +8721,7 @@ LMFA08040065,349.298079,C22H39NO2,"N-(5Z,11Z,14Z-eicosatrienoyl)-ethanolamide"
 LMFA08040066,365.329379,C23H43NO2,"N-(2-methyl-2Z,6E-eicosadienoyl)-ethanolamine"
 LMFA08040067,399.313729,C26H41NO2,"N-(6Z,9Z,12Z,15Z,18Z,21Z-tetracosahexaenoyl)-ethanolamine"
 LMFA08040068,361.261694,C22H35NO3,"N-(17(18)-epoxy-5Z,8Z,11Z,14Z-eicosatetraenoyl)-ethanolamine"
-LMFA08040069,387.277344,C24H37NO3,"N-(19(20)-epoxy-4Z,7Z,13Z,16Z-docosapentaenoyl)-ethanolamine"
+LMFA08040069,387.277344,C24H37NO3,"N-(19(20)-epoxy-4Z,7Z,10Z,13Z,16Z-docosapentaenoyl)-ethanolamine"
 LMFA09000001,273.245649,C19H31N,"10Z,13Z,16Z-nonadecatrienenitrile"
 LMFA09000002,259.229999,C18H29N,"4Z,7Z,10Z-octadecatrienenitrile"
 LMFA10000001,294.219495,C18H30O3,"9-[1'E,3'Z-dien-1'-yloxy]-non-8E-enoic acid"
