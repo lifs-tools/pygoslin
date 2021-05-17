@@ -31,11 +31,16 @@ lipid : lipid_eof EOF;
 
 
 lipid_eof : fatty_acid;
-fatty_acid: regular_fatty_acid | wax | CAR | ethanolamine;
+fatty_acid: regular_fatty_acid_types | wax | CAR | ethanolamine;
 wax : wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type;
+regular_fatty_acid_types : regular_fatty_acid | regular_fatty_acid cyclo | regular_fatty_acid CoA;
+
 regular_fatty_acid : fatty_acid_type | additional_descriptions fatty_acid_type;
-fatty_acid_type : fatty_length acid_description | cycle fatty_length acid_description | ate_type | methyl;
-acid_description : acid_type | acid_type cyclo | acid_type CoA;
+
+
+
+fatty_acid_type : acid_types | cycle acid_types | ate_type | methyl;
+acid_types : fatty_length acid_type_regular | double_bond_positions DASH fatty_length acid_type_double | ROB double_bond_positions RCB DASH fatty_length acid_type_double;
 methyl : 'methyl' SPACE;
 
 fatty_length : notation_specials | notation_regular;
@@ -50,13 +55,15 @@ isoprop: 'isoprop';
 prosta : 'prosta' | 'prost' | 'prostan';
 CoA : DASH 'coa';
 
-acid_type: db_num acid_single_type | acid_single_type;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'noyl' | 'nyl' | 'yl' | 'ne' | ol | dial | 'noate' | 'nate';
+acid_type_regular: acid_single_type;
+acid_type_double: db_num acid_single_type;
+acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'noyl' | 'nyl' | 'yl' | ol | dial | 'noate' | 'nate'; /* | 'ne' */
+
 db_num: DASH double_bond_positions DASH db_length db_suffix | DASH double_bond_positions DASH db_suffix | db_length db_suffix | db_suffix;
 db_suffix : 'e' | 'ne' | 'ene' | 'en' | 'n';
 dial : 'dial';
 db_length: notation_regular;
-dioic : DASH functional_pos pos_separator functional_pos DASH dioic_acid | dioic_acid;
+dioic : 'n' DASH functional_pos pos_separator functional_pos DASH dioic_acid | 'ne' dioic_acid;
 dioic_acid : 'dioic acid';
 ol : 'nol' | db_suffix DASH hydroxyl_positions DASH notation_regular 'ol' | db_suffix DASH hydroxyl_position DASH 'ol' | DASH hydroxyl_positions DASH notation_regular 'ol' | DASH hydroxyl_position DASH 'ol';
 ate_type : ate | additional_descriptions ate;
@@ -69,7 +76,7 @@ hydroxyl_position : hydroxyl_number | hydroxyl_number stereo | hydroxyl_number '
 hydroxyl_number : number;
 
 additional_descriptions : additional_descriptions additional_descriptions | additional_description;
-additional_description : functional_group | functional_group DASH | double_bond_positions DASH | ROB double_bond_positions RCB DASH | pos_neg | reduction | reduction DASH;
+additional_description : functional_group | functional_group DASH | pos_neg | reduction | reduction DASH;
 functional_group : multi_functional_group | single_functional_group | epoxy;
 pos_neg : '(+/-)-' | '(+)-' | '(-)-';
 double_bond_positions : ROB double_bond_positions_p RCB | double_bond_positions_p;
@@ -83,7 +90,7 @@ functional_length : notation_last_digit | notation_second_digit | notation_last_
 functional_positions : functional_positions pos_separator functional_positions | functional_position;
 single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name | recursion_description | recursion_description DASH;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
-functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | 'homo' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy';
+functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy';
 methylene : 'methylene';
 
@@ -92,6 +99,7 @@ functional_pos_pr : functional_pos | functional_pos '\'';
 functional_pos : number;
 stereo : cistrans;
 reduction : functional_position DASH 'nor' | functional_positions DASH functional_length 'nor';
+homo : 'homo';
 
 cycle : 'cyclo';
 cyclo : '-cyclo' SOB functional_position pos_separator functional_position SCB;

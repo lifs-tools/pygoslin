@@ -105,6 +105,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["prosta_post_event"] = self.add_cyclo
         self.registered_events["reduction_pre_event"] = self.set_functional_group
         self.registered_events["reduction_post_event"] = self.reduction
+        self.registered_events["homo_post_event"] = self.homo
+        
         
         ## recursion
         self.registered_events["recursion_description_pre_event"] = self.set_recursion
@@ -151,6 +153,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def set_car(self, node):
         self.tmp["fg_pos"] = []
         self.tmp["fg_type"] = ""
+        
+        
+        
+    def homo(self, node):
+        self.tmp["post_adding"] = list(self.tmp["fg_pos"])
         
         
         
@@ -390,7 +397,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         fa_i = "fa%i" % len(self.current_fa)
         pos = self.tmp[fa_i]["db_position"]
         cistrans = self.tmp[fa_i]["db_cistrans"].upper()
-        if cistrans  in {'R', 'S', 'A', 'B'} or pos == 0: return
+        #if cistrans  in {'R', 'S', 'A', 'B'} or pos == 0: return
+        if pos == 0: return
         
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
@@ -575,6 +583,24 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
+        
+        if "post_adding" in self.tmp:
+            
+            
+            def add_position(func_group, pos):
+                func_group.position += func_group.position >= pos
+                for fg_name, fg_list in func_group.functional_groups.items():
+                    for fg in fg_list:
+                        add_position(fg, pos)
+            curr_fa = self.current_fa[-1]
+            curr_fa.num_carbon += len(self.tmp["post_adding"])
+            for pos in self.tmp["post_adding"]:
+                add_position(curr_fa, pos)
+                if type(curr_fa.double_bonds) == dict:
+                    curr_fa.double_bonds = {(k + (k >= pos)): v for k, v in curr_fa.double_bonds.items()}
+                        
+            
+        
         if type(self.current_fa[-1].double_bonds) == dict and len(self.current_fa[-1].double_bonds) > 0:
             if sum(len(ct) > 0 for p, ct in self.current_fa[-1].double_bonds.items()) != len(self.current_fa[-1].double_bonds):
                 self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)

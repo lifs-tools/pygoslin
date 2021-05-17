@@ -66,7 +66,7 @@ class LipidMapsTest(unittest.TestCase):
                 formula = compute_sum_formula(formula_parser.parse(lipid_name[2]))
                 
                 if formula != lipid_formula:
-                    print("%s: %s != %s" % (lipid_name, formula, lipid_formula))
+                    print("%i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
                     failed_sum += 1
                     exit()
                 

@@ -410,15 +410,15 @@ LMFA01020340,296.271530,C19H36O2,17-methyl-13Z-octadecenoic acid
 LMFA01020341,538.474980,C37H62O2,"34S-methyl-5Z,9Z,12Z,15Z,18Z,21Z-hexatriacontahexaenoic acid"
 LMFA01020342,312.302830,C20H40O2,11-methyl-nonadecanoic acid
 LMFA01020343,396.396730,C26H52O2,23-methyl-pentacosanoic acid
-LMFA01020345,158.130680,C9H18O2,"6,6-dimethyl-hexanoic acid"
+LMFA01020345,158.130680,C9H18O2,"6,6-dimethyl-heptanoic acid"
 LMFA01020346,186.161980,C11H22O2,"8,8-dimethyl-nonanoic acid"
 LMFA01020347,214.193280,C13H26O2,"10,10-dimethyl-undecanoic acid"
 LMFA01020348,242.224580,C15H30O2,"12,12-dimethyl-tridecanoic acid"
 LMFA01020349,382.381080,C25H50O2,18-methyl-tetracosanoic acid
 LMFA01020350,382.381080,C25H50O2,17-methyl-tetracosanoic acid
 LMFA01020351,396.396730,C26H52O2,18-methyl-pentacosanoic acid
-LMFA01020352,396.396730,C26H52O2,18-methyl-hexacosanoic acid
-LMFA01020353,396.396730,C26H52O2,"18,24-Dimethylhexacosanoic acid"
+LMFA01020352,396.396730,C26H52O2,17-methyl-pentacosanoic acid
+LMFA01020353,396.396730,C26H52O2,"17,22-Dimethyltetracosanoic acid"
 LMFA01020355,256.240230,C16H32O2,"10,13-dimethyltetradecanoic acid"
 LMFA01020356,326.318480,C21H42O2,12-methyl-eicosanoic acid
 LMFA01020357,392.365430,C26H48O2,"24-methyl-5Z,9Z-pentacosadienoic acid"
@@ -430,7 +430,7 @@ LMFA01020362,420.396730,C28H52O2,"26-methyl-5Z,9Z-heptacosadienoic acid"
 LMFA01020363,406.381080,C27H50O2,"5Z,9Z-heptacosadienoic acid"
 LMFA01020364,420.396730,C28H52O2,"5Z,9Z-octacosadienoic acid"
 LMFA01020365,434.412380,C29H54O2,"27-methyl-5Z,9Z-octacosadienoic acid"
-LMFA01020366,448.428030,C30H56O2,"26-methyl-5Z,9Z-octacosadienoic acid"
+LMFA01020366,448.428030,C30H56O2,"27-methyl-5Z,9Z-nonacosadienoic acid"
 LMFA01020367,304.240230,C20H32O2,"3,5R,15-trimethyl-7-methylene-2E,10E,12E-hexadecatrienoic acid"
 LMFA01020368,262.193280,C17H26O2,"6S,9,12S-trimethyl-2E,4E,8E,10E-tetradecatetraenoic acid"
 LMFA01020369,280.240230,C18H32O2,"4,6S-dimethyl-2E,4E-hexadecadienoic acid"
@@ -463,7 +463,7 @@ LMFA01020396,298.287180,C19H38O2,10-methyl-octadecanoic acid
 LMFA01020397,468.417860,C29H56O4,6-hydroxy-6-methyl-9-oxooctacosanoic acid
 LMFA01020398,154.099380,C9H14O2,"6S-methyl-2E,4E-octadienoic acid"
 LMFA01020399,170.094295,C9H14O3,"8-hydroxy-6S-methyl-2E,4E-octadienoic acid"
-LMFA01020400,378.349780,C25H46O2,"3,7,11-trimethyl-2Z,6Z-dodecaenoic acid"
+LMFA01020400,378.349780,C25H46O2,"3,7,11-trimethyl-2Z,6Z-docosenoic acid"
 LMFA01020401,132.078645,C6H12O3,2S-hydroxy-3S-methylpentanoic acid
 LMFA01020402,158.094295,C8H14O3,5R-hydroxy-4S-methyl­2E-heptenoic acid
 LMFA01020404,510.464810,C32H62O4,"15,16-di­methyltriacontanedioic acid"
@@ -584,7 +584,7 @@ LMFA01030078,282.255880,C18H34O2,12Z-octadecenoic acid
 LMFA01030079,282.255880,C18H34O2,12E-octadecenoic acid
 LMFA01030080,282.255880,C18H34O2,15E-octadecenoic acid
 LMFA01030081,282.255880,C18H34O2,16E-octadecenoic acid
-LMFA01030082,310.287180,C20H38O2,17Z-octadecenoic acid
+LMFA01030082,310.287180,C20H38O2,17Z-eicosenoic acid
 LMFA01030083,296.271530,C19H36O2,2-nonadecenoic acid
 LMFA01030084,310.287180,C20H38O2,9Z-eicosenoic acid
 LMFA01030085,310.287180,C20H38O2,11Z-eicosenoic acid
@@ -1124,7 +1124,7 @@ LMFA01030698,300.208930,C20H28O2,"7,10,13-Eicosatriynoic acid"
 LMFA01030699,300.208930,C20H28O2,"9,12,15-Eicosatriynoic acid"
 LMFA01030700,310.287180,C20H38O2,9E-Eicosenoic acid
 LMFA01030701,402.349780,C27H46O2,"12,14-Heptacosadiynoic acid"
-LMFA01030702,250.193280,C16H26O2,"4,7,10,13-Hexadecatetraenoic acid"
+LMFA01030702,250.193280,C16H26O2,"4,7,13-Hexadecatrienoic acid"
 LMFA01030703,244.146330,C16H20O2,"6E,8E,12E,14E-Hexadecatetraen-10-ynoic acid"
 LMFA01030704,242.130680,C16H18O2,"6E,8E,14E-Hexadecatriene-10,12-diynoic acid"
 LMFA01030705,242.130680,C16H18O2,"6E,8E,14Z-Hexadecatriene-10,12-diynoic acid"
@@ -1181,7 +1181,6 @@ LMFA01030770,226.193280,C14H26O2,11Z-tetradecenoic acid
 LMFA01030771,226.193280,C14H26O2,11E-tetradecenoic acid
 LMFA01030772,198.161980,C12H22O2,3E-dodecenoic acid
 LMFA01030773,278.224580,C18H30O2,"9Z,11E,14Z-octadecatrienoic acid"
-LMFA01030774,280.240230,C18H32O2,"5R,6-octadecadienoic acid"
 LMFA01030775,278.224580,C18H30O2,"5R,6,16E-octadecatrienoic acid"
 LMFA01030776,278.224580,C18H30O2,"5S,6,16E-octadecatrienoic acid"
 LMFA01030777,278.224580,C18H30O2,"11E,13E,15Z-octadecatrienoic acid"
@@ -1318,7 +1317,6 @@ LMFA01030910,338.318480,C22H42O2,7Z-docosenoic acid
 LMFA01030911,338.318480,C22H42O2,9Z-docosenoic acid
 LMFA01030912,296.271530,C19H36O2,16Z-nonadecenoic acid
 LMFA01030913,226.193280,C14H26O2,5E-Tetradecenoic acid 
-LMFA01030914,280.240230,C18H32O2,"5S,6-octadecadienoic acid"
 LMFA01030916,410.318480,C28H42O2,"4Z,7Z,10Z,13Z,16Z,19Z,22Z-octacosaheptaenoic acid"
 LMFA01030917,448.428030,C30H56O2,"5Z,9Z-triacontadienoic acid"
 LMFA01030919,274.193280,C18H26O2,"(10Z,14E,16E)-10,14,16-Octadecatrien-12-ynoic acid"
@@ -1536,10 +1534,10 @@ LMFA01031186,268.240230,C17H32O2,6Z-heptadecenoic acid
 LMFA01031187,238.156895,C14H22O3,"5-oxo-6E,8Z-tetradecadienoic acid"
 LMFA01031188,238.156895,C14H22O3,"5-oxo-6E,8E-tetradecadienoic acid"
 LMFA01031190,254.224580,C16H30O2,8E-hexadecenoic acid
-LMFA01031191,366.349780,C24H46O2,9Z-tetradocosenoic acid
-LMFA01031192,366.349780,C24H46O2,17E-tetradocosenoic acid
-LMFA01031193,366.349780,C24H46O2,18E-tetradocosenoic acid
-LMFA01031194,366.349780,C24H46O2,19E-tetradocosenoic acid
+LMFA01031191,366.349780,C24H46O2,9Z-tetracosenoic acid
+LMFA01031192,366.349780,C24H46O2,17E-tetracosenoic acid
+LMFA01031193,366.349780,C24H46O2,18E-tetracosenoic acid
+LMFA01031194,366.349780,C24H46O2,19E-tetracosenoic acid
 LMFA01031195,212.177630,C13H24O2,9Z-tridecenoic acid
 LMFA01031196,226.193280,C14H26O2,7E-tetradecenoic acid
 LMFA01031197,240.208930,C15H28O2,5Z-pentadecenoic acid
@@ -1835,10 +1833,10 @@ LMFA01050387,132.078645,C6H12O3,2-ethyl-2-hydroxy-butanoic acid
 LMFA01050388,118.062995,C5H10O3,2-ethyl-3-hydroxy-propionic acid
 LMFA01050389,118.062995,C5H10O3,2-hydroxy-2-methyl-butanoic acid
 LMFA01050390,118.062995,C5H10O3,2S-hydroxy-3-methyl-butanoic acid
-LMFA01050391,118.062995,C5H10O3,2-methyl-3-hydroxy-2-butanoic acid
+LMFA01050391,118.062995,C5H10O3,2-methyl-3-hydroxy-butanoic acid
 LMFA01050393,118.062995,C5H10O3,3R-hydroxy-2S-methyl-butanoic acid
 LMFA01050394,118.062995,C5H10O3,3S-hydroxy-2S-methyl-butanoic acid
-LMFA01050395,160.109945,C8H16O3,3-hydroxy-6-methyl-hexanoic acid
+LMFA01050395,160.109945,C8H16O3,3-hydroxy-6-methyl-heptanoic acid
 LMFA01050396,118.062995,C5H10O3,3-hydroxy-3-methyl-butanoic acid
 LMFA01050397,120.042260,C4H8O4,"2,3-dihydroxy-butanoic acid"
 LMFA01050398,102.031695,C4H6O3,4-hydroxy-2E-butenoic acid
@@ -1937,7 +1935,7 @@ LMFA01050536,404.313790,C22H44O6,"9,10,12,13-tetrahydroxydocosanoic acid"
 LMFA01050537,332.256275,C18H36O5,"9,10,13-trihydroxy-Octadecanoic acid"
 LMFA01050538,314.245710,C18H34O4,10-Hydroxy-9-oxooctadecanoic acid
 LMFA01050539,304.224975,C16H32O5,"2R,15R,16-Trihydroxyhexadecanoic acid"
-LMFA01050540,298.250795,C18H34O3,2-Hydroxy-9Z-hexadecenoic acid
+LMFA01050540,298.250795,C18H34O3,2-Hydroxy-9Z-octadecenoic acid
 LMFA01050541,272.235145,C16H32O3,8-Hydroxyhexadecanoic acid
 LMFA01050542,244.203845,C14H28O3,9-Hydroxytetradecanoic acid
 LMFA01050543,330.240625,C18H34O5,"5,8,12-Trihydroxy-9-octadecenoic acid"
@@ -1976,7 +1974,7 @@ LMFA01050576,268.167460,C15H24O4,"8,11-dihydroxypentadeca-6Z-en-9-ynoic acid"
 LMFA01050577,282.183110,C16H26O4,"9,12-dihydroxyhexadeca-7Z-en-10-ynoic acid"
 LMFA01050578,310.214410,C18H30O4,"11,14-dihydroxyoctadeca-9Z-en-12-ynoic acid"
 LMFA01050579,200.104860,C10H16O4,"9,10‐dihydroxy-2E,4E-decadienoic acid"
-LMFA01050580,228.136160,C12H20O4,"5,11‐dihydroxy-2E,6E-didodecenoic acid"
+LMFA01050580,228.136160,C12H20O4,"5,11‐dihydroxy-2E,6E-dodecadienoic acid"
 LMFA01050581,230.151810,C12H22O4,10‐hydroxy‐4‐hydroxymethyl-2E-undecenoic acid
 LMFA01050582,230.151810,C12H22O4,"9,11‐dihydroxy-2E-dodecenoic acid"
 LMFA01050583,230.151810,C12H22O4,"5,11‐dihydroxy-2E-dodecenoic acid"
@@ -2134,7 +2132,7 @@ LMFA01060187,240.172545,C14H24O3,7-oxo-11Z-Tetradecenoic acid
 LMFA01060189,242.188195,C14H26O3,7-Oxotetradecanoic acid
 LMFA01060190,102.031695,C4H6O3,2S-methyl-3-oxo-propanoic acid
 LMFA01060191,141.042594,C6H7NO3,"2-amino-6-oxo-2,4-hexadienoic acid"
-LMFA01060192,116.047345,C5H8O3,2-methyl-3-oxo-pentanoic acid
+LMFA01060192,116.047345,C5H8O3,2-methyl-3-oxo-butanoic acid
 LMFA01060193,102.031695,C4H6O3,2-methyl-3-oxo-propanoic acid
 LMFA01060194,148.000790,C4H4O6,"2-oxo-3,4,4-trihydroxy-3E-butenoic acid"
 LMFA01060195,192.027005,C6H8O7,"2,3-dioxo-4R,5S,6-trihydroxy-hexanoic acid"
@@ -2165,7 +2163,7 @@ LMFA01060225,310.214410,C18H30O4,"(S)-(10E,12E)-14- hydroxy-9-oxo-10,12-octadeca
 LMFA01060226,294.219495,C18H30O3,"11-oxo-(7E,9E)-octdecadienoic acid"
 LMFA01060227,268.203845,C16H28O3,9-oxo-7E-hexadecenoic acid
 LMFA01060228,170.094295,C9H14O3,4-oxo-2E-nonenoic acid
-LMFA01060229,266.188195,C16H26O3,"4-oxo-2E,15-hexadecendioic acid"
+LMFA01060229,266.188195,C16H26O3,"4-oxo-2E,15-hexadecadienoic acid"
 LMFA01060230,268.203845,C16H28O3,4-oxo-2E-hexadecenoic acid
 LMFA01060231,294.219495,C18H30O3,"N-(9-oxo-10Z,12Z)-octadecadienoic acid"
 LMFA01060232,296.235145,C18H32O3,6-oxo-4E-octadecenoic acid
@@ -2493,7 +2491,7 @@ LMFA01140023,252.208930,C16H28O2,11-(2-cyclopentenyl)-undecanoic acid
 LMFA01140024,314.088141,C15H23O2Br,"4S,5S-methylene-11-bromo-8E,10Z-tetradecadienoic acid"
 LMFA01140025,290.224580,C19H30O2,13-Phenyltridecanoic acid
 LMFA01140026,268.240230,C17H32O2,"9R,10S-methylene-hexadecanoic acid"
-LMFA01140027,408.396730,C27H52O2,19-cyclopropyl-hexacosanoic acid
+LMFA01140027,408.396730,C27H52O2,19-(2-hexyl-cyclopropyl)-octadecanoic acid
 LMFA01140028,262.193280,C17H26O2,11-Phenylundecanoic acid
 LMFA01140029,312.230060,C18H32O4,Dihydroxy-2-cyclopentene-1-tridecanoic acid
 LMFA01140030,318.255880,C21H34O2,15-Phenylpentadecanoic acid
@@ -2503,8 +2501,8 @@ LMFA01140033,282.255880,C18H34O2,7-(2-octylcyclopropyl)heptanoic acid
 LMFA01140034,308.271530,C20H36O2,15-(cyclopent-2-en-1-yl)pentadecanoic acid
 LMFA01140035,278.224580,C18H30O2,13-(2-cyclopenten-1-yl)-4Z-tridecenoic acid
 LMFA01140036,250.193280,C16H26O2,11-(cyclo­pent-2-en-1-yl)-6Z-un­decenoic acid
-LMFA01140037,268.240230,C17H32O2,"7R,8S-methylenehexanoic acid"
-LMFA01140038,268.240230,C17H32O2,"7,8-methylenehexanoic acid"
+LMFA01140037,268.240230,C17H32O2,"7R,8S-methylenehexadecanoic acid"
+LMFA01140038,268.240230,C17H32O2,"7,8-methylenehexadecanoic acid"
 LMFA01140039,306.255880,C20H34O2,15-(2-cyclopenten-1-yl)-9Z-Pentadecenoic acid
 LMFA01140040,306.255880,C20H34O2,15-(2-cyclopenten-1-yl)-9-Pentadecenoic acid
 LMFA01140041,282.255880,C18H34O2,13-Cyclopentyltridecanoic acid
@@ -2686,8 +2684,8 @@ LMFA01160061,1227.278610,C83H166O4,2-eicosyl-3-hydroxy-40-methoxy-41-methyl-henh
 LMFA01160062,1087.122110,C73H146O4,2-docosyl-3-hydroxy-32-methoxy-33-methyl-nonatetracontanoic acid
 LMFA01160063,1115.153410,C75H150O4,2-docosyl-3-hydroxy-32-methoxy-33-methyl-henpentacontanoic acid
 LMFA01160064,1143.184710,C77H154O4,2-docosyl-3-hydroxy-32-methoxy-33-methyl-tripentacontanoic acid
-LMFA01160065,1101.137760,C74H148O4,2-tetracosyl-3-hydroxy-32-methoxy-33-methyl-nonatetracontanoic acid
-LMFA01160066,1129.169060,C76H152O4,2-tetracosyl-3-hydroxy-32-methoxy-33-methyl-henpentacontanoic acid
+LMFA01160065,1101.137760,C74H148O4,2-tetracosyl-3-hydroxy-32-methoxy-33-methyl-octatetracontanoic acid
+LMFA01160066,1129.169060,C76H152O4,2-tetracosyl-3-hydroxy-32-methoxy-33-methyl-pentacontanoic acid
 LMFA01160067,1171.216010,C79H158O4,2-tetracosyl-3-hydroxy-32-methoxy-33-methyl-tripentacontanoic acid
 LMFA01160068,1043.059510,C70H138O4,2-eicosyl-3-hydroxy-32-oxo-33-methyl-nonatetracontanoic acid
 LMFA01160069,1071.090810,C72H142O4,2-eicosyl-3-hydroxy-32-oxo-33-methyl-henpentacontanoic acid
@@ -2748,20 +2746,20 @@ LMFA01160123,848.819675,C55H108O5,2-eicosyl-3-hydroxy-34-carboxy-tetratriacontan
 LMFA01160124,904.882275,C59H116O5,2-eicosyl-3-hydroxy-38-carboxy-octatriacontanoic acid
 LMFA01160125,820.788375,C53H104O5,2-docosyl-3-hydroxy-30-carboxy-triacontanoic acid
 LMFA01160126,876.850975,C57H112O5,2-docosyl-3-hydroxy-34-carboxy-tetratriacontanoic acid
-LMFA01160127,932.913575,C61H120O5,2-docosyl-3-hydroxy-38-carboxy-tetratriacontanoic acid
+LMFA01160127,932.913575,C61H120O5,2-docosyl-3-hydroxy-38-carboxy-octatriacontanoic acid
 LMFA01160128,848.819675,C55H108O5,2-tetracosyl-3-hydroxy-30-carboxy-triacontanoic acid
 LMFA01160129,904.882275,C59H116O5,2-tetracosyl-3-hydroxy-34-carboxy-tetratriacontanoic acid
 LMFA01160130,960.944875,C63H124O5,2-tetracosyl-3-hydroxy-38-carboxy-octatriacontanoic acid
 LMFA01160131,1017.043860,C68H136O4,2-eicosyl-3-hydroxy-46-methoxy-heptatetracontanoic acid
 LMFA01160132,1045.075160,C70H140O4,2-docosyl-3-hydroxy-46-methoxy-heptatetracontanoic acid
 LMFA01160133,1073.106460,C72H144O4,2-tetracosyl-3-hydroxy-46-methoxy-heptatetracontanoic acid
-LMFA01160134,1101.137760,C74H148O4,2-eicosyl-3-hydroxy-51-methoxy-dopentacontanoic acid
-LMFA01160135,1129.169060,C76H152O4,2-docosyl-3-hydroxy-51-methoxy-dopentacontanoic acid
-LMFA01160136,1157.200360,C78H156O4,2-tetracosyl-3-hydroxy-51-methoxy-dopentacontanoic acid
-LMFA01160137,1185.231660,C80H160O4,2-eicosyl-3-hydroxy-57-methoxy-octapentacontanoic acid
-LMFA01160138,1213.262960,C82H164O4,2-docosyl-3-hydroxy-57-methoxy-octapentacontanoic acid
-LMFA01160139,1241.294260,C84H168O4,2-tetracosyl-3-hydroxy-57-methoxy-octapentacontanoic acid
-LMFA01170001,174.089210,C8H14O4,"1,8-octanedioic acid"
+LMFA01160134,1101.137760,C74H148O4,2-eicosyl-3-hydroxy-52-methoxy-tripentacontanoic acid
+LMFA01160135,1129.169060,C76H152O4,2-docosyl-3-hydroxy-52-methoxy-tripentacontanoic acid
+LMFA01160136,1157.200360,C78H156O4,2-tetracosyl-3-hydroxy-52-methoxy-tripentacontanoic acid
+LMFA01160137,1185.231660,C80H160O4,2-eicosyl-3-hydroxy-58-methoxy-nonapentacontanoic acid
+LMFA01160138,1213.262960,C82H164O4,2-docosyl-3-hydroxy-58-methoxy-nonapentacontanoic acid
+LMFA01160139,1241.294260,C84H168O4,2-tetracosyl-3-hydroxy-58-methoxy-nonapentacontanoic acid
+LMFA01170001,174.089210,C8H14O4,"Octan-1,8-dioic acid"
 LMFA01170002,228.136160,C12H20O4,2E-dodecenedioic acid
 LMFA01170003,194.057910,C10H10O4,"2E,4E,6Z,8Z-Decatetraenedioic acid"
 LMFA01170004,194.057910,C10H10O4,"2E,4Z,6Z,8Z-Decatetraenedioic acid"
@@ -2926,7 +2924,7 @@ LMFA02000024,294.219495,C18H30O3,"9S-hydroxy-10E,12Z,15Z-octadecatrienoic acid"
 LMFA02000028,292.203845,C18H28O3,"13-keto-9Z,11E,15Z-octadecatrienoic acid"
 LMFA02000029,294.219495,C18H30O3,"13-OH-9Z,11E,15Z-octadecatrienoic acid"
 LMFA02000030,310.214410,C18H30O4,"15,16-epoxy-13-OH-9Z,11E-octadecadienoic acid"
-LMFA02000031,326.209325,C18H30O5,"2R-hydroperoxy-9Z,12Z,15Z-octadecatrienoic acid"
+LMFA02000031,326.209325,C18H30O5,"2R-hydroperoxy-13-hydroxy-9Z,12Z,15Z-octadecenoic acid"
 LMFA02000033,294.219495,C18H30O3,"2R-hydroxy-9Z,12Z,15Z-octadecatrienoic acid"
 LMFA02000034,312.230060,C18H32O4,"13S-hydroperoxy-9Z,11E-octadecadienoic acid"
 LMFA02000035,296.235145,C18H32O3,"13R-hydroxy-9Z,11E-octadecadienoic acid"
@@ -2991,7 +2989,7 @@ LMFA02000094,298.250795,C18H34O3,13S-hydroxy11E-octadecenoic acid
 LMFA02000095,298.250795,C18H34O3,11R-hydroxy12E-octadecenoic acid
 LMFA02000096,298.250795,C18H34O3,11S-hydroxy12E-octadecenoic acid
 LMFA02000097,314.245710,C18H34O4,6-hydroperoxy-7E-octadecenoic acid
-LMFA02000098,298.250795,C18H34O3,13-hydroperoxy-14E-octadecenoic acid
+LMFA02000098,298.250795,C18H34O3,13-hydroxy-14E-octadecenoic acid
 LMFA02000099,312.230060,C18H32O4,"9-hydroperoxy-9E,11E-octadecadienoic acid"
 LMFA02000100,312.230060,C18H32O4,"9-hydroperoxy-10E,12E-octadecadienoic acid"
 LMFA02000101,312.230060,C18H32O4,"10-hydroperoxy-8E,12Z-octadecadienoic acid"
@@ -3198,7 +3196,7 @@ LMFA02000301,294.219495,C18H30O3,"13-Hydroxy-3E,9Z,11E-octadecatrienoic acid"
 LMFA02000302,314.245710,C18H34O4,"12S,13S-dihydroxy-9Z-Octadecenoic acid"
 LMFA02000303,294.255880,C19H34O2,"16-methyl-octadeca-9Z,12Z-dienoic acid"
 LMFA02000304,276.208930,C18H28O2,"5E,9Z,12Z,15Z-Octadecatetraenoic acid"
-LMFA02000305,294.219495,C18H30O3,"15R,16S-epoxy-9Z,12E-octadienoic acid"
+LMFA02000305,294.219495,C18H30O3,"15R,16S-epoxy-9Z,12E-octadecadienoic acid"
 LMFA02000306,294.219495,C18H30O3," 9,10-epoxy-3E,12Z-Octadecadienoic acid"
 LMFA02000307,280.240230,C18H32O2,"9E,11Z-Octadecadienoic acid"
 LMFA02000308,296.235145,C18H32O3,"8-hydroxy-11Z,14Z-Octadecadienoic acid"
@@ -3580,7 +3578,6 @@ LMFA03010030,350.209325,C20H30O5,"9,15-dioxo-11R-hydroxy-5Z,13E-prostadienoic ac
 LMFA03010031,352.224975,C20H32O5,"9,15-dioxo-11R-hydroxy-5Z-prostenoic acid"
 LMFA03010032,328.152205,C16H24O7,"11R-hydroxy-9,15-dioxo-2,3,4,5-tetranor-prostan-1,20-dioic acid"
 LMFA03010033,334.214410,C20H30O4,"9,15-dioxo-5Z,10-prostadienoic acid"
-LMFA03010034,334.214410,C20H30O4,"9,15-dioxo-5Z-prostaenoic acid-cyclo[11S,16]"
 LMFA03010035,334.214410,C20H30O4,"9-oxo-15S-hydroxy-5Z,10Z,13E-prostatrienoic acid"
 LMFA03010036,354.240625,C20H34O5,"9S,11S,15S-trihydroxy-5Z,13E-prostadienoic acid"
 LMFA03010037,374.260240,C20H30D4O6,"9S,11R,15S-trihydroxy-6-oxo-13E-prostenoic acid (3,3,4,4-d4)"
