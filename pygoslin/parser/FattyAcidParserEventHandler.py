@@ -136,6 +136,10 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         ## ethanolamine
         self.registered_events["ethanolamine_post_event"] = self.add_ethanolamine
         
+        ## functional group position summary
+        self.registered_events["fg_pos_summary_pre_event"] = self.set_functional_group
+        self.registered_events["fg_pos_summary_post_event"] = self.add_summary
+        self.registered_events["func_stereo_pre_event"] = self.add_func_stereo
         
         
         
@@ -147,11 +151,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.current_fa = [FattyAcid("FA")]
         self.db_numbers = -1
         self.tmp = {"fa1": {}}
-        #self.debug = "full"
+        self.debug = "full"
         
         
     def set_car(self, node):
         self.tmp["fg_pos"] = []
+        self.tmp["fg_pos_ext"] = {}
         self.tmp["fg_type"] = ""
         
         
@@ -159,6 +164,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def homo(self, node):
         self.tmp["post_adding"] = list(self.tmp["fg_pos"])
         
+        
+    def add_summary(self, node):
+        self.tmp["fg_pos_summary"] = {k: v for k, v in self.tmp["fg_pos_ext"].items()}
+        
+        
+    def add_func_stereo(self, node):
+        self.tmp["fg_pos_ext"][self.tmp["fg_pos"][-1]] = node.get_text()
         
         
     def set_methylene(self, node):
@@ -181,6 +193,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     def set_coa(self, node):
         self.headgroup = "CoA"
+        
         
         
     def set_methyl(self, node):
@@ -236,6 +249,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def set_recursion(self, node):
         self.tmp["fg_pos"] = []
+        self.tmp["fg_pos_ext"] = {}
         self.tmp["fg_type"] = ""
         self.current_fa.append(FattyAcid("FA"))
         fa_i = "fa%i" % len(self.current_fa)
@@ -258,11 +272,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def add_wax_ester(self, node):
         fa_i = "fa%i" % len(self.current_fa)
-        
         fa = self.current_fa.pop()
         
-        if "WE" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["WE"] = []
-        self.current_fa[-1].functional_groups["WE"].append(fa)
+        fa.name += "1"
+        self.current_fa[-1].name += "2"
+        self.current_fa.insert(0, fa)
         
         
         
@@ -285,8 +299,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                     switch_position(fg, switch)
             
         curr_fa = self.current_fa[-1]
-        if "noyloxy" in curr_fa.functional_groups and self.headgroup == "FA":
-            self.headgroup = "FAHFA"
+        if "noyloxy" in curr_fa.functional_groups:
+            if self.headgroup == "FA": self.headgroup = "FAHFA"
             
             while len(curr_fa.functional_groups["noyloxy"]) > 0:
                 fa = curr_fa.functional_groups["noyloxy"].pop()
@@ -296,7 +310,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 
                 if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
                 curr_fa.functional_groups["acyl"].append(acyl)
-            del curr_fa.func_groups["noyloxy"]
+            del curr_fa.functional_groups["noyloxy"]
                 
         elif "-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups or "nyl" in curr_fa.functional_groups or "methyl" in curr_fa.functional_groups:
             while True:
@@ -309,7 +323,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 while len(curr_fa.functional_groups[yl]) > 0:
                     fa = curr_fa.functional_groups[yl].pop()
                     
-                    if self.headgroup == "cyclo":
+                    if "cyclo" in self.tmp:
                         cyclo_len = curr_fa.num_carbon
                         self.tmp['cyclo_len'] = cyclo_len
                         switch_position(curr_fa, 2 + cyclo_len)
@@ -351,18 +365,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                             curr_fa.functional_groups["alkyl"].append(alkyl)
                             
                 del curr_fa.functional_groups[yl]
-                
-        elif "WE" in curr_fa.functional_groups and self.headgroup == "WE":
-            while len(curr_fa.functional_groups["WE"]) > 0:
-                fa = curr_fa.functional_groups["WE"].pop()
-                fa.name += "1"
-                curr_fa.name += "2"
-                self.current_fa.insert(0, fa)
-                
-            del curr_fa.functional_groups["WE"]
-                
+           
                             
-                
         if "cyclo" in curr_fa.functional_groups and self.headgroup == "FA":
             fa = curr_fa.functional_groups["cyclo"][0]
             del curr_fa.functional_groups["cyclo"]
@@ -381,6 +385,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             self.tmp["fg_pos"] = [start_pos, end_pos]
             self.add_cyclo(node)
             
+            
+        elif "cyclo" in self.tmp:
+            self.tmp["fg_pos"] = [1, curr_fa.num_carbon]
+            self.add_cyclo(node)
+            
+            
+            
         
     def set_double_bond_information(self, node):
         fa_i = "fa%i" % len(self.current_fa)
@@ -397,7 +408,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         fa_i = "fa%i" % len(self.current_fa)
         pos = self.tmp[fa_i]["db_position"]
         cistrans = self.tmp[fa_i]["db_cistrans"].upper()
-        #if cistrans  in {'R', 'S', 'A', 'B'} or pos == 0: return
+        if cistrans == "" and "fg_pos_summary" in self.tmp and pos in self.tmp["fg_pos_summary"]: cistrans = self.tmp["fg_pos_summary"][pos]
         if pos == 0: return
         
         del self.tmp[fa_i]["db_position"]
@@ -427,11 +438,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def set_fatty_acyl_type(self, node):
         t = node.get_text()
-        
-        if "cyclo" in self.tmp:
-            self.headgroup = "cyclo"
-            del self.tmp["cyclo"]
-            return
         
         if t[-2:] == "ol": self.headgroup = "FOH"
         elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
@@ -474,10 +480,21 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def add_cyclo(self, node):
         start = self.tmp["fg_pos"][0]
         end = self.tmp["fg_pos"][1]
-        if "cycle_added" in self.tmp["fa%i" % len(self.current_fa)]: return
-    
-        self.tmp["fa%i" % len(self.current_fa)]["cycle_added"] = True
         
+        fgroup = self.current_fa[-1].functional_groups
+        if "cy" in fgroup:
+            curr_fa = self.current_fa[-1]
+            cy = fgroup["cy"][0]
+            del fgroup["cy"]
+            if type(curr_fa.double_bonds) != dict: curr_fa.double_bonds = {}
+            if type(cy.double_bonds) == dict and len(cy.double_bonds) > 0:
+                for k, v in cy.double_bonds.items(): curr_fa.double_bonds[k] = v
+            
+            for fg, fg_list in cy.functional_groups.items():
+                if fg not in fgroup: fgroup[fg] = []
+                fgroup[fg] += fg_list
+            
+            
         cyclo_db = None
         # check double bonds
         if type(self.current_fa[-1].double_bonds) == dict and len(self.current_fa[-1].double_bonds) > 0:
@@ -537,6 +554,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def set_functional_group(self, node):
         self.tmp["fg_pos"] = []
+        self.tmp["fg_pos_ext"] = {}
         self.tmp["fg_type"] = ""
         
         
@@ -585,10 +603,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def build_lipid(self, node):
         
         if "post_adding" in self.tmp:
-            
-            
             def add_position(func_group, pos):
                 func_group.position += func_group.position >= pos
+                if type(func_group) == Cycle:
+                    func_group.start += func_group.start >= pos
+                    func_group.end += func_group.end >= pos
                 for fg_name, fg_list in func_group.functional_groups.items():
                     for fg in fg_list:
                         add_position(fg, pos)
@@ -599,6 +618,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 if type(curr_fa.double_bonds) == dict:
                     curr_fa.double_bonds = {(k + (k >= pos)): v for k, v in curr_fa.double_bonds.items()}
                         
+        
             
         
         if type(self.current_fa[-1].double_bonds) == dict and len(self.current_fa[-1].double_bonds) > 0:
