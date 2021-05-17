@@ -158,8 +158,8 @@ class AcylAlkylGroup(FunctionalGroup):
         self.alkyl = alkyl
         if fa != None: self.functional_groups["alkyl" if self.alkyl else "acyl"] = [fa]
         self.double_bonds = 1
-        self.elements[Element.O] = 0 if self.alkyl else 1
-        self.elements[Element.H] = -1
+        self.elements[Element.O] = -1 if self.alkyl else 1
+        self.elements[Element.H] = 1 if self.alkyl else -1
         
         
 
@@ -178,7 +178,7 @@ class AcylAlkylGroup(FunctionalGroup):
     
 _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1}), # hydroxyl
                            "Me": FunctionalGroup("Me", elements = {Element.C: 1, Element.H: 2}), # methyl
-                           "My": FunctionalGroup("My", elements = {Element.C: 1, Element.H: 1}), # methylene
+                           "My": FunctionalGroup("My", elements = {Element.C: 1}, double_bonds = 1), # methylene
                            "dMe": FunctionalGroup("dMe", elements = {Element.C: 1}), # methylen
                            "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
                            "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}), # carboxyl

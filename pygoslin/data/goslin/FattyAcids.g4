@@ -31,7 +31,8 @@ lipid : lipid_eof EOF;
 
 
 lipid_eof : fatty_acid;
-fatty_acid: regular_fatty_acid | wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type | wax_ester fatty_acid_type | wax_ester additional_descriptions fatty_acid_type | CAR | ethanolamine;
+fatty_acid: regular_fatty_acid | wax | CAR | ethanolamine;
+wax : wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type;
 regular_fatty_acid : fatty_acid_type | additional_descriptions fatty_acid_type;
 fatty_acid_type : fatty_length acid_description | cycle fatty_length acid_description | ate_type | methyl;
 acid_description : acid_type | acid_type cyclo | acid_type CoA;
@@ -68,7 +69,7 @@ hydroxyl_position : hydroxyl_number | hydroxyl_number stereo | hydroxyl_number '
 hydroxyl_number : number;
 
 additional_descriptions : additional_descriptions additional_descriptions | additional_description;
-additional_description : functional_group | functional_group DASH | double_bond_positions DASH | ROB double_bond_positions RCB DASH | pos_neg | reduction | reduction DASH | recursion_description | recursion_description DASH;
+additional_description : functional_group | functional_group DASH | double_bond_positions DASH | ROB double_bond_positions RCB DASH | pos_neg | reduction | reduction DASH;
 functional_group : multi_functional_group | single_functional_group | epoxy;
 pos_neg : '(+/-)-' | '(+)-' | '(-)-';
 double_bond_positions : ROB double_bond_positions_p RCB | double_bond_positions_p;
@@ -80,10 +81,11 @@ db_number : number;
 multi_functional_group : functional_positions DASH functional_length functional_group_type | functional_positions DASH functional_group_type;
 functional_length : notation_last_digit | notation_second_digit | notation_last_digit notation_second_digit;
 functional_positions : functional_positions pos_separator functional_positions | functional_position;
-single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name;
+single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name | recursion_description | recursion_description DASH;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
-functional_group_type : 'ethyl' | 'propyl' | 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | 'homo' | 'fluoro' | 'chloro' | 'methylene' | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy';
+functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | 'homo' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy';
+methylene : 'methylene';
 
 functional_position : functional_pos_pr | functional_pos stereo;
 functional_pos_pr : functional_pos | functional_pos '\'';
