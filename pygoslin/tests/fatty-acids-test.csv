@@ -3749,7 +3749,7 @@ LMFA03010229,410.230455,C22H34O7,"18-oxo-9S,15S-dihydroxy-11R-acetoxy-5Z,13E-pro
 LMFA03010230,452.277405,C25H40O7,"methyl-9S-hydroxy-11R,15S-diacetoxy-6Z,13E-prostadienoate"
 LMFA03010231,454.293055,C25H42O7,"methyl 9S-hydroxy-11R,15S-diacetoxy-13E-prostenoate"
 LMFA03010232,370.235540,C20H34O6,"9-oxo-11R,15S,20-trihydroxy-13E-prostaenoic acid"
-LMFA03010233,350.245710,C21H34O4,"Methyl 15S-hydroxy-5Z,13E-prostadienoate"
+LMFA03010233,350.245710,C21H34O4,"Methyl 9-oxo-15S-hydroxy-5Z,13E-prostadienoate"
 LMFA03010234,336.230060,C20H32O4,"9,15-dioxo-5Z-prostenoic acid"
 LMFA03020001,336.230060,C20H32O4,"5S,12R-dihydroxy-6Z,8E,10E,14Z-eicosatetraenoic acid"
 LMFA03020002,439.239246,C23H37NO5S,"5S-hydroxy,6R-(S-cysteinyl),7E,9E,11Z,14Z-eicosatetraenoic acid"
@@ -7084,7 +7084,7 @@ LMFA07010472,340.334130,C22H44O2,hexyl hexadecanoate
 LMFA07010473,284.271530,C18H36O2,Methyl heptadecanoate
 LMFA07010474,298.287180,C19H38O2,Methyl octadecanoate
 LMFA07010475,368.365430,C24H48O2,hexyl octadecanoate
-LMFA07010476,368.365430,C24H48O2,ethyl docosenyl
+LMFA07010476,368.365430,C24H48O2,ethyl docosenate
 LMFA07010477,184.146330,C11H20O2,Methyl 4Z-decenoate
 LMFA07010478,182.130680,C11H18O2,"Methyl 2E,4E-decadienoate"
 LMFA07010479,182.130680,C11H18O2,"Methyl 2E,4Z-decadienoate"
@@ -7111,8 +7111,8 @@ LMFA07010499,268.240230,C17H32O2,Methyl 8Z-hexadecenoate
 LMFA07010500,282.255880,C18H34O2,Methyl 14-methyl-8Z-hexadecenoate
 LMFA07010501,268.240230,C17H32O2,Methyl 9Z-hexadecenoate
 LMFA07010502,282.255880,C18H34O2,ethyl 9Z-hexadecenoate
-LMFA07010503,116.083730,C6H12O2,ethyl 2-methyl-propionyl
-LMFA07010504,200.177630,C12H24O2,octyl 2-methyl-propionyl
+LMFA07010503,116.083730,C6H12O2,ethyl 2-methyl-propionate
+LMFA07010504,200.177630,C12H24O2,octyl 2-methyl-propionate
 LMFA07010505,100.052430,C5H8O2,ethyl 2E-propenoate
 LMFA07010506,130.099380,C7H14O2,ethyl 2-methyl-butanoate
 LMFA07010507,158.130680,C9H18O2,butyl 2-methyl-butanoate
@@ -7135,9 +7135,9 @@ LMFA07010523,170.130680,C10H18O2,ethyl 4Z-octenoate
 LMFA07010524,184.146330,C11H20O2,"Methyl 3,7-dimethyl-6E-octenoate"
 LMFA07010525,170.130680,C10H18O2,Methyl 6E-nonenoate
 LMFA07010526,238.193280,C15H26O2,"Methyl (E)-2,6,10-trimethyl-5,9-undecadienoate"
-LMFA07010527,284.271530,C18H36O2,Methyl 14-methyl-8-hexadecenoate
+LMFA07010527,284.271530,C18H36O2,Methyl 14-methyl-hexadecanoate
 LMFA07010528,102.068080,C5H10O2,Methyl butyrate
-LMFA07010529,186.161980,C11H22O2,"Methyl 3,7-dimethyl-6-octenoate"
+LMFA07010529,186.161980,C11H22O2,"Methyl 3,7-dimethyl-octanoate"
 LMFA07010530,252.208930,C16H28O2,(Z)-3-Decenyl (E)-2-hexenoate
 LMFA07010531,252.208930,C16H28O2,(Z)-3-Decenyl (E)-3-hexenoate
 LMFA07010532,240.208930,C15H28O2,(Z)-5-Decenyl 3-methylbutanoate
@@ -7166,8 +7166,8 @@ LMFA07010554,238.193280,C15H26O2,"(E,E)-8,10-Tetradecadienyl formate"
 LMFA07010555,266.224580,C17H30O2,"(Z,E)-9,12-Tetradecadienyl propionate"
 LMFA07010556,326.318480,C21H42O2,"10,14-Dimethylpentadecyl butyrate"
 LMFA07010557,268.240230,C17H32O2,(Z)-11-Hexadecenyl formate
-LMFA07010558,354.349780,C23H46O2,6-Octadecenyl 3-methylbutanoate
-LMFA07010559,354.349780,C23H46O2,6-Octadecenyl valerate
+LMFA07010558,354.349780,C23H46O2,Octadecanyl 3-methylbutanoate
+LMFA07010559,354.349780,C23H46O2,Octadacenyl valerate
 LMFA07010560,352.334130,C23H44O2,(Z)-7-Octadecenyl 3-methylbutanoate
 LMFA07010561,338.318480,C22H42O2,(Z)-7-Octadecenyl butyrate
 LMFA07010562,352.334130,C23H44O2,(Z)-9-Octadecenyl 3-methylbutanoate
@@ -7183,14 +7183,14 @@ LMFA07010571,186.161980,C11H22O2,2-Methylbutyl hexanoate
 LMFA07010572,158.130680,C9H18O2,3-Methylbutyl 2-methylpropionate
 LMFA07010573,144.115030,C8H16O2,3-Methylbutyl propionate
 LMFA07010574,158.130680,C9H18O2,3-Methylbutyl butyrate
-LMFA07010575,116.083730,C6H12O2,3-Methyl-2-butenyl formate
-LMFA07010576,326.318480,C21H42O2,3-Methyl-2-butenyl hexadecanoate
-LMFA07010577,354.349780,C23H46O2,3-Methyl-2-butenyl octadecanoate
-LMFA07010578,382.381080,C25H50O2,3-Methyl-2-butenyl eicosanoate
-LMFA07010579,410.412380,C27H54O2,3-Methyl-2-butenyl docosanoate
+LMFA07010575,116.083730,C6H12O2,3-Methyl-butanyl formate
+LMFA07010576,326.318480,C21H42O2,3-Methyl-butanyl hexadecanoate
+LMFA07010577,354.349780,C23H46O2,3-Methyl-butanyl octadecanoate
+LMFA07010578,382.381080,C25H50O2,3-Methyl-butanyl eicosanoate
+LMFA07010579,410.412380,C27H54O2,3-Methyl-butanyl docosanoate
 LMFA07010580,156.115030,C9H16O2,(E)-2-Methyl-2-butenyl butyrate
 LMFA07010581,142.099380,C8H14O2,(E)-2-Butenyl butyrate
-LMFA07010582,298.287180,C19H38O2,3-Methyl-3-butenyl tetradecanoate
+LMFA07010582,298.287180,C19H38O2,3-Methyl-butanyl tetradecanoate
 LMFA07010583,188.141245,C10H20O3,Hexyl (R)-3-hydroxybutyrate
 LMFA07010584,250.193280,C16H26O2,"(E)-2-Hexenyl (E)-7,9-decadienoate"
 LMFA07010585,170.130680,C10H18O2,(E)-2-Hexenyl butyrate
@@ -7204,8 +7204,8 @@ LMFA07010592,184.146330,C11H20O2,(Z)-3-Hexenyl 3-methylbutanoate
 LMFA07010593,170.130680,C10H18O2,3Z-Hexenyl butanoate
 LMFA07010594,198.161980,C12H22O2,(Z)-3-Hexenyl hexanoate
 LMFA07010595,186.161980,C11H22O2,Heptyl butyrate
-LMFA07010596,270.255880,C17H34O2,"2,6-Dimethyl-5-heptenyl octanoate"
-LMFA07010597,284.271530,C18H36O2,"2,6-Dimethyl-5-heptenyl nonanoate"
+LMFA07010596,270.255880,C17H34O2,"2,6-Dimethyl-heptanyl octanoate"
+LMFA07010597,284.271530,C18H36O2,"2,6-Dimethyl-heptanyl nonanoate"
 LMFA07010598,312.302830,C20H40O2,7-Methyloctyl 9-methyldecanoate
 LMFA07010599,296.271530,C19H36O2,7-Methyloctyl (Z)-4-decenoate
 LMFA07010600,256.240230,C16H32O2,7-Methyloctyl 5-methylhexanoate
@@ -7214,11 +7214,11 @@ LMFA07010602,270.255880,C17H34O2,7-Methyloctyl octanoate
 LMFA07010603,198.161980,C12H22O2,(E)-2-Octenyl butyrate
 LMFA07010604,210.161980,C13H22O2,(E)-2-Octenyl 2-methyl-(E)-2-butenoate
 LMFA07010605,226.193280,C14H26O2,(E)-2-Octenyl hexanoate
-LMFA07010606,186.161980,C11H22O2,"3,7-Dimethyl-6-octenyl formate"
-LMFA07010607,312.302830,C20H40O2,"3,7-Dimethyl-6-octenyl decanoate"
-LMFA07010608,312.302830,C20H40O2,"3,7-Dimethyl-6-octenyl 3,7-dimethyl-6-octenoate"
+LMFA07010606,186.161980,C11H22O2,"3,7-Dimethyl-octanyl formate"
+LMFA07010607,312.302830,C20H40O2,"3,7-Dimethyl-octanyl decanoate"
+LMFA07010608,312.302830,C20H40O2,"3,7-Dimethyl-octanyl 3,7-dimethyl-octanoate"
 LMFA07010609,310.287180,C20H38O2,"(E)-3,7-Dimethyl-6-octenyl 3,7-dimethyl-2,6-octadienoate"
-LMFA07010610,212.177630,C13H24O2,3-Methylene-7-methyl-7-octenyl propionate
+LMFA07010610,212.177630,C13H24O2,3-Methylene-7-methyl-octanyl propionate
 LMFA07010611,182.130680,C11H18O2,"(E)-3,7-Dimethyl-2,6-octadienyl formate"
 LMFA07010612,308.271530,C20H36O2,"(E)-3,7-Dimethyl-2,6-octadienyl decanoate"
 LMFA07010613,336.302830,C22H40O2,"(E)-3,7-Dimethyl-2,6-octadienyl dodecanoate"
@@ -7253,14 +7253,14 @@ LMFA07010641,200.141245,C11H20O3,3Z-Hexenyl 2R-hydroxy-3-methylbutyrate
 LMFA07010642,186.125595,C10H18O3,3Z-Hexenyl 3R-hydroxybutanoate
 LMFA07010643,170.130680,C10H18O2,3Z-Hexenyl isobutyrate
 LMFA07010644,338.318480,C22H42O2,7Z-Octadecenyl isobutyrate 
-LMFA07010645,352.334130,C23H44O2,9Z-Octadecenyl isobutyrate 
+LMFA07010645,352.334130,C23H44O2,9Z-Octadecenyl 2-methylbutanoate
 LMFA07010646,362.318480,C24H42O2,"11Z,14Z,17Z-Eicosatrienyl isobutyrate "
 LMFA07010647,388.334130,C26H44O2,"7Z,13Z,16Z,19Z-Docosatetraenyl isobutyrate "
 LMFA07010648,242.224580,C15H30O2,"1,3,5,7-Tetramethyldecyl formate"
 LMFA07010649,326.318480,C21H42O2,"10,14-Dimethylpentadecyl isobutyrate"
 LMFA07010650,312.302830,C20H40O2,14-Methylpentadecyl isobutyrate
 LMFA07010651,340.334130,C22H44O2,16-Methylheptadecyl isobutyrate
-LMFA07010652,158.130680,C9H18O2,1-Methylbutyl 3-methylbutanoate
+LMFA07010652,158.130680,C9H18O2,Butyl 3-methylbutanoate
 LMFA07010653,186.161980,C11H22O2,Isopropyl octanoate 
 LMFA07010654,172.146330,C10H20O2,2-Pentyl 3-methylbutanoate
 LMFA07010655,382.381080,C25H50O2,4-Methyl-3-heptyl heptadecanoate 
@@ -7293,8 +7293,8 @@ LMFA07010681,214.193280,C13H26O2,2-methylbutyl octanoate
 LMFA07010682,214.193280,C13H26O2,3-Methylbutyl octanoate
 LMFA07010683,312.302830,C20H40O2,3-Methylbutyl pentadecanoate
 LMFA07010684,558.537580,C38H70O2,"eicosanyl 9Z,12Z,15Z-octadecatrienoate"
-LMFA07010685,586.568880,C40H74O2,"11Z-eicosenyl 9Z,12Z-octadecadienoate"
-LMFA07010686,584.553230,C40H72O2,"11Z-eicosenyl 9Z,12Z,15Z-octadecatrienoate"
+LMFA07010685,586.568880,C40H74O2,"11Z-docosenyl 9Z,12Z-octadecadienoate"
+LMFA07010686,584.553230,C40H72O2,"11Z-docosenyl 9Z,12Z,15Z-octadecatrienoate"
 LMFA07010692,314.209325,C17H30O5,2S-hydroxy-3-(10Z-tetradecenoyloxy)-propanoic acid
 LMFA07010693,146.094295,C7H14O3,ethyl 2-hydroxy-2-methylbutanoate
 LMFA07010694,160.109945,C8H16O3,ethyl 2-hydroxy-3-methylpentanoate

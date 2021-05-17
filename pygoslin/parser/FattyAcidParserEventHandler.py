@@ -151,7 +151,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.current_fa = [FattyAcid("FA")]
         self.db_numbers = -1
         self.tmp = {"fa1": {}}
-        self.debug = "full"
+        #self.debug = "full"
         
         
     def set_car(self, node):
@@ -209,7 +209,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         curr_fa = self.current_fa[-1]
         curr_fa.num_carbon -= 1
         fg = get_functional_group("Me")
-        fg.position = 1
+        fg.position = 2
         if "Me" not in curr_fa.functional_groups: curr_fa.functional_groups["Me"] = []
         curr_fa.functional_groups["Me"].append(fg)
         
@@ -389,6 +389,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         elif "cyclo" in self.tmp:
             self.tmp["fg_pos"] = [1, curr_fa.num_carbon]
             self.add_cyclo(node)
+            del self.tmp["cyclo"]
             
             
             
