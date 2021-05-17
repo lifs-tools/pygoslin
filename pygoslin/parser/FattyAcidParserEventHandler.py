@@ -145,7 +145,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.current_fa = [FattyAcid("FA")]
         self.db_numbers = -1
         self.tmp = {"fa1": {}}
-        self.debug = "full"
+        #self.debug = "full"
         
         
     def set_car(self, node):
@@ -280,48 +280,83 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         curr_fa = self.current_fa[-1]
         if "noyloxy" in curr_fa.functional_groups and self.headgroup == "FA":
             self.headgroup = "FAHFA"
-            fa = curr_fa.functional_groups["noyloxy"][0]
             
-            acyl = AcylAlkylGroup(curr_fa.functional_groups["noyloxy"][0])
-            acyl.position = fa.position
-            del curr_fa.functional_groups["noyloxy"]
-            
-            if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
-            curr_fa.functional_groups["acyl"].append(acyl)
+            while len(curr_fa.functional_groups["noyloxy"]) > 0:
+                fa = curr_fa.functional_groups["noyloxy"].pop()
+                
+                acyl = AcylAlkylGroup(fa)
+                acyl.position = fa.position
+                
+                if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
+                curr_fa.functional_groups["acyl"].append(acyl)
+            del curr_fa.func_groups["noyloxy"]
                 
         elif "-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups or "nyl" in curr_fa.functional_groups or "methyl" in curr_fa.functional_groups:
-            if "-1-yl" in curr_fa.functional_groups: yl = "-1-yl"
-            elif "yl" in curr_fa.functional_groups: yl = "yl"
-            elif "nyl" in curr_fa.functional_groups: yl = "nyl"
-            elif "methyl" in curr_fa.functional_groups: yl = "methyl"
-            fa = curr_fa.functional_groups[yl][0]
-            del curr_fa.functional_groups[yl]
+            while True:
+                if "-1-yl" in curr_fa.functional_groups: yl = "-1-yl"
+                elif "yl" in curr_fa.functional_groups: yl = "yl"
+                elif "nyl" in curr_fa.functional_groups: yl = "nyl"
+                elif "methyl" in curr_fa.functional_groups: yl = "methyl"
+                else: break
             
-            if self.headgroup == "cyclo":
-                cyclo_len = curr_fa.num_carbon
-                self.tmp['cyclo_len'] = cyclo_len
-                switch_position(curr_fa, 2 + cyclo_len)
-                shift_position(fa, cyclo_len)
-                
-                for fg, fg_list in fa.functional_groups.items():
-                    if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
-                    else: curr_fa.functional_groups[fg] += fg_list
-                curr_fa.num_carbon = cyclo_len + fa.num_carbon
-                
-                if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = {}
-                if type(fa.double_bonds) == dict:
-                    for pos, ez in fa.double_bonds.items():
-                        curr_fa.double_bonds[pos + cyclo_len] = ez
+                while len(curr_fa.functional_groups[yl]) > 0:
+                    fa = curr_fa.functional_groups[yl].pop()
+                    
+                    if self.headgroup == "cyclo":
+                        cyclo_len = curr_fa.num_carbon
+                        self.tmp['cyclo_len'] = cyclo_len
+                        switch_position(curr_fa, 2 + cyclo_len)
+                        shift_position(fa, cyclo_len)
                         
-            else:
-                ## add alkyls here
-                alkyl = AcylAlkylGroup(fa, alkyl = True)
-                alkyl.position = fa.position
-                if "alkyl" not in curr_fa.functional_groups: curr_fa.functional_groups["alkyl"] = []
-                curr_fa.functional_groups["alkyl"].append(alkyl)
+                        for fg, fg_list in fa.functional_groups.items():
+                            if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
+                            else: curr_fa.functional_groups[fg] += fg_list
+                        curr_fa.num_carbon = cyclo_len + fa.num_carbon
                         
-            
-        elif "cyclo" in curr_fa.functional_groups and self.headgroup == "FA":
+                        if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = {}
+                        if type(fa.double_bonds) == dict:
+                            for pos, ez in fa.double_bonds.items():
+                                curr_fa.double_bonds[pos + cyclo_len] = ez
+                                
+                    else:
+                        ## add alkyls here
+                        
+                        # special alkyls: i.e. ethyl, methyl
+                        fg_name = ""
+                        if (fa.double_bonds if type(fa.double_bonds) == int else len(fa.double_bonds)) == 0 and len(fa.functional_groups) == 0:
+                            if fa.num_carbon == 1:
+                                fg_name = "Me"
+                                fg = get_functional_group(fg_name)
+                            
+                            elif fa.num_carbon == 2:
+                                fg_name = "Et"
+                                fg = get_functional_group(fg_name)
+                                
+                            if len(fg_name) > 0:
+                                fg.position = fa.position
+                                if fg_name not in curr_fa.functional_groups: curr_fa.functional_groups[fg_name] = []
+                                curr_fa.functional_groups[fg_name].append(fg)
+                            
+                        if len(fg_name) == 0:
+                            alkyl = AcylAlkylGroup(fa, alkyl = True)
+                            alkyl.position = fa.position
+                            if "alkyl" not in curr_fa.functional_groups: curr_fa.functional_groups["alkyl"] = []
+                            curr_fa.functional_groups["alkyl"].append(alkyl)
+                            
+                del curr_fa.functional_groups[yl]
+                
+        elif "WE" in curr_fa.functional_groups and self.headgroup == "WE":
+            while len(curr_fa.functional_groups["WE"]) > 0:
+                fa = curr_fa.functional_groups["WE"].pop()
+                fa.name += "1"
+                curr_fa.name += "2"
+                self.current_fa.insert(0, fa)
+                
+            del curr_fa.functional_groups["WE"]
+                
+                            
+                
+        if "cyclo" in curr_fa.functional_groups and self.headgroup == "FA":
             fa = curr_fa.functional_groups["cyclo"][0]
             del curr_fa.functional_groups["cyclo"]
             start_pos, end_pos = curr_fa.num_carbon + 1, curr_fa.num_carbon + (self.tmp["cyclo_len"] if 'cyclo_len' in self.tmp else 5)
@@ -339,17 +374,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             self.tmp["fg_pos"] = [start_pos, end_pos]
             self.add_cyclo(node)
             
-            
-        elif "WE" in curr_fa.functional_groups and self.headgroup == "WE":
-            fa = curr_fa.functional_groups["WE"][0]
-            fa.name += "1"
-            curr_fa.name += "2"
-            del curr_fa.functional_groups["WE"]
-            self.current_fa.insert(0, fa)
-        
-        #else: 
-        #    raise LipidException("Unknown nested lipid name structure")
-        
         
     def set_double_bond_information(self, node):
         fa_i = "fa%i" % len(self.current_fa)
