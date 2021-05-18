@@ -84,6 +84,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["functional_group_pre_event"] = self.set_functional_group
         self.registered_events["functional_group_post_event"] = self.add_functional_group
         self.registered_events["functional_pos_pre_event"] = self.set_functional_pos
+        self.registered_events["functional_position_pre_event"] = self.set_functional_position
         self.registered_events["functional_group_type_pre_event"] = self.set_functional_type
         
         ## cyclo / epoxy
@@ -157,28 +158,30 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def set_car(self, node):
         self.tmp["fg_pos"] = []
-        self.tmp["fg_pos_ext"] = {}
         self.tmp["fg_type"] = ""
         
         
         
     def homo(self, node):
-        self.tmp["post_adding"] = list(self.tmp["fg_pos"])
+        self.tmp["post_adding"] = list(p[0] for p in self.tmp["fg_pos"])
+        
         
         
     def add_summary(self, node):
         fa_i = "fa%i" % len(self.current_fa)
-        self.tmp[fa_i]["fg_pos_summary"] = {k: v.upper() for k, v in self.tmp["fg_pos_ext"].items()}
+        self.tmp[fa_i]["fg_pos_summary"] = {k: v.upper() for k, v in self.tmp["fg_pos"]}
+        
         
         
     def add_func_stereo(self, node):
-        self.tmp["fg_pos_ext"][self.tmp["fg_pos"][-1]] = node.get_text()
+        self.tmp["fg_pos"][-1][1] = node.get_text()
+        
         
         
     def set_methylene(self, node):
         if len(self.tmp["fg_pos"]) > 1:
-            if self.tmp["fg_pos"][0] < self.tmp["fg_pos"][1]: self.tmp["fg_pos"][1] += 1
-            elif self.tmp["fg_pos"][0] > self.tmp["fg_pos"][1]: self.tmp["fg_pos"][0] += 1
+            if self.tmp["fg_pos"][0][0] < self.tmp["fg_pos"][1]: self.tmp["fg_pos"][1][0] += 1
+            elif self.tmp["fg_pos"][0][0] > self.tmp["fg_pos"][1]: self.tmp["fg_pos"][0][0] += 1
             self.current_fa[-1].num_carbon += 1
             self.tmp["add_methylene"] = True
      
@@ -259,24 +262,28 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp[fa_i]["recursion_pos"] = int(node.get_text())
         
         
+        
     def set_recursion(self, node):
         self.tmp["fg_pos"] = []
-        self.tmp["fg_pos_ext"] = {}
         self.tmp["fg_type"] = ""
         self.current_fa.append(FattyAcid("FA"))
         fa_i = "fa%i" % len(self.current_fa)
         self.tmp[fa_i] = {"recursion_pos": 0}
         
         
+        
     def add_recursion(self, node):
         fa_i = "fa%i" % len(self.current_fa)
         pos = self.tmp[fa_i]["recursion_pos"]
         
+        
         fa = self.current_fa.pop()
         fa.position = pos
         
-        if self.headgroup not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[self.headgroup] = []
-        self.current_fa[-1].functional_groups[self.headgroup].append(fa)
+        fname = self.headgroup if "cyclo_yl" not in self.tmp else "cyclo"
+        
+        if fname not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[fname] = []
+        self.current_fa[-1].functional_groups[fname].append(fa)
         
         self.tmp["added_func_group"] = True
         
@@ -350,7 +357,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         if type(fa.double_bonds) == dict:
                             for pos, ez in fa.double_bonds.items():
                                 curr_fa.double_bonds[pos + cyclo_len] = ez
-                                
+                        self.tmp["cyclo_yl"] = True
+                        
                     else:
                         ## add alkyls here
                         
@@ -376,9 +384,10 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                             if "alkyl" not in curr_fa.functional_groups: curr_fa.functional_groups["alkyl"] = []
                             curr_fa.functional_groups["alkyl"].append(alkyl)
                             
+                if "cyclo" in self.tmp: del self.tmp["cyclo"]
                 del curr_fa.functional_groups[yl]
            
-                            
+           
         if "cyclo" in curr_fa.functional_groups and self.headgroup == "FA":
             fa = curr_fa.functional_groups["cyclo"][0]
             del curr_fa.functional_groups["cyclo"]
@@ -394,15 +403,15 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 for pos, ez in fa.double_bonds.items():
                     curr_fa.double_bonds[pos + start_pos - 1] = ez
                     
-            self.tmp["fg_pos"] = [start_pos, end_pos]
+            self.tmp["fg_pos"] = [[start_pos, ""], [end_pos, ""]]
             self.add_cyclo(node)
+            del self.tmp["cyclo_len"]
             
             
         elif "cyclo" in self.tmp:
-            self.tmp["fg_pos"] = [1, curr_fa.num_carbon]
+            self.tmp["fg_pos"] = [[1, ""], [curr_fa.num_carbon, ""]]
             self.add_cyclo(node)
             del self.tmp["cyclo"]
-            
             
             
         
@@ -412,9 +421,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp[fa_i]["db_cistrans"] = ""
         
         
+        
     def reduction(self, node):
         self.current_fa[-1].num_carbon -= len(self.tmp["fg_pos"])
-        self.tmp["reduction"] = [p for p in self.tmp["fg_pos"]]
+        self.tmp["reduction"] = [p[0] for p in self.tmp["fg_pos"]]
+        
         
         
     def add_double_bond_information(self, node):
@@ -436,7 +447,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def set_dioic(self, node):
         self.headgroup = "FA"
         
-        pos = self.tmp["fg_pos"][1] if len(self.tmp["fg_pos"]) == 2 else self.current_fa[-1].num_carbon
+        pos = self.tmp["fg_pos"][1][0] if len(self.tmp["fg_pos"]) == 2 else self.current_fa[-1].num_carbon
         self.current_fa[-1].num_carbon -= 1
         func_group = get_functional_group("COOH")
         func_group.position = pos - 1
@@ -492,8 +503,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def add_cyclo(self, node):
-        start = self.tmp["fg_pos"][0]
-        end = self.tmp["fg_pos"][1]
+        start = self.tmp["fg_pos"][0][0]
+        end = self.tmp["fg_pos"][1][0]
         
         fgroup = self.current_fa[-1].functional_groups
         if "cy" in fgroup:
@@ -568,14 +579,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def set_functional_group(self, node):
         self.tmp["fg_pos"] = []
-        self.tmp["fg_pos_ext"] = {}
         self.tmp["fg_type"] = ""
         
         
         
     def set_prosta(self, node):
         minus_pos = (sum([1 for p in self.tmp["reduction"] if p < 8]) if "reduction" in self.tmp else 0)
-        self.tmp["fg_pos"] = [8 - minus_pos, 12 - minus_pos]
+        self.tmp["fg_pos"] = [[8 - minus_pos, ""], [12 - minus_pos, ""]]
         self.tmp["fg_type"] = "cy"
         
         
@@ -600,12 +610,18 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         if t not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[t] = []
         for pos in self.tmp["fg_pos"]:
             fg_insert = fg.copy()
-            fg_insert.position = pos - (sum([1 for p in self.tmp["reduction"] if p < pos]) if "reduction" in self.tmp else 0)
+            fg_insert.position = pos[0] - (sum([1 for p in self.tmp["reduction"] if p < pos[0]]) if "reduction" in self.tmp else 0)
             self.current_fa[-1].functional_groups[t].append(fg_insert)
         
         
+        
+    def set_functional_position(self, node):
+        self.tmp["fg_pos"].append([0, ""])
+        
+        
+        
     def set_functional_pos(self, node):
-        self.tmp["fg_pos"].append(int(node.get_text()))
+        self.tmp["fg_pos"][-1][0] = int(node.get_text())
         
         
         

@@ -57,25 +57,26 @@ class LipidMapsTest(unittest.TestCase):
         formula_parser = SumFormulaParser()
     
         failed, failed_sum = 0, 0
-        for i, lipid_name in enumerate(lipidnames):
-            #if i and i % 100 == 0: print(i)
-            try:
-                lipid = lipid_parser.parse(lipid_name[3])
-                lipid_formula = lipid.get_sum_formula()
-                
-                formula = compute_sum_formula(formula_parser.parse(lipid_name[2]))
-                
-                if formula != lipid_formula:
-                    print("%i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
-                    failed_sum += 1
-                    exit()
-                
-                
-                
-            except Exception as e:
-                failed += 1
-                #if lipid_name[3].find("yn") < 0 and lipid_name[3].find("furan") < 0: 
-                #print("'%s','%s',''" % (lipid_name[0], lipid_name[3].replace("'", "\\'")))
+        with open("failed.txt", "wt") as output:
+            for i, lipid_name in enumerate(lipidnames):
+                if i and i % 100 == 0: print(i)
+                try:
+                    lipid = lipid_parser.parse(lipid_name[3])
+                    lipid_formula = lipid.get_sum_formula()
+                    
+                    formula = compute_sum_formula(formula_parser.parse(lipid_name[2]))
+                    
+                    if formula != lipid_formula:
+                        print("%i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
+                        failed_sum += 1
+                        exit()
+                    
+                    
+                    
+                except Exception as e:
+                    failed += 1
+                    if lipid_name[3].find("yn") < 0 and lipid_name[3].find("furan") < 0: 
+                        output.write("'%s','%s',''\n" % (lipid_name[0], lipid_name[3].replace("'", "\\'")))
                 
                 
         print("In the test, %i of %i lipids failed" % (failed, len(lipidnames)))

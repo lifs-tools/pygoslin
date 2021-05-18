@@ -35,7 +35,7 @@ fatty_acid: regular_fatty_acid_types | wax | CAR | ethanolamine;
 wax : wax_ester SPACE fatty_acid_type | wax_ester SPACE additional_descriptions fatty_acid_type;
 regular_fatty_acid_types : regular_fatty_acid | regular_fatty_acid cyclo | regular_fatty_acid CoA;
 
-regular_fatty_acid : fatty_acid_type | additional_descriptions fatty_acid_type | additional_descriptions DASH ROB double_bond_positions RCB DASH fatty_length acid_type_double;
+regular_fatty_acid : fatty_acid_type | additional_descriptions fatty_acid_type | additional_descriptions DASH ROB double_bond_positions RCB DASH fatty_length acid_type_double | ROB double_bond_positions RCB DASH fatty_length acid_type_double;
 
 
 
@@ -96,7 +96,7 @@ epoxy : functional_position pos_separator functional_position DASH 'epoxy' | fun
 methylene : 'methylene';
 
 functional_position : functional_position_pure | ROB functional_position_pure RCB;
-functional_position_pure : functional_pos_pr | functional_pos func_stereo;
+functional_position_pure : functional_pos_pr | functional_pos func_stereo | func_stereo;
 functional_pos_pr : functional_pos | functional_pos '\'';
 functional_pos : number;
 func_stereo : stereo;
