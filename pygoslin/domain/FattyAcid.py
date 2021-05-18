@@ -50,7 +50,21 @@ class FattyAcid(FunctionalGroup):
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
         
         
-        
+    def copy(self):
+        fa = FattyAcid(self.name)
+        fa.position = self.position
+        fa.num_carbon = self.num_carbon
+        fa.lipid_FA_bond_type = self.lipid_FA_bond_type
+        fa.lcb = self.lcb
+        fa.double_bonds = {key: value for key, value in self.double_bonds.items()} if type(self.double_bonds) != int else self.double_bonds
+        fa.functional_groups = {}
+        for fg, fg_list in self.functional_groups.items():
+            fa.functional_groups[fg] = []
+            for fg_item in fg_list:
+                func_group = FunctionalGroup("")
+                func_group.clone(fg_item)
+                fa.function_groups[fg].append(func_group.copy())
+        return fa
 
         
     def clone(self, fa):
@@ -66,7 +80,7 @@ class FattyAcid(FunctionalGroup):
             for fg_item in fg_list:
                 func_group = FunctionalGroup("")
                 func_group.clone(fg_item)
-                self.function_groups[fg].append(func_group)
+                self.function_groups[fg].append(func_group.copy())
                 
                 
                 

@@ -44,7 +44,7 @@ class FunctionalGroup:
         for fg, fg_list in self.functional_groups.items():
             if fg not in functional_group.functional_groups: functional_group.functional_groups[fg] = []
             for func_group in fg_list:
-                functional_group.functional_groups[fg].append(func_group)
+                functional_group.functional_groups[fg].append(func_group.copy())
         functional_group.ring_stereo = self.ring_stereo
         return functional_group
         
@@ -157,9 +157,14 @@ class AcylAlkylGroup(FunctionalGroup):
         super().__init__("O", position = position, count = count)
         self.alkyl = alkyl
         if fa != None: self.functional_groups["alkyl" if self.alkyl else "acyl"] = [fa]
-        self.double_bonds = 1
+        self.double_bonds = int(not self.alkyl)
         self.elements[Element.O] = -1 if self.alkyl else 1
         self.elements[Element.H] = 1 if self.alkyl else -1
+        
+        
+        
+    def copy(self):
+        return AcylAlkylGroup(self.functional_groups["alkyl" if self.alkyl else "acyl"][0].copy(), alkyl = self.alkyl, position = self.position, count = self.count)
         
         
 
