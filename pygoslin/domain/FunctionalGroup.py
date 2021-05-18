@@ -152,32 +152,63 @@ class HeadgroupDecorator(FunctionalGroup):
 
     
 class AcylAlkylGroup(FunctionalGroup):
-    def __init__(self, fa, position = -1, count = 1, alkyl = False):
+    def __init__(self, fa, position = -1, count = 1, alkyl = False, N_bond = False):
         
         super().__init__("O", position = position, count = count)
         self.alkyl = alkyl
         if fa != None: self.functional_groups["alkyl" if self.alkyl else "acyl"] = [fa]
         self.double_bonds = int(not self.alkyl)
-        self.elements[Element.O] = -1 if self.alkyl else 1
-        self.elements[Element.H] = 1 if self.alkyl else -1
+        self.N_bond = N_bond
         
+        if self.N_bond:
+            self.elements[Element.H] = 2 if self.alkyl else 0
+            self.elements[Element.O] = -1 if self.alkyl else 0
+            self.elements[Element.N] = 1
+            
+        else:
+            self.elements[Element.H] = 1 if self.alkyl else -1
+            self.elements[Element.O] = 0 if self.alkyl else 1
         
         
     def copy(self):
-        return AcylAlkylGroup(self.functional_groups["alkyl" if self.alkyl else "acyl"][0].copy(), alkyl = self.alkyl, position = self.position, count = self.count)
+        return AcylAlkylGroup(self.functional_groups["alkyl" if self.alkyl else "acyl"][0].copy(), alkyl = self.alkyl, position = self.position, count = self.count, N_bond = self.N_bond)
         
         
 
     def to_string(self, level):
         acyl_alkyl_string = []
         if level == LipidLevel.ISOMERIC_SUBSPECIES: acyl_alkyl_string.append("%i" % self.position)
-        acyl_alkyl_string.append("O(")
+        acyl_alkyl_string.append("%s(" % ("N" if self.N_bond else "O"))
         if not self.alkyl: acyl_alkyl_string.append("FA ")
         fa = self.functional_groups["alkyl" if self.alkyl else "acyl"][0]
         acyl_alkyl_string.append(fa.to_string(level))
         acyl_alkyl_string.append(")")
         
         return "".join(acyl_alkyl_string)
+    
+    
+
+
+
+    
+class CarbonChain(FunctionalGroup):
+    def __init__(self, fa, position = -1, count = 1):
+        super().__init__("cc", position = position, count = count)
+        if fa != None: self.functional_groups["cc"] = [fa]
+        
+        self.elements[Element.H] = 1
+        self.elements[Element.O] = -1
+        
+        
+    def copy(self):
+        return CarbonChain(self.functional_groups["cc"][0].copy(), position = self.position, count = self.count)
+        
+        
+
+    def to_string(self, level):
+        return "%s(%s)" % ((str(self.position) if level == LipidLevel.ISOMERIC_SUBSPECIES else ""), self.functional_groups["cc"][0].to_string(level))
+    
+    
     
     
     

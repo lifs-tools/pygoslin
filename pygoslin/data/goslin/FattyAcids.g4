@@ -72,7 +72,7 @@ db_num: DASH double_bond_positions DASH db_length db_suffix | DASH double_bond_p
 db_suffix : 'e' | 'ne' | 'ene' | 'en' | 'n';
 dial : 'dial';
 db_length: notation_regular;
-dioic : 'n' DASH functional_pos pos_separator functional_pos DASH dioic_acid | 'ne' dioic_acid;
+dioic : 'n' DASH functional_positions DASH dioic_acid | 'ne' dioic_acid;
 dioic_acid : 'dioic acid';
 ol : 'nol' | db_suffix DASH hydroxyl_positions DASH notation_regular 'ol' | db_suffix DASH hydroxyl_position DASH 'ol' | DASH hydroxyl_positions DASH notation_regular 'ol' | DASH hydroxyl_position DASH 'ol';
 ate_type : ate | additional_descriptions ate;
@@ -121,8 +121,8 @@ homo : 'homo';
 cycle : 'cyclo';
 cyclo : '-cyclo' SOB functional_position pos_separator functional_position SCB;
 
-recursion_description : recursion_position DASH recursion | recursion_position DASH ROB recursion RCB;
-recursion : fatty_acid;
+recursion_description : recursion_position DASH recursion;
+recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fatty_acid CCB;
 recursion_position : ROB functional_positions RCB | recursion_pos | recursion_pos stereo;
 recursion_pos : number;
 
@@ -142,6 +142,8 @@ ROB: '(';
 RCB: ')';
 SOB: '[';
 SCB: ']';
+COB: '{';
+CCB: '}';
 pos_separator : COMMA;
 
 

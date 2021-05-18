@@ -285,7 +285,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         fa = self.current_fa.pop()
         fa.position = pos
         
-        fname = self.headgroup if "cyclo_yl" not in self.tmp else "cyclo"
+        if "cyclo_yl" in self.tmp:
+            fname = "cyclo"
+            del self.tmp["cyclo_yl"]
+        else:
+            fname = self.headgroup
         
         if fname not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups[fname] = []
         self.current_fa[-1].functional_groups[fname].append(fa)
@@ -325,6 +329,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             
         curr_fa = self.current_fa[-1]
         
+        print(curr_fa.functional_groups, curr_fa.num_carbon)
         if "noyloxy" in curr_fa.functional_groups:
             if self.headgroup == "FA": self.headgroup = "FAHFA"
             
@@ -369,9 +374,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         self.tmp["cyclo_yl"] = True
                         
                     else:
-                        ## add alkyls here
-                        
-                        # special alkyls: i.e. ethyl, methyl
+                        ## add carbon chains here here
+                        ## special chains: i.e. ethyl, methyl
                         fg_name = ""
                         if (fa.double_bonds if type(fa.double_bonds) == int else len(fa.double_bonds)) == 0 and len(fa.functional_groups) == 0:
                             if fa.num_carbon == 1:
@@ -388,16 +392,15 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                                 curr_fa.functional_groups[fg_name].append(fg)
                             
                         if len(fg_name) == 0:
-                            alkyl = AcylAlkylGroup(fa, alkyl = True)
-                            alkyl.position = fa.position
-                            if "alkyl" not in curr_fa.functional_groups: curr_fa.functional_groups["alkyl"] = []
-                            curr_fa.functional_groups["alkyl"].append(alkyl)
+                            cc = CarbonChain(fa, position = fa.position)
+                            if "cc" not in curr_fa.functional_groups: curr_fa.functional_groups["cc"] = []
+                            curr_fa.functional_groups["cc"].append(cc)
                             
                 if "cyclo" in self.tmp: del self.tmp["cyclo"]
                 del curr_fa.functional_groups[yl]
            
            
-        if "cyclo" in curr_fa.functional_groups and self.headgroup == "FA":
+        if "cyclo" in curr_fa.functional_groups:
             fa = curr_fa.functional_groups["cyclo"][0]
             del curr_fa.functional_groups["cyclo"]
             start_pos, end_pos = curr_fa.num_carbon + 1, curr_fa.num_carbon + (self.tmp["cyclo_len"] if 'cyclo_len' in self.tmp else 5)
@@ -414,7 +417,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                     
             self.tmp["fg_pos"] = [[start_pos, ""], [end_pos, ""]]
             self.add_cyclo(node)
-            del self.tmp["cyclo_len"]
+            if "cyclo_len" in self.tmp: del self.tmp["cyclo_len"]
+            if "cyclo" in self.tmp: del self.tmp["cyclo"]
             
             
         elif "cyclo" in self.tmp:
@@ -544,11 +548,10 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             remove_item = []
             for i, func_group in enumerate(curr_fa.functional_groups["noyloxy"]):
                 if start <= func_group.position <= end:
-                    acyl = AcylAlkylGroup(func_group)
-                    acyl.position = func_group.position
+                    cc = CarbonChain(func_group, position = func_group.position)
                     
-                    if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
-                    curr_fa.functional_groups["acyl"].append(acyl)
+                    if "cc" not in curr_fa.functional_groups: curr_fa.functional_groups["cc"] = []
+                    curr_fa.functional_groups["cc"].append(cc)
                     remove_item.append(i)
                     
             for i in remove_item[::-1]: del curr_fa.functional_groups["noyloxy"][i]
