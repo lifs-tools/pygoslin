@@ -31,24 +31,35 @@ lipid : lipid_eof EOF;
 
 
 lipid_eof : fatty_acid;
-fatty_acid: regular_fatty_acid | wax | CAR | ethanolamine;
+fatty_acid: regular_fatty_acid | wax | CAR | ethanolamine | amine | acetic_acid;
 wax : wax_ester SPACE fatty_acid_type | wax_ester SPACE regular_fatty_acid;
 wax_ester : fatty_acid | ROB fatty_acid RCB | methyl;
 methyl : 'methyl';
 CAR : car_positions DASH SOB fatty_acid SCB '-4-(trimethylazaniumyl)butanoate';
 car_positions : functional_position | ROB car_position RCB DASH functional_position;
-ethanolamine : 'n-' ROB fatty_acid RCB DASH 'ethanolamine';
-
+ethanolamine : amine_prefix ROB fatty_acid RCB DASH 'ethanolamine';
+amine : amine_prefix amine_n DASH regular_fatty_acid SPACE 'amine';
+amine_prefix : 'n-' | '(+/-)n-';
+amine_n : fatty_acid | ROB fatty_acid RCB | methyl;
+acetic_acid : acetic_recursion 'acetic acid';
+acetic_recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fatty_acid CCB;
 
 regular_fatty_acid : ate_type |
                      additional_len acid_type_regular |
                      additional_len acid_type_double |
+                     /* hydrocarbons | */
                      additional_descriptions double_bond_positions fatty_length acid_type_double |
                      fg_pos_summary additional_descriptions fatty_length acid_type_regular | 
                      fg_pos_summary additional_descriptions fatty_length acid_type_double | 
                      fg_pos_summary fatty_length acid_type_double |  
                      fg_pos_summary additional_descriptions double_bond_positions fatty_length acid_type_double;
+
+hydrocarbons : additional_len db_num |
+               double_bond_positions fatty_length db_num |
+               fg_pos_summary additional_descriptions fatty_length db_num;
 additional_len : additional_descriptions fatty_length | fatty_length;
+
+
 
 
 fatty_length : notation_specials | notation_regular | cycle notation_specials | cycle notation_regular;
@@ -64,7 +75,7 @@ prosta : 'prosta' | 'prost' | 'prostan';
 
 acid_type_regular: acid_single_type | acid_single_type cyclo_position;
 acid_type_double: db_num acid_single_type | db_num acid_single_type cyclo_position;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl;
+acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl | 'ne';
 CoA : 'noyl' coa | 'yl' coa | 'nyl' coa;
 coa : 'coa' | '-coa';
 yl : 'yl' | 'nyl' | 'n' DASH yl_ending DASH 'yl' | DASH yl_ending DASH 'yl';
@@ -74,7 +85,7 @@ db_num: DASH double_bond_positions DASH db_length db_suffix | DASH double_bond_p
 db_suffix : 'e' | 'ne' | 'ene' | 'en' | 'n';
 dial : 'dial';
 db_length: notation_regular;
-dioic : 'n' DASH functional_positions DASH dioic_acid | 'ne' dioic_acid;
+dioic : 'n' DASH functional_positions DASH dioic_acid | DASH functional_positions DASH dioic_acid | 'ne' dioic_acid;
 dioic_acid : 'dioic acid';
 ol : 'nol' | db_suffix DASH hydroxyl_positions DASH notation_regular 'ol' | db_suffix DASH hydroxyl_position DASH 'ol' | DASH hydroxyl_positions DASH notation_regular 'ol' | DASH hydroxyl_position DASH 'ol';
 ate_type : ate | additional_descriptions ate;
@@ -106,11 +117,11 @@ functional_positions : functional_positions_pure | ROB functional_positions_pure
 functional_positions_pure : functional_positions pos_separator functional_positions | functional_position;
 single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name | recursion_description | recursion_description DASH;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
-functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy' | acetoxy;
+functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy' | ROB functional_position pos_separator functional_position RCB DASH 'epoxy';
 methylene_group : functional_positions DASH methylene;
 methylene : 'methylene';
-acetoxy : 'acetoxy';
+/* acetoxy : 'acetoxy'; */
 
 functional_position : functional_position_pure | ROB functional_position_pure RCB;
 functional_position_pure : functional_pos_pr | functional_pos func_stereo | func_stereo;

@@ -234,6 +234,7 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
                            "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
                            "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
+                           "Ac": FunctionalGroup("Ac", elements = {Element.C: 2, Element.O: 2, Element.H: 2}, double_bonds = 1),
                            "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 1}),
                            "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}),
                            "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),

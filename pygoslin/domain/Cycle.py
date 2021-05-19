@@ -75,9 +75,9 @@ class Cycle(FunctionalGroup):
             
         ## take back what's mine# check double bonds
         if type(parent.double_bonds) == dict and len(parent.double_bonds) > 0:
-            self.double_bonds = {db_pos: val for db_pos, val in parent.double_bonds.items() if start <= db_pos <= end}
+            self.double_bonds = {db_pos: val for db_pos, val in parent.double_bonds.items() if self.start <= db_pos <= self.end}
             
-            for pos in cyclo_db:
+            for pos in self.double_bonds:
                 del parent.double_bonds[pos]
                 
         remove_list = set()

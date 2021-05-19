@@ -58,7 +58,7 @@ class LipidMapsTest(unittest.TestCase):
     
         failed, failed_sum = 0, 0
         with open("failed.txt", "wt") as output:
-            for i, lipid_name in enumerate(lipidnames):
+            for i, lipid_name in enumerate(lipidnames[8000:]):
                 if i and i % 100 == 0: print(i)
                 try:
                     lipid = lipid_parser.parse(lipid_name[3])
