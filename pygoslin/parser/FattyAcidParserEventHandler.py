@@ -88,8 +88,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["functional_group_type_pre_event"] = self.set_functional_type
         
         ## cyclo / epoxy
-        self.registered_events["cyclo_pre_event"] = self.set_functional_group
-        self.registered_events["cyclo_post_event"] = self.add_cyclo
+        self.registered_events["cyclo_position_pre_event"] = self.set_functional_group
+        self.registered_events["cyclo_position_post_event"] = self.rearrange_cycle
         self.registered_events["epoxy_pre_event"] = self.set_functional_group
         self.registered_events["epoxy_post_event"] = self.add_epoxy
         self.registered_events["cycle_pre_event"] = self.set_cycle
@@ -515,6 +515,16 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     def set_fatty_length(self, node):
         self.current_fa[-1].num_carbon += self.tmp["length"]
+        
+        
+        
+    def rearrange_cycle(self, node):
+        curr_fa = self.current_fa[-1]
+        start = self.tmp["fg_pos"][0][0]
+        if "cy" in curr_fa.functional_groups:
+            for cy in curr_fa.functional_groups["cy"]:
+                shift = start - cy.position
+                cy.rearrange_functional_groups(curr_fa, shift)
         
         
         

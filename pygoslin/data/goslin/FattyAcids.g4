@@ -62,8 +62,8 @@ notation_specials: 'etha' | 'eth' | 'buta' | 'but' | 'butr' | 'valer' | 'propa' 
 isoprop: 'isoprop';
 prosta : 'prosta' | 'prost' | 'prostan';
 
-acid_type_regular: acid_single_type | acid_single_type cyclo;
-acid_type_double: db_num acid_single_type | db_num acid_single_type cyclo;
+acid_type_regular: acid_single_type | acid_single_type cyclo_position;
+acid_type_double: db_num acid_single_type | db_num acid_single_type cyclo_position;
 acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'noyl' | 'nyl' | 'yl' | ol | dial | 'noate' | 'nate' | CoA;
 CoA : 'noyl' coa | 'yl' coa | 'nyl' coa;
 coa : 'coa' | '-coa';
@@ -119,7 +119,7 @@ reduction : functional_position DASH 'nor' | functional_positions DASH functiona
 homo : 'homo';
 
 cycle : 'cyclo';
-cyclo : '-cyclo' SOB functional_position pos_separator functional_position SCB;
+cyclo_position : '-cyclo' SOB functional_position pos_separator functional_position SCB;
 
 recursion_description : recursion_position DASH recursion;
 recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fatty_acid CCB;

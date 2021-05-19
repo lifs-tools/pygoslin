@@ -57,32 +57,35 @@ class Cycle(FunctionalGroup):
         return super().get_double_bonds() + 1
     
     
-    def rearrange_functional_groups(self, parent):
+    def rearrange_functional_groups(self, parent, shift):
         ## put everything back into parent
         if type(parent.double_bonds) != dict: parent.double_bonds = {}
         if type(self.double_bonds) == dict and len(self.double_bonds) > 0:
             for k, v in self.double_bonds.items(): parent.double_bonds[k] = v
         
+        fgroup = parent.functional_groups
         for fg, fg_list in self.functional_groups.items():
             if fg not in fgroup: fgroup[fg] = []
             fgroup[fg] += fg_list
+        self.functional_groups = {}
             
+        self.shift_positions(shift)
             
         ## take back what's mine
         remove_list = set()
-        for fg, fg_list in parent.functional_groups.items():
+        for fg, fg_list in fgroup.items():
             remove_item = []
             
             for i, func_group in enumerate(fg_list):
-                if self.start <= func_group.position <= self.end:
+                if self.start <= func_group.position <= self.end and func_group != self:
                     if fg not in self.functional_groups: self.functional_groups[fg] = []
                     self.functional_groups[fg].append(func_group)
                     remove_item.append(i)
                     
-            for i in remove_item[::-1]: del parent.functional_groups[fg][i]
+            for i in remove_item[::-1]: del fgroup[fg][i]
             if len(fg_list) == 0: remove_list.add(fg)
             
-        for fg in remove_list: del parent.functional_groups[fg]
+        for fg in remove_list: del fgroup[fg]
         
         
     
