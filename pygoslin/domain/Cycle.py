@@ -62,6 +62,7 @@ class Cycle(FunctionalGroup):
         if type(parent.double_bonds) != dict: parent.double_bonds = {}
         if type(self.double_bonds) == dict and len(self.double_bonds) > 0:
             for k, v in self.double_bonds.items(): parent.double_bonds[k] = v
+            self.double_bonds = {}
         
         fgroup = parent.functional_groups
         for fg, fg_list in self.functional_groups.items():
@@ -69,9 +70,16 @@ class Cycle(FunctionalGroup):
             fgroup[fg] += fg_list
         self.functional_groups = {}
             
+        # shift the cycle
         self.shift_positions(shift)
             
-        ## take back what's mine
+        ## take back what's mine# check double bonds
+        if type(parent.double_bonds) == dict and len(parent.double_bonds) > 0:
+            self.double_bonds = {db_pos: val for db_pos, val in parent.double_bonds.items() if start <= db_pos <= end}
+            
+            for pos in cyclo_db:
+                del parent.double_bonds[pos]
+                
         remove_list = set()
         for fg, fg_list in fgroup.items():
             remove_item = []

@@ -64,9 +64,11 @@ prosta : 'prosta' | 'prost' | 'prostan';
 
 acid_type_regular: acid_single_type | acid_single_type cyclo_position;
 acid_type_double: db_num acid_single_type | db_num acid_single_type cyclo_position;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | '-1-yl' | 'noyl' | 'nyl' | 'yl' | ol | dial | 'noate' | 'nate' | CoA;
+acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl;
 CoA : 'noyl' coa | 'yl' coa | 'nyl' coa;
 coa : 'coa' | '-coa';
+yl : 'yl' | 'nyl' | 'n' DASH yl_ending DASH 'yl' | DASH yl_ending DASH 'yl';
+yl_ending: number;
 
 db_num: DASH double_bond_positions DASH db_length db_suffix | DASH double_bond_positions DASH db_suffix | db_length db_suffix | db_suffix;
 db_suffix : 'e' | 'ne' | 'ene' | 'en' | 'n';
@@ -87,7 +89,7 @@ hydroxyl_number : number;
 additional_descriptions : additional_descriptions_m | additional_descriptions_m DASH;
 additional_descriptions_m : additional_descriptions_m additional_descriptions_m | additional_description;
 additional_description : functional_group | functional_group DASH | pos_neg | reduction | reduction DASH;
-functional_group : multi_functional_group | single_functional_group | epoxy;
+functional_group : multi_functional_group | single_functional_group | epoxy | methylene_group;
 pos_neg : '(+/-)-' | '(+)-' | '(-)-';
 
 double_bond_positions : double_bond_positions_m DASH | double_bond_positions_m;
@@ -106,6 +108,7 @@ single_functional_group : functional_position DASH functional_group_type_name | 
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
 functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy' | acetoxy;
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy' | ROB functional_position pos_separator functional_position RCB DASH 'epoxy';
+methylene_group : functional_positions DASH methylene;
 methylene : 'methylene';
 acetoxy : 'acetoxy';
 

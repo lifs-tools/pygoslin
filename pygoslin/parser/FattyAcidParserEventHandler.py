@@ -114,6 +114,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["recursion_description_pre_event"] = self.set_recursion
         self.registered_events["recursion_description_post_event"] = self.add_recursion
         self.registered_events["recursion_pos_pre_event"] = self.set_recursion_pos
+        self.registered_events["yl_ending_pre_event"] = self.set_yl_ending
         
         self.registered_events["hydroxyl_number_pre_event"] = self.add_hydroxyl
         self.registered_events["ol_pre_event"] = self.setup_hydroxyl
@@ -182,11 +183,33 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp["fg_pos"][-1][1] = node.get_text()
         
         
+    def set_yl_ending(self, node):
+        l = int(node.get_text()) - 1
+        if l == 0: return
+    
+        if l == 1:
+            fname = "Me"
+            fg = get_functional_group(fname)
+        elif l == 2:
+            fname = "Et"
+            fg = get_functional_group(fname)
+        else:
+            fname = "cc"
+            fg = CarbonChain(FattyAcid("FA", num_carbon = l))
+            
+        curr_fa = self.current_fa[-1]
+        curr_fa.num_carbon -= l
+        fg.position = l
+        curr_fa.shift_positions(-l)
+        if fname not in curr_fa.functional_groups: curr_fa.functional_groups[fname] = []
+        curr_fa.functional_groups[fname].append(fg)
+        
+        
         
     def set_methylene(self, node):
         if len(self.tmp["fg_pos"]) > 1:
-            if self.tmp["fg_pos"][0][0] < self.tmp["fg_pos"][1]: self.tmp["fg_pos"][1][0] += 1
-            elif self.tmp["fg_pos"][0][0] > self.tmp["fg_pos"][1]: self.tmp["fg_pos"][0][0] += 1
+            if self.tmp["fg_pos"][0][0] < self.tmp["fg_pos"][1][0]: self.tmp["fg_pos"][1][0] += 1
+            elif self.tmp["fg_pos"][0][0] > self.tmp["fg_pos"][1][0]: self.tmp["fg_pos"][0][0] += 1
             self.current_fa[-1].num_carbon += 1
             self.tmp["add_methylene"] = True
      
@@ -338,13 +361,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             del curr_fa.functional_groups["noyloxy"]
             
                 
-        elif "-1-yl" in curr_fa.functional_groups or "yl" in curr_fa.functional_groups or "nyl" in curr_fa.functional_groups or "methyl" in curr_fa.functional_groups:
+        elif sum([k[-2:] == "yl" for k in curr_fa.functional_groups]) > 0:
             while True:
-                if "-1-yl" in curr_fa.functional_groups: yl = "-1-yl"
-                elif "yl" in curr_fa.functional_groups: yl = "yl"
-                elif "nyl" in curr_fa.functional_groups: yl = "nyl"
-                elif "methyl" in curr_fa.functional_groups: yl = "methyl"
-                else: break
+                try:
+                    yl = [k for k in curr_fa.functional_groups if k[-2:] == "yl"][0]
+                except Exception:
+                    break
             
                 while len(curr_fa.functional_groups[yl]) > 0:
                     fa = curr_fa.functional_groups[yl].pop()
@@ -524,6 +546,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         if "cy" in curr_fa.functional_groups:
             for cy in curr_fa.functional_groups["cy"]:
                 shift = start - cy.position
+                if shift == 0: continue
                 cy.rearrange_functional_groups(curr_fa, shift)
         
         

@@ -58,13 +58,14 @@ class LipidMapsTest(unittest.TestCase):
     
         failed, failed_sum = 0, 0
         with open("failed.txt", "wt") as output:
-            for i, lipid_name in enumerate(lipidnames[2600:]):
+            for i, lipid_name in enumerate(lipidnames):
                 if i and i % 100 == 0: print(i)
                 try:
                     lipid = lipid_parser.parse(lipid_name[3])
                 except Exception as e:
                     failed += 1
-                    if lipid_name[3].find("yn") < 0 and lipid_name[3].find("furan") < 0: 
+                    
+                    if lipid_name[3].find("yn") < 0 and lipid_name[3].find("furan") < 0 and lipid_name[3][-3:] != "ane" and lipid_name[3][-3:] != "one":
                         output.write("'%s','%s',''\n" % (lipid_name[0], lipid_name[3].replace("'", "\\'")))
                     continue
                         
