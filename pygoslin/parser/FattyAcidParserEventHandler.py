@@ -370,6 +370,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                     switch_position(fg, switch)
             
         curr_fa = self.current_fa[-1]
+        
         if "noyloxy" in curr_fa.functional_groups:
             if self.headgroup == "FA": self.headgroup = "FAHFA"
             
@@ -726,6 +727,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
+        if "cyclo_yl" in self.tmp:
+            self.tmp["fg_pos"] = [[1, ""], [self.tmp["cyclo_len"], ""]]
+            self.add_cyclo(node)
+            del self.tmp["cyclo_yl"]
+            del self.tmp["cyclo_len"]
+        
         if "post_adding" in self.tmp:
             def add_position(func_group, pos):
                 func_group.position += func_group.position >= pos
