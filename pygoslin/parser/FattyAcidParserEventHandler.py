@@ -219,6 +219,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def set_methylene(self, node):
+        self.tmp["fg_type"] = "methylene"
         if len(self.tmp["fg_pos"]) > 1:
             if self.tmp["fg_pos"][0][0] < self.tmp["fg_pos"][1][0]: self.tmp["fg_pos"][1][0] += 1
             elif self.tmp["fg_pos"][0][0] > self.tmp["fg_pos"][1][0]: self.tmp["fg_pos"][0][0] += 1
