@@ -35,6 +35,7 @@ class Cycle(FunctionalGroup):
         super().__init__("cy", functional_groups = functional_groups)
         self.count = 1
         self.cycle = cycle
+        self.position = start
         self.start = start
         self.end = end
         self.double_bonds = double_bonds if double_bonds != None else 0
@@ -55,6 +56,43 @@ class Cycle(FunctionalGroup):
     def get_double_bonds(self):
         return super().get_double_bonds() + 1
     
+    
+    def rearrange_functional_groups(self, parent):
+        ## put everything back into parent
+        if type(parent.double_bonds) != dict: parent.double_bonds = {}
+        if type(self.double_bonds) == dict and len(self.double_bonds) > 0:
+            for k, v in self.double_bonds.items(): parent.double_bonds[k] = v
+        
+        for fg, fg_list in self.functional_groups.items():
+            if fg not in fgroup: fgroup[fg] = []
+            fgroup[fg] += fg_list
+            
+            
+        ## take back what's mine
+        remove_list = set()
+        for fg, fg_list in parent.functional_groups.items():
+            remove_item = []
+            
+            for i, func_group in enumerate(fg_list):
+                if self.start <= func_group.position <= self.end:
+                    if fg not in self.functional_groups: self.functional_groups[fg] = []
+                    self.functional_groups[fg].append(func_group)
+                    remove_item.append(i)
+                    
+            for i in remove_item[::-1]: del parent.functional_groups[fg][i]
+            if len(fg_list) == 0: remove_list.add(fg)
+            
+        for fg in remove_list: del parent.functional_groups[fg]
+        
+        
+    
+    def shift_positions(self, shift):
+        super().shift_positions(shift)
+        self.start += shift
+        self.end += shift
+        if type(self.double_bonds) == dict:
+            self.double_bonds = {k + shift: v for k, v in self.double_bonds.items()}
+        
     
     def compute_elements(self):
         self.elements[Element.H] = -2

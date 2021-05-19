@@ -59,6 +59,13 @@ class FunctionalGroup:
     
     
     
+    def shift_positions(self, shift):
+        self.position += shift
+        for fg_name, fg_list in self.functional_groups.items():
+            for fg in fg_list:
+                fg.shift_positions(shift)
+                
+    
     
     def get_functional_group_elements(self):
         elements = {e: 0 for e in Element}
