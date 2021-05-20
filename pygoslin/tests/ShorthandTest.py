@@ -84,8 +84,11 @@ data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_
         
         "SPB 18:0;1OH,3OH": ["SPB 18:0;1OH,3OH", "SPB 18:0;(OH)2", "SPB 18:0;O2", "SPB 18:0;O2", "C18H39NO2"],
         
-        "LPIM1 19:1(9Z)/0:0": ["LPIM1 19:1(9Z)/0:0", "LPIM1 19:1(9)/0:0", "LPIM1 19:1", "LPIM1 19:1", "C34H63O17P"]
+        "LPIM1 19:1(9Z)/0:0": ["LPIM1 19:1(9Z)/0:0", "LPIM1 19:1(9)/0:0", "LPIM1 19:1", "LPIM1 19:1", "C34H63O17P"],
 
+        "Hex2Cer(1) 17:1(5E);15Me;3OH,4OH/22:0;2OH": ["Hex2Cer(1) 17:1(5E);15Me;3OH,4OH/22:0;2OH", "Hex2Cer 17:1(5);Me;(OH)2/22:0;OH", "Hex2Cer 18:1;O2/22:0;O", "Hex2Cer 40:1;O4", "C52H99NO15"],
+        
+        "Glc-Cer(1) 21:0;[13-15cy3:0];3OH,4OH/22:1(16E);2OH;15oxo": ["Glc-Cer(1) 21:0;[13-15cy3:0];3OH,4OH/22:1(16E);2OH;15oxo", "Glc-Cer 21:0;(OH)2;[cy3:0]/22:1(16);OH;oxo", "GlcCer 21:1;O2/22:2;O2", "GlcCer 43:3;O5", "C49H91NO11"]
         }
 
 class ShorthandTest(unittest.TestCase):
@@ -94,7 +97,6 @@ class ShorthandTest(unittest.TestCase):
     def test_nomenclature(self):
         parser = ShorthandParser()
 
-        start = time.time()
         for lipid_name in data:
             
             results = data[lipid_name]
@@ -107,19 +109,17 @@ class ShorthandTest(unittest.TestCase):
             else:
                 formula = lipid.get_sum_formula()
             
-
-            for l, lipid_level in enumerate([LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.SPECIES]):
+            levels = [LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.SPECIES]
+            for l, lipid_level in enumerate(levels):
                 n = lipid.get_lipid_string(lipid_level)
                 self.assertEqual(results[l], n, "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
                 self.assertEqual(formula, lipid.get_sum_formula(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
 
 
                 lipid2 = parser.parse(n)
-                self.assertEqual(results[l], lipid2.get_lipid_string(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
-                self.assertEqual(formula, lipid2.get_sum_formula(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
-        elapsed = time.time() - start
-        print("time elapsed: %f" % elapsed)
-        print("lipid / second: %f" % (len(data) * 5 / elapsed))
+                for ll in range(l, 4):
+                    self.assertEqual(results[ll], lipid2.get_lipid_string(levels[ll]), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
+                    self.assertEqual(formula, lipid2.get_sum_formula(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
         
         
         

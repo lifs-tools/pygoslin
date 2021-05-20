@@ -579,6 +579,28 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
+        
+        headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
+
+        true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
+        
+        poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        
+        # make lyso
+        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.headgroup[:2] != "PIP":
+            self.headgroup = "L" + self.headgroup
+            headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        
+        if self.level == LipidLevel.SPECIES:
+            if true_fa == 0 and poss_fa != 0:
+                raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
+            
+        elif true_fa != poss_fa:
+            raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
+        
+        
+        
         # add count numbers for fatty acyl chains
         fa_it = len(self.fa_list) > 0 and self.fa_list[0].lcb
         for it in range(fa_it, len(self.fa_list)):
@@ -590,7 +612,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
         if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
-        headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
         
         self.lipid = LipidAdduct()
         self.lipid.adduct = self.adduct

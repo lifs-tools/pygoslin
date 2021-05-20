@@ -85,7 +85,7 @@ class LipidSpecies:
             return "".join(lipid_string)
         
         else:
-            raise RuntimeException("LipidSpecies does not know how to create a lipid string for level %s" + level)
+            raise RuntimeException("LipidSpecies does not know how to create a lipid string for level %s" % level)
         
         
         
