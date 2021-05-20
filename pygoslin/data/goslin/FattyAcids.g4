@@ -27,13 +27,11 @@ grammar FattyAcids;
 
 
 /* first rule is always start rule, EOF = end of file */
-lipid : lipid_eof EOF;
+lipid : fatty_acid EOF;
 
-
-lipid_eof : fatty_acid;
 fatty_acid: regular_fatty_acid | wax | CAR | ethanolamine | amine | acetic_acid;
-wax : wax_ester SPACE fatty_acid_type | wax_ester SPACE regular_fatty_acid;
-wax_ester : fatty_acid | ROB fatty_acid RCB | methyl;
+wax : wax_ester fatty_acid_type | wax_ester regular_fatty_acid;
+wax_ester : fatty_acid SPACE | ROB fatty_acid RCB SPACE | methyl SPACE | methyl DASH;
 methyl : 'methyl';
 CAR : car_positions DASH SOB fatty_acid SCB '-4-(trimethylazaniumyl)butanoate';
 car_positions : functional_position | ROB car_position RCB DASH functional_position;
@@ -47,18 +45,14 @@ acetic_recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fa
 regular_fatty_acid : ate_type |
                      additional_len acid_type_regular |
                      additional_len acid_type_double |
-                     /* hydrocarbons | */
                      additional_descriptions double_bond_positions fatty_length acid_type_double |
-                     fg_pos_summary additional_descriptions fatty_length acid_type_regular | 
-                     fg_pos_summary additional_descriptions fatty_length acid_type_double | 
+                     sum_add fatty_length acid_type_regular | 
+                     sum_add fatty_length acid_type_double | 
                      fg_pos_summary fatty_length acid_type_double |  
-                     fg_pos_summary additional_descriptions double_bond_positions fatty_length acid_type_double;
+                     sum_add double_bond_positions fatty_length acid_type_double;
 
-hydrocarbons : additional_len db_num |
-               double_bond_positions fatty_length db_num |
-               fg_pos_summary additional_descriptions fatty_length db_num;
 additional_len : additional_descriptions fatty_length | fatty_length;
-
+sum_add : fg_pos_summary additional_descriptions;
 
 
 
@@ -74,7 +68,7 @@ isoprop: 'isoprop';
 prosta : 'prosta' | 'prost' | 'prostan';
 
 acid_type_regular: acid_single_type | acid_single_type cyclo_position;
-acid_type_double: db_num acid_single_type | db_num acid_single_type cyclo_position;
+acid_type_double: db_num acid_type_regular;
 acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl | 'ne';
 CoA : 'noyl' coa | 'yl' coa | 'nyl' coa;
 coa : 'coa' | '-coa';
@@ -94,7 +88,7 @@ isobut : 'isobutyrate';
 
 
 hydroxyl_positions : hydroxyl_positions pos_separator hydroxyl_positions | hydroxyl_position;
-hydroxyl_position : hydroxyl_number | hydroxyl_number stereo | hydroxyl_number '\'' stereo;
+hydroxyl_position : hydroxyl_number | hydroxyl_number cistrans | hydroxyl_number PRIME cistrans;
 hydroxyl_number : number;
 
 additional_descriptions : additional_descriptions_m | additional_descriptions_m DASH;
@@ -106,7 +100,7 @@ pos_neg : '(+/-)-' | '(+)-' | '(-)-';
 double_bond_positions : double_bond_positions_m DASH | double_bond_positions_m;
 double_bond_positions_m : double_bond_positions_pure | ROB double_bond_positions_pure RCB;
 double_bond_positions_pure : double_bond_positions_pure pos_separator double_bond_positions_pure | double_bond_position;
-double_bond_position : db_number | db_number cistrans | db_number '\'' | db_number '\'' cistrans | cistrans;
+double_bond_position : db_number | db_number cistrans | db_number PRIME | db_number PRIME cistrans | cistrans;
 cistrans : 'e' | 'z' | 'r' | 's' | 'a' | 'b' | 'c';
 db_number : number;
 fg_pos_summary : functional_positions DASH;
@@ -114,7 +108,7 @@ fg_pos_summary : functional_positions DASH;
 multi_functional_group : functional_positions DASH functional_length functional_group_type | functional_positions DASH functional_group_type;
 functional_length : notation_last_digit | notation_second_digit | notation_last_digit notation_second_digit;
 functional_positions : functional_positions_pure | ROB functional_positions_pure RCB;
-functional_positions_pure : functional_positions pos_separator functional_positions | functional_position;
+functional_positions_pure : functional_positions_pure pos_separator functional_positions_pure | functional_position;
 single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name | recursion_description | recursion_description DASH;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
 functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy';
@@ -124,11 +118,9 @@ methylene : 'methylene';
 /* acetoxy : 'acetoxy'; */
 
 functional_position : functional_position_pure | ROB functional_position_pure RCB;
-functional_position_pure : functional_pos_pr | functional_pos func_stereo | func_stereo;
-functional_pos_pr : functional_pos | functional_pos '\'';
+functional_position_pure : functional_pos | functional_pos PRIME | functional_pos func_stereo | functional_pos PRIME func_stereo | func_stereo;
 functional_pos : number;
-func_stereo : stereo;
-stereo : cistrans;
+func_stereo : cistrans;
 reduction : functional_position DASH 'nor' | functional_positions DASH functional_length 'nor';
 homo : 'homo';
 
@@ -137,7 +129,7 @@ cyclo_position : '-cyclo' SOB functional_position pos_separator functional_posit
 
 recursion_description : recursion_position DASH recursion;
 recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fatty_acid CCB;
-recursion_position : ROB functional_positions RCB | recursion_pos | recursion_pos stereo;
+recursion_position : ROB functional_positions RCB | recursion_pos | recursion_pos cistrans;
 recursion_pos : number;
 
 
@@ -158,6 +150,7 @@ SOB: '[';
 SCB: ']';
 COB: '{';
 CCB: '}';
+PRIME: '\'';
 pos_separator : COMMA;
 
 

@@ -41,6 +41,7 @@ from pygoslin.parser.Parser import *
 from pygoslin.parser.ParserCommon import *
 from pygoslin.domain.LipidLevel import *
 from pygoslin.domain.Element import *
+from pygoslin.domain.LipidExceptions import *
 
 class LipidMapsTest(unittest.TestCase):
     
@@ -56,19 +57,23 @@ class LipidMapsTest(unittest.TestCase):
         lipid_parser = FattyAcidParser()
         formula_parser = SumFormulaParser()
     
-        failed, failed_sum = 0, 0
+        not_implemented, failed, failed_sum = 0, 0, 0
         with open("failed.txt", "wt") as output:
             for i, lipid_name in enumerate(lipidnames):
+                name = lipid_name[3]
                 if i and i % 100 == 0: print(i)
+                
+                if name.find("yn") >= 0 or name.find("furan") >= 0 or name[-3:] == "ane" or name[-3:] == "one" or name.find("phosphate") >= 0 or name.find("pyran") >= 0 or name[-5:] == "olide" or name[-4:] == "-one":
+                    not_implemented += 1
+                    continue                
+                
                 try:
-                    lipid = lipid_parser.parse(lipid_name[3])
+                    lipid = lipid_parser.parse(name)
                 except Exception as e:
                     failed += 1
-                    
-                    if lipid_name[3].find("yn") < 0 and lipid_name[3].find("furan") < 0 and lipid_name[3][-3:] != "ane" and lipid_name[3][-3:] != "one":
-                        output.write("'%s','%s',''\n" % (lipid_name[0], lipid_name[3].replace("'", "\\'")))
+                    output.write("'%s','%s',''\n" % (lipid_name[0], name.replace("'", "\\'")))
                     continue
-                        
+                
                 lipid_formula = lipid.get_sum_formula()
                 formula = compute_sum_formula(formula_parser.parse(lipid_name[2]))
                 
@@ -77,6 +82,5 @@ class LipidMapsTest(unittest.TestCase):
                     failed_sum += 1
                     exit()
                 
-                
-        print("In the test, %i of %i lipids failed" % (failed, len(lipidnames)))
-        print("In the test, %i of %i lipid formulas failed" % (failed_sum, len(lipidnames) - failed))
+        print("In the test, %i of %i lipids can not be described by nomenclature" % (not_implemented, len(lipidnames)))
+        print("In the test, %i of %i lipids failed" % (failed, len(lipidnames) - not_implemented))

@@ -69,10 +69,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         ## lengths
         self.registered_events["functional_length_pre_event"] = self.reset_length
-        self.registered_events["db_length_pre_event"] = self.reset_length
+        self.registered_events["db_length_pre_event"] = self.set_db_length
         self.registered_events["fatty_length_pre_event"] = self.reset_length
         self.registered_events["functional_length_post_event"] = self.set_functional_length
-        self.registered_events["db_length_post_event"] = self.set_db_length
         self.registered_events["fatty_length_post_event"] = self.set_fatty_length
         
         ## numbers
@@ -150,9 +149,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["fg_pos_summary_post_event"] = self.add_summary
         self.registered_events["func_stereo_pre_event"] = self.add_func_stereo
         
-        ## hydrocarbons
-        self.registered_events["hydrocarbons_post_event"] = self.set_hydrocarbons
-        
         
     def reset_lipid(self, node):
         self.level = LipidLevel.ISOMERIC_SUBSPECIES
@@ -160,7 +156,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.headgroup = ""
         self.current_fa = [FattyAcid("FA")]
         self.db_numbers = -1
-        self.tmp = {"fa1": {}}
+        self.tmp = {"fa1": {}, "db_length": 0}
         #self.debug = "full"
         
         
@@ -182,12 +178,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def set_acetic_acid(self, node):
         self.current_fa[-1].num_carbon += 2
         self.headgroup = "FA"
-        
-        
-        
-    def set_hydrocarbons(self, node):
-        self.current_fa[-1].lipid_FA_bond_type = LipidFaBondType.AMINE
-        self.headgroup = "HC"
         
         
         
@@ -552,6 +542,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         curr_fa.functional_groups["oxo"].append(fg)
         
         
+        
+    def set_db_length(self, node):
+        self.tmp["db_length"] = self.tmp["length"]
+        self.reset_length(node)
+        
     
     def reset_length(self, node):
         self.tmp["length"] = 0
@@ -640,15 +635,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp["fg_pos"] = self.tmp["fg_pos"][:1]
         self.tmp["fg_type"] = "Epoxy"
         
-        
-        
-    def set_db_length(self, node):
-        pass
-        #d = self.current_fa[-1].get_double_bonds()
-        
-        #if len(self.current_fa[-1].double_bonds) != self.tmp["length"]:
-        #    raise LipidException("Double bond count does not match with number of double bond positions")
-        
     
     
     def special_number(self, node):
@@ -728,11 +714,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
+        
         if "cyclo_yl" in self.tmp:
             self.tmp["fg_pos"] = [[1, ""], [self.tmp["cyclo_len"], ""]]
             self.add_cyclo(node)
             del self.tmp["cyclo_yl"]
             del self.tmp["cyclo_len"]
+            
         
         if "post_adding" in self.tmp:
             def add_position(func_group, pos):

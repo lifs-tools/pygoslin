@@ -134,7 +134,6 @@ class Parser:
             ruleToNT = {Parser.EOF_RULE_NAME: Parser.EOF_RULE}
             self.TtoNT[Parser.EOF_SIGN] = set([Parser.EOF_RULE])
             for rule_line in rules:
-                
                 tokens_level_1 = []
                 for t in Parser.split_string(rule_line, Parser.RULE_ASSIGNMENT, self.quote): tokens_level_1.append(t.strip(' '))
                 if len(tokens_level_1) != 2: raise Exception("Error: corrupted token in grammar rule: '%s'" % rule_line);
