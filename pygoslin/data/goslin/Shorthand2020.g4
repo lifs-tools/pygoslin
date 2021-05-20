@@ -127,18 +127,17 @@ fa4_unsorted : fa2_unsorted unsorted_fa_separator fa2_unsorted;
 
 
 /* glycero lipids */
-gl : gl_species | gl_subpsecies | gl_molecular_species_double;
-gl_species : gl_hg headgroup_separator fatty_acyl_chain;
-gl_molecular_species_double : gl_hg_triple headgroup_separator fatty_acyl_chain2;
-gl_subpsecies : gl_single | gl_double | gl_triple;
-gl_hg : gl_hg_double | gl_hg_triple;
+gl : gl_species | gl_subpsecies | gl_molecular_species;
+gl_species : gl_hg_dt headgroup_separator fatty_acyl_chain;
+gl_molecular_species : gl_hg_double headgroup_separator fatty_acyl_chain2 | gl_hg_triple headgroup_separator fatty_acyl_chain2 | gl_hg_single headgroup_separator fatty_acyl_chain;
+gl_subpsecies : gl_hg headgroup_separator fatty_acyl_chain3;
+gl_hg_dt : gl_hg_double | gl_hg_true_double | gl_hg_triple;
+gl_hg : gl_hg_single | gl_hg_double | gl_hg_true_double | gl_hg_triple;
 gl_hg_single : 'MG' | 'MGMG' | 'DGMG' | 'SQMG';
-gl_hg_double : 'DG' | 'MGDG' | 'DGDG' | 'SQDG';
+gl_hg_double : 'DG';
+gl_hg_true_double : 'MGDG' | 'DGDG' | 'SQDG';
 gl_hg_triple : 'TG';
-gl_single : gl_hg_single headgroup_separator fatty_acyl_chain | gl_full;
-gl_double : gl_hg_double headgroup_separator fatty_acyl_chain2 | gl_full;
-gl_full : gl_hg_single headgroup_separator fatty_acyl_chain3 | gl_hg_double headgroup_separator fatty_acyl_chain3;
-gl_triple : gl_hg_triple headgroup_separator fatty_acyl_chain3;
+
 
 
 pl : pl_species | pl_subspecies | pl_molecular_species_double | pl_molecular_species_triple;

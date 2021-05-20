@@ -68,7 +68,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         ## set species events
         self.registered_events["med_species_pre_event"] = self.set_species_level
         self.registered_events["gl_species_pre_event"] = self.set_species_level
-        self.registered_events["gl_molecular_species_double_pre_event"] = self.set_molecular_level
+        self.registered_events["gl_molecular_species_pre_event"] = self.set_molecular_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_molecular_species_double_pre_event"] = self.set_molecular_level
         self.registered_events["pl_molecular_species_triple_pre_event"] = self.set_molecular_level
@@ -84,6 +84,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["med_hg_triple_pre_event"] = self.set_headgroup_name
         self.registered_events["gl_hg_single_pre_event"] = self.set_headgroup_name
         self.registered_events["gl_hg_double_pre_event"] = self.set_headgroup_name
+        self.registered_events["gl_hg_true_double_pre_event"] = self.set_headgroup_name
         self.registered_events["gl_hg_triple_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_single_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_double_pre_event"] = self.set_headgroup_name

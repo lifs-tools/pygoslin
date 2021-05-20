@@ -30,24 +30,15 @@ from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
+from pygoslin.domain.FattyAcid import FattyAcid
 
 class LipidStructuralSubspecies(LipidMolecularSubspecies):
 
 
     def __init__(self, head_group, fa = []):
-        super().__init__(head_group)
+        super().__init__(head_group, fa)
         
-        self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES
-        
-        for fas in fa:
-            if fas.name in self.fa:
-                raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fas.name)
-            
-            else:
-                self.fa[fas.name] = fas
-                self.fa_list.append(fas)
-                self.info.add(fas)
-                
+        self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES   
     
 
     def get_extended_class(self):

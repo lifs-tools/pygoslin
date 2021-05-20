@@ -216,7 +216,6 @@ class CarbonChain(FunctionalGroup):
     def __init__(self, fa, position = -1, count = 1):
         super().__init__("cc", position = position, count = count)
         if fa != None: self.functional_groups["cc"] = [fa]
-        self.double_bonds = 0
         
         self.elements[Element.H] = 1
         self.elements[Element.O] = -1

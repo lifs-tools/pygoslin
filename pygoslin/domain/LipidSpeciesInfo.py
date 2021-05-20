@@ -29,7 +29,7 @@ from pygoslin.domain.Element import Element
 from pygoslin.domain.LipidClass import all_lipids
 from pygoslin.domain.FunctionalGroup import FunctionalGroup
 
-ester_prefix = ["", "O-", "dO-", "tO-", "eO-"] 
+ether_prefix = ["", "O-", "dO-", "tO-", "eO-"] 
         
 class LipidSpeciesInfo(FattyAcid):
     
@@ -40,7 +40,7 @@ class LipidSpeciesInfo(FattyAcid):
         self.num_oxygen = 0
         self.num_ethers = 0
         self.num_specified_fa = 0
-        self.total_fa = all_lipids[lipid_class]["poss_fa"]
+        self.total_fa = all_lipids[lipid_class]["max_fa"]
         
         
     def add(self, fa):
@@ -73,12 +73,12 @@ class LipidSpeciesInfo(FattyAcid):
         
     
     def to_string(self):
-        global ester_prefix
+        global ether_prefix
 
         elements = self.get_elements()
         num_oxygen = elements[Element.O]
         
-        info_string = [ester_prefix[self.num_ethers]]
+        info_string = [ether_prefix[self.num_ethers]]
         info_string.append("%i:%i" % (self.num_carbon, self.double_bonds))
         if num_oxygen > 0:
             info_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))

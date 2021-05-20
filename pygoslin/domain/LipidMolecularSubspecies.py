@@ -31,6 +31,7 @@ from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.FunctionalGroup import FunctionalGroup
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
+from pygoslin.domain.FattyAcid import FattyAcid
 
 class LipidMolecularSubspecies(LipidSpecies):
 
@@ -50,6 +51,14 @@ class LipidMolecularSubspecies(LipidSpecies):
                 self.fa[fas.name] = fas
                 self.fa_list.append(fas)
                 self.info.add(fas)
+                
+                
+        # add 0:0 dummys
+        for i in range(len(fa), self.info.total_fa):
+            fas = FattyAcid("FA%i" % (i + len(fa) + 1))
+            self.info.add(fas)
+            self.fa[fas.name] = fas
+            self.fa_list.append(fas)
     
 
 

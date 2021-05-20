@@ -34,6 +34,7 @@ from pygoslin.domain.LipidClass import *
 from pygoslin.domain.LipidFaBondType import *
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.Element import Element
+from pygoslin.domain.FattyAcid import FattyAcid
 
 class LipidSpecies:
     def __init__(self, headgroup, fa = []):
@@ -41,8 +42,9 @@ class LipidSpecies:
         
         self.info = LipidSpeciesInfo(self.headgroup.lipid_class)
         self.info.level = LipidLevel.SPECIES
-        for fas in fa:
-            self.info.add(fas)
+        
+        # add fatty acids
+        for fas in fa: self.info.add(fas)
         
         
         if self.headgroup.sp_exception:
@@ -93,13 +95,15 @@ class LipidSpecies:
             raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
         dummy = FunctionalGroup("dummy", elements = self.headgroup.get_elements())
+        
         dummy += self.info
         
         # since only one FA info is provided, we have to treat this single information as
         # if we would have the complete information about all possible FAs in that lipid
         additional_fa = all_lipids[self.headgroup.lipid_class]["poss_fa"]
+        remaining_H = all_lipids[self.headgroup.lipid_class]["max_fa"] - additional_fa
         dummy.elements[Element.O] += additional_fa - self.info.num_ethers - self.headgroup.sp_exception
-        dummy.elements[Element.H] -= additional_fa - 2 * self.info.num_ethers
+        dummy.elements[Element.H] -= additional_fa - remaining_H - 2 * self.info.num_ethers
         
         return dummy.elements
         

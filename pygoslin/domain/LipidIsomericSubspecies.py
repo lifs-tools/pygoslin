@@ -30,23 +30,16 @@ from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.FattyAcid import FattyAcid
 
 class LipidIsomericSubspecies(LipidStructuralSubspecies):
 
 
     def __init__(self, head_group, fa = []):
-        super().__init__(head_group)
+        super().__init__(head_group, fa)
                 
         self.info.level = LipidLevel.ISOMERIC_SUBSPECIES
         
-        for fas in fa:
-            if fas.name in self.fa:
-                raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fas.name)
-            
-            else:
-                self.fa[fas.name] = fas
-                self.fa_list.append(fas)
-                self.info.add(fas)
 
     
     
