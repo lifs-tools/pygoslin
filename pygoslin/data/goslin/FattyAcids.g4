@@ -97,8 +97,7 @@ additional_description : functional_group | functional_group DASH | pos_neg | re
 functional_group : multi_functional_group | single_functional_group | epoxy | methylene_group;
 pos_neg : '(+/-)-' | '(+)-' | '(-)-';
 
-double_bond_positions : double_bond_positions_m DASH | double_bond_positions_m;
-double_bond_positions_m : double_bond_positions_pure | ROB double_bond_positions_pure RCB;
+double_bond_positions : double_bond_positions_pure DASH | ROB double_bond_positions_pure RCB DASH | double_bond_positions_pure | ROB double_bond_positions_pure RCB;
 double_bond_positions_pure : double_bond_positions_pure pos_separator double_bond_positions_pure | double_bond_position;
 double_bond_position : db_number | db_number cistrans | db_number PRIME | db_number PRIME cistrans | cistrans;
 cistrans : 'e' | 'z' | 'r' | 's' | 'a' | 'b' | 'c';
@@ -111,7 +110,7 @@ functional_positions : functional_positions_pure | ROB functional_positions_pure
 functional_positions_pure : functional_positions_pure pos_separator functional_positions_pure | functional_position;
 single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name | recursion_description | recursion_description DASH;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
-functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy';
+functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'phospho' | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy' | ROB functional_position pos_separator functional_position RCB DASH 'epoxy';
 methylene_group : functional_positions DASH methylene;
 methylene : 'methylene';

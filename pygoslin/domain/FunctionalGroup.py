@@ -165,7 +165,7 @@ class AcylAlkylGroup(FunctionalGroup):
         self.alkyl = alkyl
         if fa != None: self.functional_groups["alkyl" if self.alkyl else "acyl"] = [fa]
         self.double_bonds = int(not self.alkyl)
-        self.N_bond = N_bond
+        self.set_N_bond_type(N_bond)
         
         if self.N_bond:
             self.elements[Element.H] = 2 if self.alkyl else 0
@@ -179,6 +179,20 @@ class AcylAlkylGroup(FunctionalGroup):
         
     def copy(self):
         return AcylAlkylGroup(self.functional_groups["alkyl" if self.alkyl else "acyl"][0].copy(), alkyl = self.alkyl, position = self.position, count = self.count, N_bond = self.N_bond)
+        
+        
+        
+    def set_N_bond_type(self, N_bond):
+        self.N_bond = N_bond
+        
+        if self.N_bond:
+            self.elements[Element.H] = 2 if self.alkyl else 0
+            self.elements[Element.O] = -1 if self.alkyl else 0
+            self.elements[Element.N] = 1
+            
+        else:
+            self.elements[Element.H] = 1 if self.alkyl else -1
+            self.elements[Element.O] = 0 if self.alkyl else 1
         
         
 
@@ -202,6 +216,7 @@ class CarbonChain(FunctionalGroup):
     def __init__(self, fa, position = -1, count = 1):
         super().__init__("cc", position = position, count = count)
         if fa != None: self.functional_groups["cc"] = [fa]
+        self.double_bonds = 0
         
         self.elements[Element.H] = 1
         self.elements[Element.O] = -1
@@ -240,8 +255,8 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),
                            "SH": FunctionalGroup("SH", elements = {Element.S: 1}),
                            "CN": FunctionalGroup("CN", elements = {Element.C: 1, Element.N: 1, Element.H: -1}),
-                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.O: 4, Element.H: 1}),
-                           "S": FunctionalGroup("S", elements = {Element.S: 1, Element.O: 4}),
+                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.O: 4, Element.H: 1}, double_bonds = 1),
+                           "S": FunctionalGroup("S", elements = {Element.S: 1, Element.O: 4}, double_bonds = 2),
                            "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
                            "G": FunctionalGroup("G", elements = {Element.N: 1, Element.H: 1}),
                            "Hex": HeadgroupDecorator("Hex", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
@@ -274,7 +289,8 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "OGlcNAc": HeadgroupDecorator("OGlcNAc", elements = {}),
                            "OGlc": HeadgroupDecorator("OGlc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
                            "NeuAc2": HeadgroupDecorator("NeuAc2", elements = {}),
-                           "O": FunctionalGroup("O", elements = {Element.O: 1})
+                           "O": FunctionalGroup("O", elements = {Element.O: 1}),
+                           "Pa": FunctionalGroup("Pa", elements = {Element.P: 1, Element.H: 3})
                            }
 
 
