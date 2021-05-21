@@ -55,6 +55,7 @@ class LipidMapsTest(unittest.TestCase):
         
         
         lipid_parser = FattyAcidParser()
+        shorthand_parser = ShorthandParser()
         formula_parser = SumFormulaParser()
     
         not_implemented, failed, failed_sum = 0, 0, 0
@@ -81,6 +82,35 @@ class LipidMapsTest(unittest.TestCase):
                     print("%i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
                     failed_sum += 1
                     exit()
+                    
+                if name.lower().find("cyano") >= 0:
+                    continue
+                
+                lipid2 = shorthand_parser.parse(lipid.get_lipid_string())
+                lipid_formula = lipid2.get_sum_formula()
+                
+                if formula != lipid_formula:
+                    print("current, %i, %s: %s != %s / %s" % (i, lipid_name, formula, lipid_formula, lipid.get_lipid_string()))
+                    failed_sum += 1
+                    exit()
+                    
+                
+                lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES))
+                lipid_formula = lipid2.get_sum_formula()
+                
+                if formula != lipid_formula:
+                    print("molecular subspecies, %i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
+                    failed_sum += 1
+                    exit()
+                
+                lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.SPECIES))
+                lipid_formula = lipid2.get_sum_formula()
+                
+                if formula != lipid_formula:
+                    print("species, %i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
+                    failed_sum += 1
+                    exit()
+                
                 
         print("In the test, %i of %i lipids can not be described by nomenclature" % (not_implemented, len(lipidnames)))
         print("In the test, %i of %i lipids failed" % (failed, len(lipidnames) - not_implemented))

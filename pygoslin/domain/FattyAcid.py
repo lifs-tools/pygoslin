@@ -132,7 +132,7 @@ class FattyAcid(FunctionalGroup):
                 fg_list = self.functional_groups[fg]
                 if len(fg_list) > 0:
                     
-                    if fg in {"acyl", "alkyl", "cy"}:
+                    if fg in {"acyl", "alkyl", "cy", "cc"}:
                         fg_summary = ",".join([func_group.to_string(level) for func_group in fg_list])
                         if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
                     

@@ -238,8 +238,8 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "My": FunctionalGroup("My", elements = {Element.C: 1}, double_bonds = 1), # methylene
                            "dMe": FunctionalGroup("dMe", elements = {Element.C: 1}), # methylen
                            "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
-                           "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}), # carboxyl
-                           "Ep": FunctionalGroup("Ep", elements = {Element.O: 1, Element.H: -2}), # epoxy
+                           "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}, double_bonds = 1), # carboxyl
+                           "Ep": FunctionalGroup("Ep", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # epoxy
                            "OO": FunctionalGroup("OO", elements = {Element.O: 2}),  # peroxy
                            "OMe": FunctionalGroup("OMe", elements = {Element.O: 1, Element.C: 1, Element.H: 2}), # methoxy
                            "oxy": FunctionalGroup("oxy", elements = {Element.O: 1}), # Alkoxy / ether
@@ -248,9 +248,9 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
                            "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
                            "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
-                           "Ac": FunctionalGroup("Ac", elements = {Element.C: 2, Element.O: 2, Element.H: 2}),
+                           "Ac": FunctionalGroup("Ac", elements = {Element.C: 2, Element.O: 2, Element.H: 2}, double_bonds = 1),
                            "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 1}),
-                           "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}),
+                           "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}, double_bonds = 1),
                            "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),
                            "SH": FunctionalGroup("SH", elements = {Element.S: 1}),
                            "CN": FunctionalGroup("CN", elements = {Element.C: 1, Element.N: 1, Element.H: -1}),

@@ -579,8 +579,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def build_lipid(self, node):
         
-        if self.headgroup == "HC": self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.AMINE
-        
         headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
 
         true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
@@ -600,6 +598,9 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         elif true_fa != poss_fa:
             raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
         
+        
+        if "HC" in all_lipids[headgroup.lipid_class]["specials"]:
+            self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.AMINE
         
         
         # add count numbers for fatty acyl chains

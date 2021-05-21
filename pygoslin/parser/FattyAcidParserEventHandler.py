@@ -343,6 +343,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         fa = self.current_fa.pop()
         
         fa.name += "1"
+        fa.lipid_FA_bond_type = LipidFaBondType.AMINE
         self.current_fa[-1].name += "2"
         self.current_fa.insert(0, fa)
         
@@ -363,6 +364,19 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         curr_fa = self.current_fa[-1]
         
         if "noyloxy" in curr_fa.functional_groups:
+            """
+            if curr_fa.functional_groups["noyloxy"][-1].position == curr_fa.num_carbon:
+                fa = curr_fa.functional_groups["noyloxy"].pop()
+                curr_fa.num_carbon -= 1
+                cooh = get_functional_group("COOH")
+                cooh.position = curr_fa.num_carbon
+                if "COOH" not in curr_fa.functional_groups: curr_fa.functional_groups["COOH"] = []
+                curr_fa.functional_groups["COOH"].append(cooh)
+                self.headgroup = "WE"
+                self.current_fa.insert(0, fa)
+                self.add_wax_ester(node)
+                return
+            """
             if self.headgroup == "FA": self.headgroup = "FAHFA"
             
             while len(curr_fa.functional_groups["noyloxy"]) > 0:

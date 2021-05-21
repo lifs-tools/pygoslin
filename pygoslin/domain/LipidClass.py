@@ -56,6 +56,7 @@ all_lipids = [{"name": "UNDEFINED",
                 "max_fa": 0,
                 "poss_fa": set(),
                 "synonyms": [],
+                "specials": set(),
                 "elements": {}}]
 
 
@@ -77,9 +78,10 @@ with open(file_name, mode = "rt") as infile:
             lipid_dict["description"] = row[2]
             lipid_dict["max_fa"] = int(row[3])
             lipid_dict["poss_fa"] = int(row[4])
-            row[5] = row[5].strip(" ")
-            lipid_dict["elements"] = sum_formula_parser.parse(row[5]) if len(row[5]) > 0 else {e: 0 for e in Element}
-            lipid_dict["synonyms"] = [r for r in row[6:] if len(r) > 0]
+            lipid_dict["specials"] = set(row[5].split(","))
+            row[6] = row[6].strip(" ")
+            lipid_dict["elements"] = sum_formula_parser.parse(row[6]) if len(row[6]) > 0 else {e: 0 for e in Element}
+            lipid_dict["synonyms"] = [r for r in row[7:] if len(r) > 0]
             
             
             all_lipids.append(lipid_dict)

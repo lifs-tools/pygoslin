@@ -47,10 +47,13 @@ adduct2 : character | character character;
 
 /* mediators */
 med : med_species | med_subspecies;
-med_species : med_hg_double fatty_acyl_chain;
-med_subspecies : med_hg_single fatty_acyl_chain | med_hg_single headgroup_separator fatty_acyl_chain | med_hg_double headgroup_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain | med_hg_triple headgroup_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain unsorted_fa_separator fatty_acyl_chain | med_hg_triple headgroup_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain sorted_fa_separator fatty_acyl_chain;
-med_hg_single : 'FA' | 'FOH' | 'FAL' | 'CAR' | 'CoA' | 'NAE' | 'NAT' | 'WD' | 'HC';
-med_hg_double : 'WE' | 'NA' | 'FAHFA';
+med_species : med_hg_double headgroup_separator fatty_acyl_chain | med_hg_triple headgroup_separator fatty_acyl_chain;
+med_subspecies : med_hg_single headgroup_separator fatty_acyl_chain |
+                 med_hg_single headgroup_separator fatty_acyl_chain |
+                 med_hg_double headgroup_separator fatty_acyl_chain2 |
+                 med_hg_triple headgroup_separator fatty_acyl_chain3;
+med_hg_single : 'FA' | 'FOH' | 'FAL' | 'CAR' | 'CoA' | 'NAE' | 'NAT' | 'WD' | 'HC' | 'FAHFA';
+med_hg_double : 'WE' | 'NA';
 med_hg_triple : 'WD';
 
 
@@ -96,7 +99,7 @@ stereo_number : number;
 stereo_type : 'R' | 'S';
 molecular_func_group : molecular_func_group_name | molecular_func_group_name func_group_count;
 func_group_ext_name : round_open_bracket func_group_name round_close_bracket | func_group_name;
-func_group_name : 'Et' | 'Me' | 'Br' | 'Cl' | 'F' | 'I' | 'NO2' | 'My' | 'Ep' | 'OO' | 'dMe' | 'OMe' | 'oxy' | 'NH2' | 'OOH' | 'SH' | 'OH' | 'oxo' | 'CN' | 'Ph' | 'Su' | 'COOH' | 'G' | 'T' | 'COG' | 'COT' | carbohydrate | 'H' | med;
+func_group_name : 'Et' | 'Me' | 'Ac' | 'Br' | 'Cl' | 'F' | 'I' | 'NO2' | 'My' | 'Ep' | 'OO' | 'dMe' | 'OMe' | 'oxy' | 'NH2' | 'OOH' | 'SH' | 'OH' | 'oxo' | 'CN' | 'Ph' | 'Su' | 'COOH' | 'G' | 'T' | 'COG' | 'COT' | carbohydrate | 'H' | med;
 molecular_func_group_name : 'O' | 'N' | 'P' | 'S';
 func_group_cycle : SOB cycle_base SCB | SOB cycle_base funcgroup_separator cycle_func_group_data SCB;
 cycle_base : cycle_def | cycle_def carbon_db_separator cycle_db;

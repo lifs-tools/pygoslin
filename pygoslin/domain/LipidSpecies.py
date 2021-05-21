@@ -102,8 +102,9 @@ class LipidSpecies:
         # if we would have the complete information about all possible FAs in that lipid
         additional_fa = all_lipids[self.headgroup.lipid_class]["poss_fa"]
         remaining_H = all_lipids[self.headgroup.lipid_class]["max_fa"] - additional_fa
-        dummy.elements[Element.O] += additional_fa - self.info.num_ethers - self.headgroup.sp_exception
-        dummy.elements[Element.H] -= additional_fa - remaining_H - 2 * self.info.num_ethers
+        hydrochain = int("HC" in all_lipids[self.headgroup.lipid_class]["specials"])
+        dummy.elements[Element.O] -= -additional_fa + self.info.num_ethers + self.headgroup.sp_exception + hydrochain
+        dummy.elements[Element.H] += -additional_fa + remaining_H + 2 * self.info.num_ethers + 2 * hydrochain
         
         return dummy.elements
         
