@@ -142,7 +142,12 @@ class FattyAcid(FunctionalGroup):
                         else: fa_string.append(";%s" % fg)
         
         else:
-            if num_oxygen > 0: fa_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
+            elements = self.get_functional_group_elements()
+            additional_elements = ";".join("%s%s" % (element_shortcut[e], str(elements[e]) if elements[e] > 1 else "") for e in element_order[2:] if e in elements and elements[e] > 0)
+            
+            if len(additional_elements) > 0:
+                fa_string.append(";")
+                fa_string.append(additional_elements)
         
         return "".join(fa_string)
     

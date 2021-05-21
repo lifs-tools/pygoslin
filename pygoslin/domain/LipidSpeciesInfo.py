@@ -25,7 +25,7 @@ SOFTWARE.
 
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
-from pygoslin.domain.Element import Element
+from pygoslin.domain.Element import *
 from pygoslin.domain.LipidClass import all_lipids
 from pygoslin.domain.FunctionalGroup import FunctionalGroup
 
@@ -74,13 +74,16 @@ class LipidSpeciesInfo(FattyAcid):
     
     def to_string(self):
         global ether_prefix
-
-        elements = self.get_elements()
-        num_oxygen = elements[Element.O]
         
         info_string = [ether_prefix[self.num_ethers]]
         info_string.append("%i:%i" % (self.num_carbon, self.double_bonds))
-        if num_oxygen > 0:
-            info_string.append(";O%s" % (str(num_oxygen) if num_oxygen > 1 else ""))
+        
+
+        elements = self.get_elements()
+        additional_elements = ";".join("%s%s" % (element_shortcut[e], str(elements[e]) if elements[e] > 1 else "") for e in element_order[2:] if e in elements and elements[e] > 0)
+        
+        if len(additional_elements) > 0:
+            info_string.append(";")
+            info_string.append(additional_elements)
             
         return "".join(info_string)

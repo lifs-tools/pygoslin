@@ -33,7 +33,10 @@ fatty_acid: regular_fatty_acid | wax | CAR | ethanolamine | amine | acetic_acid;
 wax : wax_ester fatty_acid_type | wax_ester regular_fatty_acid;
 wax_ester : fatty_acid SPACE | ROB fatty_acid RCB SPACE | methyl SPACE | methyl DASH;
 methyl : 'methyl';
-CAR : car_positions DASH SOB fatty_acid SCB '-4-(trimethylazaniumyl)butanoate';
+CAR : car_positions DASH CAR_fa '-4-(' CAR_spec ')butanoate';
+CAR_fa : SOB regular_fatty_acid SCB | COB regular_fatty_acid CCB;
+CAR_spec : 'trimethylammonio' | 'trimethylazaniumyl';
+
 car_positions : functional_position | ROB car_position RCB DASH functional_position;
 ethanolamine : amine_prefix ROB fatty_acid RCB DASH 'ethanolamine';
 amine : amine_prefix amine_n DASH regular_fatty_acid SPACE 'amine';

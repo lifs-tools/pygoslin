@@ -123,8 +123,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["func_group_name_pre_event"] = self.set_functional_group_name
         self.registered_events["func_group_count_pre_event"] = self.set_functional_group_count
         self.registered_events["stereo_type_pre_event"] = self.set_functional_group_stereo
-        self.registered_events["func_group_placeholder_pre_event"] = self.set_placeholder
-        self.registered_events["func_group_placeholder_number_pre_event"] = self.set_functional_group_count
+        self.registered_events["molecular_func_group_name_pre_event"] = self.set_molecular_func_group
         
         ## set cycle events
         self.registered_events["func_group_cycle_pre_event"] = self.set_cycle
@@ -507,8 +506,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.tmp["fa%i" % len(self.current_fa)]["fg_stereo"] = node.get_text()
         
         
-    def set_placeholder(self, node):
-        self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = "O"
+    def set_molecular_func_group(self, node):
+        self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = node.get_text()
         self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
         
         
@@ -579,6 +578,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
+        
+        if self.headgroup == "HC": self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.AMINE
         
         headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
 

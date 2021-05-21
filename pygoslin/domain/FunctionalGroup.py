@@ -248,14 +248,14 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
                            "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
                            "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
-                           "Ac": FunctionalGroup("Ac", elements = {Element.C: 2, Element.O: 2, Element.H: 2}, double_bonds = 1),
+                           "Ac": FunctionalGroup("Ac", elements = {Element.C: 2, Element.O: 2, Element.H: 2}),
                            "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 1}),
                            "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}),
                            "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),
                            "SH": FunctionalGroup("SH", elements = {Element.S: 1}),
                            "CN": FunctionalGroup("CN", elements = {Element.C: 1, Element.N: 1, Element.H: -1}),
-                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.O: 4, Element.H: 1}, double_bonds = 1),
-                           "S": FunctionalGroup("S", elements = {Element.S: 1, Element.O: 4}, double_bonds = 2),
+                           "Ph": FunctionalGroup("Ph", elements = {Element.P: 1, Element.O: 4, Element.H: 1}),
+                           "Su": FunctionalGroup("Su", elements = {Element.S: 1, Element.O: 4}),
                            "T": FunctionalGroup("T", elements = {Element.S: 1, Element.O: 3, Element.H: 1}),
                            "G": FunctionalGroup("G", elements = {Element.N: 1, Element.H: 1}),
                            "Hex": HeadgroupDecorator("Hex", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
@@ -283,13 +283,20 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "Xyl": HeadgroupDecorator("Xyl", elements = {Element.C: 29, Element.H: 52, Element.O: 26}),
                            "COG": HeadgroupDecorator("COG", elements = {Element.C: 18, Element.H: 19, Element.N: 5, Element.O: 1}),
                            "COT": HeadgroupDecorator("COT", elements = {Element.C: 6, Element.H: 14, Element.N: 2, Element.O: 2}),
-                           
-                           "H": FunctionalGroup("H", elements = {Element.H: 1}),
-                           "OGlcNAc": HeadgroupDecorator("OGlcNAc", elements = {}),
                            "OGlc": HeadgroupDecorator("OGlc", elements = {Element.C: 6, Element.H: 10, Element.O: 5}),
+                           "H": FunctionalGroup("H", elements = {Element.H: 1}),
+                           
+                           "OGlcNAc": HeadgroupDecorator("OGlcNAc", elements = {}),
                            "NeuAc2": HeadgroupDecorator("NeuAc2", elements = {}),
+                           
                            "O": FunctionalGroup("O", elements = {Element.O: 1}),
-                           "Pa": FunctionalGroup("Pa", elements = {Element.P: 1, Element.H: 3})
+                           "N": FunctionalGroup("N", elements = {Element.N: 1, Element.H: 1}),
+                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.H: 1}),
+                           "S": FunctionalGroup("S", elements = {Element.S: 1}),
+                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
+                           "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
+                           "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
+                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1})
                            }
 
 
