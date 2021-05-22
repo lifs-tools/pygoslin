@@ -91,7 +91,7 @@ isobut : 'isobutyrate';
 
 
 hydroxyl_positions : hydroxyl_positions pos_separator hydroxyl_positions | hydroxyl_position;
-hydroxyl_position : hydroxyl_number | hydroxyl_number cistrans | hydroxyl_number PRIME cistrans;
+hydroxyl_position : hydroxyl_number | hydroxyl_number cistrans_b | hydroxyl_number PRIME cistrans_b;
 hydroxyl_number : number;
 
 additional_descriptions : additional_descriptions_m | additional_descriptions_m DASH;
@@ -102,7 +102,8 @@ pos_neg : '(+/-)-' | '(+)-' | '(-)-';
 
 double_bond_positions : double_bond_positions_pure DASH | ROB double_bond_positions_pure RCB DASH | double_bond_positions_pure | ROB double_bond_positions_pure RCB;
 double_bond_positions_pure : double_bond_positions_pure pos_separator double_bond_positions_pure | double_bond_position;
-double_bond_position : db_number | db_number cistrans | db_number PRIME | db_number PRIME cistrans | cistrans;
+double_bond_position : db_number | db_number cistrans_b | db_number PRIME | db_number PRIME cistrans_b | cistrans_b;
+cistrans_b : cistrans | ROB cistrans RCB;
 cistrans : 'e' | 'z' | 'r' | 's' | 'a' | 'b' | 'c';
 db_number : number;
 fg_pos_summary : functional_positions DASH;
@@ -113,7 +114,7 @@ functional_positions : functional_positions_pure | ROB functional_positions_pure
 functional_positions_pure : functional_positions_pure pos_separator functional_positions_pure | functional_position;
 single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name | recursion_description | recursion_description DASH;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
-functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'phospho' | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'OH' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy';
+functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'phospho' | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'oh' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy' | 'cysteinyl' | 'phenyl' | 's-glutathionyl' | 's-cysteinyl' | 'butylperoxy' | 'dimethylarsinoyl' | 'methylsulfanyl' | 'imino';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy' | ROB functional_position pos_separator functional_position RCB DASH 'epoxy';
 methylene_group : functional_positions DASH methylene;
 methylene : 'methylene';
@@ -122,7 +123,7 @@ methylene : 'methylene';
 functional_position : functional_position_pure | ROB functional_position_pure RCB;
 functional_position_pure : functional_pos | functional_pos PRIME | functional_pos func_stereo | functional_pos PRIME func_stereo | func_stereo;
 functional_pos : number;
-func_stereo : cistrans;
+func_stereo : cistrans_b;
 reduction : functional_position DASH 'nor' | functional_positions DASH functional_length 'nor';
 homo : 'homo';
 
@@ -131,7 +132,7 @@ cyclo_position : '-cyclo' SOB functional_position pos_separator functional_posit
 
 recursion_description : recursion_position DASH recursion;
 recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fatty_acid CCB;
-recursion_position : ROB functional_positions RCB | recursion_pos | recursion_pos cistrans;
+recursion_position : ROB functional_positions RCB | recursion_pos | recursion_pos cistrans_b;
 recursion_pos : number;
 
 

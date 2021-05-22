@@ -138,12 +138,12 @@ class FattyAcid(FunctionalGroup):
                     
                     else:
                         fg_count = sum([func_group.count for func_group in fg_list])
-                        if fg_count > 1: fa_string.append(";(%s)%i" % (fg, fg_count))
+                        if fg_count > 1: fa_string.append(";(%s)%i" % (fg, fg_count) if not fg_list[0].is_atomic else ";%s%i" % (fg, fg_count))
                         else: fa_string.append(";%s" % fg)
         
         else:
             elements = self.get_functional_group_elements()
-            additional_elements = ";".join("%s%s" % (element_shortcut[e], str(elements[e]) if elements[e] > 1 else "") for e in element_order[2:] if e in elements and elements[e] > 0)
+            additional_elements = ";".join(("%s%i" % (element_shortcut[e], elements[e]) if elements[e] > 1 else "%s" % element_shortcut[e]) for e in element_order[2:] if e in elements and elements[e] > 0)
             
             if len(additional_elements) > 0:
                 fa_string.append(";")

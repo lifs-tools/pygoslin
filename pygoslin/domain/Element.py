@@ -45,6 +45,7 @@ class Element(Enum):
     Cl = 15
     Br = 16
     I = 17
+    As = 18
     
 electron_rest_mass = 0.00054857990946
 
@@ -57,6 +58,7 @@ element_positions = {"C": Element.C,
                     "Cl": Element.Cl,
                     "Br": Element.Br,
                     "I": Element.I,
+                    "As": Element.As,
                     "P'": Element.P32,
                     "S": Element.S,
                     "S'": Element.S34,
@@ -94,6 +96,7 @@ element_masses = {Element.C: 12.0,
                     Element.Cl: 34.968853,
                     Element.F: 18.9984031,
                     Element.I: 126.904473,
+                    Element.As: 74.921595,
                     Element.H2: 2.014101779, 
                     Element.C13: 13.0033548378, 
                     Element.N15: 15.0001088984,
@@ -112,6 +115,7 @@ element_shortcut = {Element.C: "C",
                     Element.S: "S",
                     Element.F: "F",
                     Element.I: "I",
+                    Element.As: "As",
                     Element.Br: "Br",
                     Element.Cl: "Cl",
                     Element.H2: "H'",
@@ -124,7 +128,7 @@ element_shortcut = {Element.C: "C",
                     Element.S34: "S''"
                     }
 
-element_order = [Element.C, Element.H, Element.Br, Element.Cl, Element.F, Element.I, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
+element_order = [Element.C, Element.H, Element.As, Element.Br, Element.Cl, Element.F, Element.I, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
 
 def compute_sum_formula(elements):
     return "".join(["%s%s" % (element_shortcut[e] if elements[e] > 0 else "", str(elements[e]) if elements[e] > 1 else "") for e in element_order])

@@ -28,19 +28,20 @@ from pygoslin.domain.Element import *
 from pygoslin.domain.LipidLevel import LipidLevel
 
 class FunctionalGroup:
-    def __init__(self, name, position = -1, count = 1, double_bonds = 0, stereochemistry = None, elements = None, functional_groups = None):
+    def __init__(self, name, position = -1, count = 1, double_bonds = 0, stereochemistry = None, elements = None, functional_groups = None, is_atomic = False):
         self.name = name
         self.position = position
         self.count = count
         self.stereochemistry = stereochemistry
         self.ring_stereo = ""
         self.double_bonds = double_bonds
+        self.is_atomic = is_atomic
         self.elements = {e: 0 for e in Element} if elements == None else {k: v for k, v in elements.items()}
         self.functional_groups = functional_groups if functional_groups != None else {}
         
         
     def copy(self):
-        functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, double_bonds = self.double_bonds, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()})
+        functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, double_bonds = self.double_bonds, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()}, is_atomic = self.is_atomic)
         for fg, fg_list in self.functional_groups.items():
             if fg not in functional_group.functional_groups: functional_group.functional_groups[fg] = []
             for func_group in fg_list:
@@ -244,11 +245,6 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "OMe": FunctionalGroup("OMe", elements = {Element.O: 1, Element.C: 1, Element.H: 2}), # methoxy
                            "oxy": FunctionalGroup("oxy", elements = {Element.O: 1}), # Alkoxy / ether
                            "Et": FunctionalGroup("Et", elements = {Element.C: 2, Element.H: 4}), # ethyl
-                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1}),
-                           "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
-                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
-                           "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
-                           "Ac": FunctionalGroup("Ac", elements = {Element.C: 2, Element.O: 2, Element.H: 2}, double_bonds = 1),
                            "NH2": FunctionalGroup("NH2", elements = {Element.N: 1, Element.H: 1}),
                            "NO2": FunctionalGroup("NO2", elements = {Element.N: 1, Element.O: 2, Element.H: -1}, double_bonds = 1),
                            "OOH": FunctionalGroup("OOH", elements = {Element.O: 2}),
@@ -289,14 +285,25 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "OGlcNAc": HeadgroupDecorator("OGlcNAc", elements = {}),
                            "NeuAc2": HeadgroupDecorator("NeuAc2", elements = {}),
                            
-                           "O": FunctionalGroup("O", elements = {Element.O: 1}),
-                           "N": FunctionalGroup("N", elements = {Element.N: 1, Element.H: 1}),
-                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.H: 1}),
-                           "S": FunctionalGroup("S", elements = {Element.S: 1}),
-                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}),
-                           "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}),
-                           "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}),
-                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1})
+                           "O": FunctionalGroup("O", elements = {Element.O: 1}, is_atomic = True),
+                           "N": FunctionalGroup("N", elements = {Element.N: 1, Element.H: 1}, is_atomic = True),
+                           "P": FunctionalGroup("P", elements = {Element.P: 1, Element.H: 1}, is_atomic = True),
+                           "S": FunctionalGroup("S", elements = {Element.S: 1}, is_atomic = True),
+                           "Br": FunctionalGroup("Br", elements = {Element.Br: 1, Element.H: -1}, is_atomic = True),
+                           "F": FunctionalGroup("F", elements = {Element.F: 1, Element.H: -1}, is_atomic = True),
+                           "I": FunctionalGroup("I", elements = {Element.I: 1, Element.H: -1}, is_atomic = True),
+                           "Cl": FunctionalGroup("Cl", elements = {Element.Cl: 1, Element.H: -1}, is_atomic = True),
+                           "As": FunctionalGroup("As", elements = {Element.As: 1, Element.H: 1}, is_atomic = True),
+                           
+                           "Ac": FunctionalGroup("Ac", elements = {Element.C: 2, Element.O: 2, Element.H: 2}, double_bonds = 1),
+                           "Cys": FunctionalGroup("Cys", elements = {Element.S: 1, Element.C: 3, Element.N: 1, Element.O: 2, Element.H: 5}, double_bonds = 1),
+                           "Phe": FunctionalGroup("Phe", elements = {Element.C: 6, Element.H: 4}, double_bonds = 4),
+                           "SGlu": FunctionalGroup("SGlu", elements = {Element.C: 10, Element.H: 15, Element.N: 3, Element.O: 6, Element.S: 1}, double_bonds = 4),
+                           "SCys": FunctionalGroup("SCys", elements = {Element.C: 3, Element.H: 5, Element.N: 1, Element.O: 2, Element.S: 1}, double_bonds = 1),
+                           "BOO": FunctionalGroup("BOO", elements = {Element.C: 4, Element.H: 8, Element.O: 2}),
+                           "MMAs": FunctionalGroup("MMAs", elements = {Element.C: 2, Element.H: 5, Element.O: 1, Element.As: 1}),
+                           "SMe": FunctionalGroup("SMe", elements = {Element.C: 1, Element.H: 2, Element.S: 1}),
+                           "NH": FunctionalGroup("NH", elements = {Element.N: 1, Element.H: -1}, double_bonds = 1),
                            }
 
 

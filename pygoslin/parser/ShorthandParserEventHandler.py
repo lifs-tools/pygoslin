@@ -508,7 +508,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def set_molecular_func_group(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = node.get_text()
-        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
         
         
     def add_functional_group(self, node):
