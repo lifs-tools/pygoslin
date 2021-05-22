@@ -47,7 +47,7 @@ second_numbers = {'deca': 10, 'dec': 10, 'eicosa': 20, 'eicos': 20 , 'cosa': 20,
 
 special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20}
 
-func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'phospho': 'Ph', 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluro': 'F', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'Su', 'amino': 'NH2', 'sulfanyl': 'SH', 'methoxy': 'OMe', 'iodo': 'I', 'cyano': 'CN', 'nitro': 'NO2', 'OH': 'OH', 'thio': 'SH', 'mercapto': 'SH', 'carboxy': "COOH", 'acetoxy': 'Ac', 'cysteinyl': 'Cys', 'phenyl': 'Phe', 's-glutathionyl': "SGlu", 's-cysteinyl': "SCys", "butylperoxy": "BOO", "dimethylarsinoyl": "MMAs", "methylsulfanyl": "SMe", "imino": "NH"}
+func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'phospho': 'Ph', 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluro': 'F', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'Su', 'amino': 'NH2', 'sulfanyl': 'SH', 'methoxy': 'OMe', 'iodo': 'I', 'cyano': 'CN', 'nitro': 'NO2', 'OH': 'OH', 'thio': 'SH', 'mercapto': 'SH', 'carboxy': "COOH", 'acetoxy': 'Ac', 'cysteinyl': 'Cys', 'phenyl': 'Phe', 's-glutathionyl': "SGlu", 's-cysteinyl': "SCys", "butylperoxy": "BOO", "dimethylarsinoyl": "MMAs", "methylsulfanyl": "SMe", "imino": "NH", 's-cysteinylglycinyl': "SCG"}
 
 ate = {'formate': 1, 'acetate': 2, 'butyrate': 4, 'propionate': 3, 'valerate': 5, 'isobutyrate': 4}
 
@@ -61,6 +61,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["fatty_acid_post_event"] = self.set_fatty_acid
         
         self.registered_events["acid_single_type_pre_event"] = self.set_fatty_acyl_type
+        self.registered_events["ol_ending_pre_event"] = self.set_fatty_acyl_type
         self.registered_events["double_bond_position_pre_event"] = self.set_double_bond_information
         self.registered_events["double_bond_position_post_event"] = self.add_double_bond_information
         self.registered_events["db_number_post_event"] = self.set_double_bond_position
@@ -121,6 +122,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["hydroxyl_number_pre_event"] = self.add_hydroxyl
         self.registered_events["ol_pre_event"] = self.setup_hydroxyl
         self.registered_events["ol_post_event"] = self.add_hydroxyls
+        self.registered_events["ol_pos_post_event"] = self.set_yl_ending
+        
         
         
         ## wax esters
@@ -166,6 +169,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
         
+    def add_ol(self, node):
+        self.headgroup = "FOH"
+        
+        
+        
     def homo(self, node):
         self.tmp["post_adding"] = list(p[0] for p in self.tmp["fg_pos"])
         
@@ -192,6 +200,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         l = int(node.get_text()) - 1
         if l == 0: return
     
+        curr_fa = self.all_fa[-1]
         if l == 1:
             fname = "Me"
             fg = get_functional_group(fname)
@@ -199,10 +208,28 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             fname = "Et"
             fg = get_functional_group(fname)
         else:
-            fname = "cc"
-            fg = CarbonChain(FattyAcid("FA", num_carbon = l))
+            fa = FattyAcid("FA", num_carbon = l)
+            # shift functional groups
+            for fg_name, fg_list in curr_fa.functional_groups.items():
+                remove_item = []
+                for i, func_group in enumerate(fg_list):
+                    if func_group.position <= l:
+                        remove_item.append(i)
+                        if fg_name not in fa.functional_groups: fa.functional_groups[fg_name] = []
+                        func_group.position = l + 1 - func_group.position
+                        fa.functional_groups[fg_name].append(func_group)
+                for i in remove_item[::-1]:
+                    del curr_fa.functional_groups[fg_name][i]
+            curr_fa.functional_groups = {k: v for k, v in curr_fa.functional_groups.items() if len(v) > 0}
             
-        curr_fa = self.all_fa[-1]
+            #shift double bonds
+            if type(curr_fa.double_bonds) == dict:
+                fa.double_bonds = {l + 1 - k: v for k, v in curr_fa.double_bonds.items() if k <= l}
+                for k in list(k for k in curr_fa.double_bonds if k <= l): del curr_fa.double_bonds[k]
+            
+            fname = "cc"
+            fg = CarbonChain(fa)
+            
         curr_fa.num_carbon -= l
         fg.position = l
         curr_fa.shift_positions(-l)

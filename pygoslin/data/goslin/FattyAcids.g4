@@ -46,17 +46,28 @@ acetic_acid : acetic_recursion 'acetic acid';
 acetic_recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fatty_acid CCB;
 
 regular_fatty_acid : ate_type |
+                     ol_position_description | 
                      additional_len acid_type_regular |
                      additional_len acid_type_double |
                      additional_descriptions double_bond_positions fatty_length acid_type_double |
                      sum_add fatty_length acid_type_regular | 
                      sum_add fatty_length acid_type_double | 
                      fg_pos_summary fatty_length acid_type_double |  
+                     fg_pos_summary double_bond_positions fatty_length acid_type_double |  
                      sum_add double_bond_positions fatty_length acid_type_double;
 
 additional_len : additional_descriptions fatty_length | fatty_length;
 sum_add : fg_pos_summary additional_descriptions;
-
+ol_position_description : ol_position DASH fatty_length ol_ending |
+         fg_pos_summary ol_position DASH fatty_length ol_ending | 
+         fg_pos_summary DASH ol_position DASH fatty_length ol_ending | 
+         sum_add ol_position DASH fatty_length ol_ending | 
+         sum_add DASH ol_position DASH fatty_length ol_ending |
+         additional_descriptions ol_position DASH fatty_length ol_ending |
+         additional_descriptions DASH ol_position DASH fatty_length ol_ending;
+ol_ending : 'ol' | 'nol';
+ol_position : ol_pos | ol_pos PRIME | ol_pos cistrans_b | ol_pos PRIME cistrans_b;
+ol_pos : number;
 
 
 fatty_length : notation_specials | notation_regular | cycle notation_specials | cycle notation_regular;
@@ -114,7 +125,7 @@ functional_positions : functional_positions_pure | ROB functional_positions_pure
 functional_positions_pure : functional_positions_pure pos_separator functional_positions_pure | functional_position;
 single_functional_group : functional_position DASH functional_group_type_name | functional_position functional_group_type_name | recursion_description | recursion_description DASH;
 functional_group_type_name : functional_group_type | ROB functional_group_type RCB;
-functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'phospho' | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'oh' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy' | 'cysteinyl' | 'phenyl' | 's-glutathionyl' | 's-cysteinyl' | 'butylperoxy' | 'dimethylarsinoyl' | 'methylsulfanyl' | 'imino';
+functional_group_type : 'hydroxy' | 'oxo' | 'bromo' | 'thio' | 'keto' | 'methyl' | 'hydroperoxy' | homo | 'phospho' | 'fluro' | 'fluoro' | 'chloro' | methylene | 'sulfooxy' | 'amino' | 'sulfanyl' | 'methoxy' | 'iodo' | 'cyano' | 'nitro' | 'oh' | 'thio' | 'mercapto' | 'carboxy' | 'acetoxy' | 'cysteinyl' | 'phenyl' | 's-glutathionyl' | 's-cysteinyl' | 'butylperoxy' | 'dimethylarsinoyl' | 'methylsulfanyl' | 'imino' | 's-cysteinylglycinyl';
 epoxy : functional_position pos_separator functional_position DASH 'epoxy' | functional_position ROB functional_position RCB DASH 'epoxy' | ROB functional_position pos_separator functional_position RCB DASH 'epoxy';
 methylene_group : functional_positions DASH methylene;
 methylene : 'methylene';
@@ -128,7 +139,7 @@ reduction : functional_position DASH 'nor' | functional_positions DASH functiona
 homo : 'homo';
 
 cycle : 'cyclo';
-cyclo_position : '-cyclo' SOB functional_position pos_separator functional_position SCB;
+cyclo_position : '-cyclo' SOB functional_position pos_separator functional_position SCB | ' cyclo' SOB functional_position pos_separator functional_position SCB | ' cyclo ' SOB functional_position pos_separator functional_position SCB | '-cyclo-' SOB functional_position pos_separator functional_position SCB | ' cyclo-' SOB functional_position pos_separator functional_position SCB;
 
 recursion_description : recursion_position DASH recursion;
 recursion : fatty_acid | ROB fatty_acid RCB | SOB fatty_acid SCB | COB fatty_acid CCB;

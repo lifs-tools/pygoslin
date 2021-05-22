@@ -304,6 +304,7 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "MMAs": FunctionalGroup("MMAs", elements = {Element.C: 2, Element.H: 5, Element.O: 1, Element.As: 1}),
                            "SMe": FunctionalGroup("SMe", elements = {Element.C: 1, Element.H: 2, Element.S: 1}),
                            "NH": FunctionalGroup("NH", elements = {Element.N: 1, Element.H: -1}, double_bonds = 1),
+                           "SCG": FunctionalGroup("SCG", elements = {Element.C: 5, Element.H: 8, Element.O: 3, Element.N: 2, Element.S: 1}, double_bonds = 2),
                            }
 
 
