@@ -51,13 +51,18 @@ func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'phospho': 'Ph', '
 
 ate = {'formate': 1, 'acetate': 2, 'butyrate': 4, 'propionate': 3, 'valerate': 5, 'isobutyrate': 4}
 
-class FattyAcidParserEventHandler(BaseParserEventHandler):
+class SystematicParserEventHandler(BaseParserEventHandler):
     
     def __init__(self):
         super().__init__()
         
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
+        
+        self.registered_events["FA_pre_event"] = self.set_fa
+        self.registered_events["FA_post_event"] = self.build_fa
+        
+        
         self.registered_events["fatty_acid_post_event"] = self.set_fatty_acid
         
         self.registered_events["acid_single_type_pre_event"] = self.set_fatty_acyl_type
@@ -156,9 +161,53 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def reset_lipid(self, node):
         self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.headgroup = ""
-        self.fatty_acyl_stack = [FattyAcid("FA")]
-        self.tmp = {"fa1": {}}
+        self.fatty_acyl_stack = []
+        self.fatty_acyl_list = []
+        self.tmp = {}
+        
         #self.debug = "full"
+        
+        
+        
+    def set_fa(self, node):
+        self.fatty_acyl_stack.append(FattyAcid("FA"))
+        self.tmp["fa1"] = {}
+        
+        
+    
+    def build_fa(self, node):
+        if len(self.fatty_acyl_stack) != 1:
+            raise LipidParsingException("Unable to parse lipid.")
+        
+        if "cyclo_yl" in self.tmp:
+            self.tmp["fg_pos"] = [[1, ""], [self.tmp["cyclo_len"], ""]]
+            self.add_cyclo(node)
+            del self.tmp["cyclo_yl"]
+            del self.tmp["cyclo_len"]
+            
+        
+        if "post_adding" in self.tmp:
+            def add_position(func_group, pos):
+                func_group.position += func_group.position >= pos
+                if type(func_group) == Cycle:
+                    func_group.start += func_group.start >= pos
+                    func_group.end += func_group.end >= pos
+                for fg_name, fg_list in func_group.functional_groups.items():
+                    for fg in fg_list:
+                        add_position(fg, pos)
+            curr_fa = self.fatty_acyl_stack[-1]
+            curr_fa.num_carbon += len(self.tmp["post_adding"])
+            for pos in self.tmp["post_adding"]:
+                add_position(curr_fa, pos)
+                if type(curr_fa.double_bonds) == dict:
+                    curr_fa.double_bonds = {(k + (k >= pos)): v for k, v in curr_fa.double_bonds.items()}
+        
+        if type(self.fatty_acyl_stack[-1].double_bonds) == dict and len(self.fatty_acyl_stack[-1].double_bonds) > 0:
+            if sum(len(ct) > 0 for p, ct in self.fatty_acyl_stack[-1].double_bonds.items()) != len(self.fatty_acyl_stack[-1].double_bonds):
+                self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+                
+        self.fatty_acyl_list.append(self.fatty_acyl_stack.pop())
+        del self.tmp["fa1"]
         
         
         
@@ -735,33 +784,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
-        if "cyclo_yl" in self.tmp:
-            self.tmp["fg_pos"] = [[1, ""], [self.tmp["cyclo_len"], ""]]
-            self.add_cyclo(node)
-            del self.tmp["cyclo_yl"]
-            del self.tmp["cyclo_len"]
-            
-        
-        if "post_adding" in self.tmp:
-            def add_position(func_group, pos):
-                func_group.position += func_group.position >= pos
-                if type(func_group) == Cycle:
-                    func_group.start += func_group.start >= pos
-                    func_group.end += func_group.end >= pos
-                for fg_name, fg_list in func_group.functional_groups.items():
-                    for fg in fg_list:
-                        add_position(fg, pos)
-            curr_fa = self.fatty_acyl_stack[-1]
-            curr_fa.num_carbon += len(self.tmp["post_adding"])
-            for pos in self.tmp["post_adding"]:
-                add_position(curr_fa, pos)
-                if type(curr_fa.double_bonds) == dict:
-                    curr_fa.double_bonds = {(k + (k >= pos)): v for k, v in curr_fa.double_bonds.items()}
-        
-        if type(self.fatty_acyl_stack[-1].double_bonds) == dict and len(self.fatty_acyl_stack[-1].double_bonds) > 0:
-            if sum(len(ct) > 0 for p, ct in self.fatty_acyl_stack[-1].double_bonds.items()) != len(self.fatty_acyl_stack[-1].double_bonds):
-                self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
-        
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
         if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
@@ -771,5 +793,5 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         headgroup = HeadGroup(self.headgroup)
         
         self.content = LipidAdduct()
-        self.content.lipid = lipid_level_class(headgroup, self.fatty_acyl_stack)
+        self.content.lipid = lipid_level_class(headgroup, self.fatty_acyl_list)
             
