@@ -28,6 +28,9 @@ SOFTWARE.
 class LipidException(Exception):
     pass
 
+class ParserException(Exception):
+    pass
+
 class ConstraintViolationException(LipidException):
     pass
 

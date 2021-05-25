@@ -28,7 +28,7 @@ from enum import Enum
 from os import path
 
 import pygoslin
-from pygoslin.domain.LipidExceptions import LipidParsingException, LipidException
+from pygoslin.domain.LipidExceptions import LipidParsingException, LipidException, ParserException
 from itertools import combinations as iter_combinations
 from pygoslin.parser.SumFormulaParserEventHandler import SumFormulaParserEventHandler
 
@@ -103,7 +103,7 @@ class Parser:
             n = self.next_free_rule_index
             self.next_free_rule_index += 1
             return n
-        raise Exception("Error: grammar is too big.")
+        raise ParserException("Error: grammar is too big.")
     
     
     
@@ -136,16 +136,16 @@ class Parser:
             for rule_line in rules:
                 tokens_level_1 = []
                 for t in Parser.split_string(rule_line, Parser.RULE_ASSIGNMENT, self.quote): tokens_level_1.append(t.strip(' '))
-                if len(tokens_level_1) != 2: raise Exception("Error: corrupted token in grammar rule: '%s'" % rule_line);
+                if len(tokens_level_1) != 2: raise ParserException("Error: corrupted token in grammar rule: '%s'" % rule_line);
                 
                 if len(Parser.split_string(tokens_level_1[0], ' ', self.quote)) > 1:
-                    raise Exception("Error: several rule names on left hand side in grammar rule: '%s'" % rule_line);
+                    raise ParserException("Error: several rule names on left hand side in grammar rule: '%s'" % rule_line);
                 
 
                 rule = tokens_level_1[0]
                 
                 if rule ==  Parser.EOF_RULE_NAME:
-                    raise Exception("Error: rule name is not allowed to be called EOF")
+                    raise ParserException("Error: rule name is not allowed to be called EOF")
                 
                 products = [p.strip(' ') for p in Parser.split_string(tokens_level_1[1], Parser.RULE_SEPARATOR, self.quote)]
                 
@@ -156,6 +156,8 @@ class Parser:
                 
                 
                 for product in products:
+                    if len(product) == 0:
+                        raise ParserException("Error: empty product rule in rule: \"%s\"" % rule_line)
                     non_terminals, non_terminal_rules = [], []
                     for NT in Parser.split_string(product, ' ', self.quote):
                         stripedNT = NT.strip(' ')
@@ -213,7 +215,7 @@ class Parser:
                     elif len(non_terminal_rules) == 1:
                         rule_index_1 = non_terminal_rules[0]
                         if rule_index_1 == new_rule_index:
-                            raise Exception("Error: corrupted token in grammar: rule '%s' is not allowed to refer soleley to itself." % rule)
+                            raise ParserException("Error: corrupted token in grammar: rule '%s' is not allowed to refer soleley to itself." % rule)
                         
                         if rule_index_1 not in self.NTtoNT: self.NTtoNT[rule_index_1] = set()
                         self.NTtoNT[rule_index_1].add(new_rule_index)
@@ -226,7 +228,7 @@ class Parser:
             self.parser_event_handler.sanity_check()
             
         else:
-            raise Exception("Error: file '%s' does not exist or can not be opened." % grammar_filename)
+            raise ParserException("Error: file '%s' does not exist or can not be opened." % grammar_filename)
         
         def top_nodes( rule_index):
             collection, collection_top = [rule_index], []
@@ -349,24 +351,24 @@ class Parser:
             sb.append(grammar[current_position : grammar_length])
             
         else:
-            raise Exception("Error: corrupted grammar '%s', ends either in comment or quote" % grammar_filename)
+            raise ParserException("Error: corrupted grammar '%s', ends either in comment or quote" % grammar_filename)
         
         grammar = "".join(sb).replace("\r\n", "").replace("\n", "").replace("\r", "").strip(" ");
         if grammar[-1] != Parser.RULE_TERMINAL:
-            raise Exception("Error: corrupted grammar'%s', last rule has no termininating sign, was: '%s'" % (grammar_filename, grammar[-1]))
+            raise ParserException("Error: corrupted grammar'%s', last rule has no termininating sign, was: '%s'" % (grammar_filename, grammar[-1]))
         
         rules = Parser.split_string(grammar, Parser.RULE_TERMINAL, quote)
         
         if len(rules) < 1:
-            raise Exception("Error: corrupted grammar '%s', grammar is empty" % grammar_filename)
+            raise ParserException("Error: corrupted grammar '%s', grammar is empty" % grammar_filename)
         
         grammar_name_rule = Parser.split_string(rules[0], ' ', quote)
         
         if grammar_name_rule[0] != "grammar":
-            raise Exception("Error: first rule must start with the keyword 'grammar'")
+            raise ParserException("Error: first rule must start with the keyword 'grammar'")
         
         elif len(grammar_name_rule) != 2:
-            raise Exception("Error: incorrect first rule")
+            raise ParserException("Error: incorrect first rule")
         
         return rules
     
@@ -418,7 +420,7 @@ class Parser:
                 
         if len(sb) > 0:
             tokens.append("".join(sb))
-        if in_quote: raise Exception("Error: corrupted token in grammar")
+        if in_quote: raise ParserException("Error: corrupted token in grammar")
         
         return tokens
     

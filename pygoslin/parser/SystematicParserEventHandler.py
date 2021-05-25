@@ -59,11 +59,30 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
         
-        self.registered_events["FA_pre_event"] = self.set_fa
-        self.registered_events["FA_post_event"] = self.build_fa
+        ## FA category
+        self.registered_events["FA_post_event"] = self.build_FA
         
         
+        ## GL category
+        self.registered_events["GL_pre_event"] = self.set_GL
+        self.registered_events["GL_post_event"] = self.build_GL
+        self.registered_events["gl_fa_pre_event"] = self.set_gl_fa
+        self.registered_events["gl_fa2_pre_event"] = self.set_gl_fa
+        self.registered_events["gl_fa3_pre_event"] = self.set_gl_fa
+        self.registered_events["gl_fa_rob_post_event"] = self.add_gl_fa
+        self.registered_events["gl_fa_rob_s_post_event"] = self.add_gl_fa
+        self.registered_events["gl_pos_pre_event"] = self.set_gl_pos
+        self.registered_events["gl_ending_pre_event"] = self.set_gl_class
+        self.registered_events["xdg_xmg_ending_pre_event"] = self.set_gl_class
+        
+        
+        
+        
+        ## fatty acyl
+        self.registered_events["fa_pre_event"] = self.set_fa
+        self.registered_events["fa_post_event"] = self.build_fa
         self.registered_events["fatty_acid_post_event"] = self.set_fatty_acid
+        self.registered_events["acetyl_pre_event"] = self.set_acetyl
         
         self.registered_events["acid_single_type_pre_event"] = self.set_fatty_acyl_type
         self.registered_events["ol_ending_pre_event"] = self.set_fatty_acyl_type
@@ -163,22 +182,34 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         self.headgroup = ""
         self.fatty_acyl_stack = []
         self.fatty_acyl_list = []
+        self.fatty_acyl_dict = {}
         self.tmp = {}
+        self.fatty_acyl = None
         
         #self.debug = "full"
         
         
+    def set_gl_class(self, node):
+        gl_class = node.get_text()
+        if gl_class in {'glycerol', 'rac-glycerol', 'sn-glycerol'}: self.tmp["gl_class"] = ""
+        elif gl_class == '3-o-β-d-galactosyl-sn-glycerol': self.tmp["gl_class"] = "MG"
+        elif gl_class in {'3-o-(6\'-o-α-d-galactosyl-β-d-galactosyl)-sn-glycerol', '3-o-(α-d-galactosyl1-6)-β-d-galactosyl-sn-glycerol'}: self.tmp["gl_class"] = "DG"
+        elif gl_class == '3-(6\'-sulfo-α-d-quinovosyl)-sn-glycerol': self.tmp["gl_class"] = "SQ"
+        
         
     def set_fa(self, node):
         self.fatty_acyl_stack.append(FattyAcid("FA"))
-        self.tmp["fa1"] = {}
+        self.tmp["fa1"] = {"fa_type": ""}
+        
+
+
+    def build_FA(self, node):
+        self.headgroup = self.tmp["fa1"]["fa_type"]
+        self.fatty_acyl_list = self.fatty_acyl_stack
         
         
     
-    def build_fa(self, node):
-        if len(self.fatty_acyl_stack) != 1:
-            raise LipidParsingException("Unable to parse lipid.")
-        
+    def build_fa(self, node):        
         if "cyclo_yl" in self.tmp:
             self.tmp["fg_pos"] = [[1, ""], [self.tmp["cyclo_len"], ""]]
             self.add_cyclo(node)
@@ -206,8 +237,66 @@ class SystematicParserEventHandler(BaseParserEventHandler):
             if sum(len(ct) > 0 for p, ct in self.fatty_acyl_stack[-1].double_bonds.items()) != len(self.fatty_acyl_stack[-1].double_bonds):
                 self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
                 
-        self.fatty_acyl_list.append(self.fatty_acyl_stack.pop())
-        del self.tmp["fa1"]
+                
+                
+    def set_GL(self, node):
+        self.tmp["gl_pos"] = []
+        self.fatty_acyl_stack = []
+        
+        
+        
+    def set_acetyl(self, node):
+        self.fatty_acyl_stack[-1] = FattyAcid("FA", num_carbon = 2)
+        
+        
+        
+    def build_GL(self, node):
+        self.headgroup = self.tmp["gl_class"]
+        del self.tmp["gl_class"]
+        del self.tmp["gl_pos"]
+        if len(self.fatty_acyl_dict) == 1: self.headgroup += "MG"
+        if len(self.fatty_acyl_dict) == 2: self.headgroup += "DG"
+        if len(self.fatty_acyl_dict) == 3: self.headgroup += "TG"
+        
+        lipid_class = get_class(self.headgroup)
+        if lipid_class == UNDEFINED_LIPID_CLASS:
+            raise LipidParsingException("Unknown lipid class '%s'." % self.headgroup)
+        
+        self.fatty_acyl_list = [FattyAcid("FA%i" % i) for i in range(1, all_lipids[lipid_class]["max_fa"] + 1)]
+
+        for fa_pos, fa in self.fatty_acyl_dict.items():
+            self.fatty_acyl_list[fa_pos - 1] = fa
+        
+        
+        
+    def set_gl_fa(self, node):
+        self.tmp["gl_pos"] = []
+        
+        
+        
+    def set_gl_pos(self, node):
+        self.tmp["gl_pos"].append(int(node.get_text()))
+        
+       
+       
+    def add_gl_fa(self, node):
+        if len(self.fatty_acyl_stack) != 1:
+            raise LipidParsingException("Unable to parse lipid.")
+                
+        fa = self.fatty_acyl_stack.pop()
+        
+        fa_type = self.tmp["fa1"]["fa_type"]
+        if (len(fa_type) == 2 and fa_type[-2:] == "yl") or (len(fa_type) >= 3 and fa_type[-3:] != "oyl"):
+            fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
+            if type(fa.double_bonds) == dict and 1 in fa.double_bonds:
+                del fa.double_bonds[1]
+                fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+                
+        for pos in self.tmp["gl_pos"]:
+            fa_copy = fa.copy()
+            fa_copy.name = "FA%i" % pos
+            self.fatty_acyl_dict[pos] = fa_copy
+        self.tmp["gl_pos"] = []
         
         
         
@@ -218,7 +307,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         
         
     def add_ol(self, node):
-        self.headgroup = "FOH"
+        self.tmp["fa1"]["fa_type"] = "FOH"
         
         
         
@@ -235,7 +324,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         
     def set_acetic_acid(self, node):
         self.fatty_acyl_stack[-1].num_carbon += 2
-        self.headgroup = "FA"
+        self.tmp["fa1"]["fa_type"] = "FA"
         
         
         
@@ -306,7 +395,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         
         
     def add_car(self, node):
-        self.headgroup = "CAR"
+        self.tmp["fa1"]["fa_type"] = "CAR"
         
         
         
@@ -316,7 +405,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
     
     
     def set_coa(self, node):
-        self.headgroup = "CoA"
+        self.tmp["fa1"]["fa_type"] = "CoA"
         
         
         
@@ -342,7 +431,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         
     def set_ate(self, node):
         self.fatty_acyl_stack[-1].num_carbon += ate[node.get_text()]
-        self.headgroup = "WE"
+        self.tmp["fa1"]["fa_type"] = "WE"
         
         
         
@@ -358,12 +447,12 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         
         
     def add_amine_name(self, node):
-        self.headgroup = "NA"
+        self.tmp["fa1"]["fa_type"] = "NA"
         
         
         
     def add_ethanolamine(self, node):
-        self.headgroup = "NAE"
+        self.tmp["fa1"]["fa_type"] = "NAE"
         
         
     
@@ -413,7 +502,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
             fname = "cyclo"
             del self.tmp["cyclo_yl"]
         else:
-            fname = self.headgroup
+            fname = self.tmp["fa1"]["fa_type"]
         if fname not in curr_fa.functional_groups: curr_fa.functional_groups[fname] = []
         curr_fa.functional_groups[fname].append(fa)
         
@@ -447,7 +536,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         curr_fa = self.fatty_acyl_stack[-1]
         
         if "noyloxy" in curr_fa.functional_groups:
-            if self.headgroup == "FA": self.headgroup = "FAHFA"
+            if self.tmp["fa1"]["fa_type"] == "FA": self.tmp["fa1"]["fa_type"] = "FAHFA"
             
             while len(curr_fa.functional_groups["noyloxy"]) > 0:
                 fa = curr_fa.functional_groups["noyloxy"].pop()
@@ -459,6 +548,19 @@ class SystematicParserEventHandler(BaseParserEventHandler):
                 if "acyl" not in curr_fa.functional_groups: curr_fa.functional_groups["acyl"] = []
                 curr_fa.functional_groups["acyl"].append(acyl)
             del curr_fa.functional_groups["noyloxy"]
+            
+            
+        elif "nyloxy" in curr_fa.functional_groups:
+            while len(curr_fa.functional_groups["nyloxy"]) > 0:
+                fa = curr_fa.functional_groups["nyloxy"].pop()
+            
+                
+                alkyl = AcylAlkylGroup(fa, alkyl = True)
+                alkyl.position = fa.position
+                
+                if "alkyl" not in curr_fa.functional_groups: curr_fa.functional_groups["alkyl"] = []
+                curr_fa.functional_groups["alkyl"].append(alkyl)
+            del curr_fa.functional_groups["nyloxy"]
             
                 
         elif sum([k[-2:] == "yl" for k in curr_fa.functional_groups]) > 0:
@@ -475,6 +577,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
                         cyclo_len = curr_fa.num_carbon
                         self.tmp['cyclo_len'] = cyclo_len
                         switch_position(curr_fa, 2 + cyclo_len)
+                        if type(curr_fa.double_bonds) == dict: curr_fa.double_bonds = {2 + cyclo_len - k: v for k, v in curr_fa.double_bonds.items()}
                         fa.shift_positions(cyclo_len)
                         
                         for fg, fg_list in fa.functional_groups.items():
@@ -582,7 +685,7 @@ class SystematicParserEventHandler(BaseParserEventHandler):
         
         
     def set_dioic(self, node):
-        self.headgroup = "FA"
+        self.tmp["fa1"]["fa_type"] = "FA"
         
         pos = self.tmp["fg_pos"][1][0] if len(self.tmp["fg_pos"]) == 2 else self.fatty_acyl_stack[-1].num_carbon
         self.fatty_acyl_stack[-1].num_carbon -= 1
@@ -601,15 +704,15 @@ class SystematicParserEventHandler(BaseParserEventHandler):
     def set_fatty_acyl_type(self, node):
         t = node.get_text()
         
-        if t[-2:] == "ol": self.headgroup = "FOH"
-        elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
-        elif t in {"nal", "dial"}: self.headgroup = "FAL"
-        elif t in {"acetate", "noate", "nate"}: self.headgroup = "WE"
+        if t[-2:] == "ol": self.tmp["fa1"]["fa_type"] = "FOH"
+        elif t in {"noic acid", "dioic_acid"}: self.tmp["fa1"]["fa_type"] = "FA"
+        elif t in {"nal", "dial"}: self.tmp["fa1"]["fa_type"] = "FAL"
+        elif t in {"acetate", "noate", "nate"}: self.tmp["fa1"]["fa_type"] = "WE"
         elif t == "ne":
-            self.headgroup = "HC"
+            self.tmp["fa1"]["fa_type"] = "HC"
             self.fatty_acyl_stack[-1].lipid_FA_bond_type = LipidFaBondType.AMINE
             
-        else: self.headgroup = t
+        else: self.tmp["fa1"]["fa_type"] = t
         
         
         

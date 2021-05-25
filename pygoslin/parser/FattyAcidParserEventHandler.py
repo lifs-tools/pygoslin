@@ -411,6 +411,19 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 curr_fa.functional_groups["acyl"].append(acyl)
             del curr_fa.functional_groups["noyloxy"]
             
+            
+        elif "nyloxy" in curr_fa.functional_groups:
+            while len(curr_fa.functional_groups["nyloxy"]) > 0:
+                fa = curr_fa.functional_groups["nyloxy"].pop()
+            
+                
+                alkyl = AcylAlkylGroup(fa, alkyl = True)
+                alkyl.position = fa.position
+                
+                if "alkyl" not in curr_fa.functional_groups: curr_fa.functional_groups["alkyl"] = []
+                curr_fa.functional_groups["alkyl"].append(alkyl)
+            del curr_fa.functional_groups["nyloxy"]
+            
                 
         elif sum([k[-2:] == "yl" for k in curr_fa.functional_groups]) > 0:
             while True:
@@ -426,6 +439,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         cyclo_len = curr_fa.num_carbon
                         self.tmp['cyclo_len'] = cyclo_len
                         switch_position(curr_fa, 2 + cyclo_len)
+                        if type(curr_fa.double_bonds) == dict: curr_fa.double_bonds = {2 + cyclo_len - k: v for k, v in curr_fa.double_bonds.items()}
                         fa.shift_positions(cyclo_len)
                         
                         for fg, fg_list in fa.functional_groups.items():

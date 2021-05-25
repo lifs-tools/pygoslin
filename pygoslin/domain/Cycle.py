@@ -47,14 +47,21 @@ class Cycle(FunctionalGroup):
         if type(start) == int:
             if end - start + 1 != cycle:
                 raise ConstraintViolationException("Cycle data start (%i) and end (%i) values do not correspond to count (%i)!" % (start, end, cycle))
+            
                 
         
-    def clone(self, cyc):
-        pass
+    def copy(self):
+        cy = Cycle(cycle = self.cycle, start = self.start, end = self.end)
+        cy.double_bonds = {k: v for k, v in self.double_bonds.items()} if type(self.double_bonds) == dict else self.double_bonds
+        for fg, fg_list in self.functional_groups.items():
+            cy.functional_groups[fg] = [func_group.copy() for func_group in fg_list]
+        return cy
+                
     
     
     def get_double_bonds(self):
         return super().get_double_bonds() + 1
+    
     
     
     def rearrange_functional_groups(self, parent, shift):

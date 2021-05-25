@@ -57,13 +57,8 @@ class FattyAcid(FunctionalGroup):
         fa.lipid_FA_bond_type = self.lipid_FA_bond_type
         fa.lcb = self.lcb
         fa.double_bonds = {key: value for key, value in self.double_bonds.items()} if type(self.double_bonds) != int else self.double_bonds
-        fa.functional_groups = {}
         for fg, fg_list in self.functional_groups.items():
-            fa.functional_groups[fg] = []
-            for fg_item in fg_list:
-                func_group = FunctionalGroup("")
-                func_group.clone(fg_item)
-                fa.function_groups[fg].append(func_group.copy())
+            fa.functional_groups[fg] = [func_group.copy() for func_group in fg_list]
         return fa
 
         

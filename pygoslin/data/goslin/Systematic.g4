@@ -27,8 +27,39 @@ grammar Systematic;
 
 
 /* first rule is always start rule, EOF = end of file */
-lipid : fatty_acid EOF;
+lipid : lipid_category EOF;
 
+lipid_category : FA | GL | GP | SL | ST;
+
+/* fatty acids */
+FA : fa;
+
+/* glycero lipids */
+GL : gl | xdg | xmg;
+gl : gl_fa DASH gl_ending | gl_fa2 DASH gl_ending | gl_fa3 DASH gl_ending;
+gl_ending : 'glycerol' | sn_rac DASH 'glycerol';
+xdg : gl_fa2 DASH xdg_xmg_ending;
+xmg : gl_fa DASH xdg_xmg_ending;
+xdg_xmg_ending : '3-o-β-d-galactosyl-sn-glycerol' | '3-o-(6\'-o-α-d-galactosyl-β-d-galactosyl)-sn-glycerol' | '3-o-(α-d-galactosyl1-6)-β-d-galactosyl-sn-glycerol' | '3-(6\'-sulfo-α-d-quinovosyl)-sn-glycerol';
+sn_rac : 'rac' | 'sn';
+gl_position : gl_pos | gl_pos DASH 'o';
+gl_pos : number;
+        
+gl_fa : gl_position DASH gl_fa_rob | gl_position gl_fa_rob_s | gl_position DASH ROB number COLON number gl_fa_rob;
+gl_fa2 : gl_position COMMA gl_position DASH 'di' gl_fa_rob | gl_position COMMA gl_position DASH 'di' DASH gl_fa_rob | gl_fa DASH gl_fa;
+gl_fa3 : gl_position COMMA gl_position COMMA gl_position DASH 'tri' gl_fa_rob | gl_fa DASH gl_fa2 | gl_fa2 DASH gl_fa;
+gl_fa_rob : ROB fa RCB | fa;
+gl_fa_rob_s : ROB fa RCB;
+
+
+
+
+
+
+
+
+fa : fatty_acid | acetyl;
+acetyl : 'acetyl';
 fatty_acid: regular_fatty_acid | wax | CAR | ethanolamine | amine | acetic_acid;
 wax : wax_ester fatty_acid_type | wax_ester regular_fatty_acid;
 wax_ester : fatty_acid SPACE | ROB fatty_acid RCB SPACE | methyl SPACE | methyl DASH;
@@ -83,7 +114,7 @@ prosta : 'prosta' | 'prost' | 'prostan';
 
 acid_type_regular: acid_single_type | acid_single_type cyclo_position;
 acid_type_double: db_num acid_type_regular;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl | 'ne';
+acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl | 'ne' | 'nyloxy';
 CoA : 'noyl' coa | 'yl' coa | 'nyl' coa;
 coa : 'coa' | '-coa';
 yl : 'yl' | 'nyl' | 'n' DASH yl_ending DASH 'yl' | DASH yl_ending DASH 'yl';
