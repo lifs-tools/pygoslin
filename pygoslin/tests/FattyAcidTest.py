@@ -33,15 +33,6 @@ from pygoslin.domain.Element import Element
 
 class FattyAcidTest(unittest.TestCase):
     
-    def test_instanceZero(self):
-        instanceZero = FattyAcid("FA1", 2, 0, 0, LipidFaBondType.UNDEFINED, False, 0)
-        assert 0 == instanceZero.num_double_bonds
-        
-        
-    def test_instanceOne(self):
-        instanceOne = FattyAcid("FA1", 2, 1, 0, LipidFaBondType.UNDEFINED, False, 0)
-        assert 1 == instanceOne.num_double_bonds
-            
 
     @unittest.expectedFailure
     def test_wrong_bond_type(self):
@@ -76,11 +67,6 @@ class FattyAcidTest(unittest.TestCase):
     @unittest.expectedFailure
     def test_wrong_db(self):
         instance = FattyAcid("FAX", 1, 0, 0, LipidFaBondType.UNDEFINED, False, 1)
-        
-
-    def test_hydroxyl(self):
-        instance = FattyAcid("FAX", 2, 0, 1, LipidFaBondType.UNDEFINED, False, 1)
-        assert 1 == instance.num_hydroxyl
 
 
     @unittest.expectedFailure

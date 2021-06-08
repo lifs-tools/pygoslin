@@ -83,7 +83,7 @@ prosta : 'prosta' | 'prost' | 'prostan';
 
 acid_type_regular: acid_single_type | acid_single_type cyclo_position;
 acid_type_double: db_num acid_type_regular;
-acid_single_type: 'noic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl | 'ne' | 'yloxy';
+acid_single_type: 'noic acid' | 'nic acid' | 'nal' | dioic | 'noyloxy' | 'noyl' | ol | dial | 'noate' | 'nate' | CoA | yl | 'ne' | 'yloxy';
 CoA : 'noyl' coa | 'yl' coa | 'nyl' coa;
 coa : 'coa' | '-coa';
 yl : 'yl' | 'nyl' | 'n' DASH yl_ending DASH 'yl' | DASH yl_ending DASH 'yl';

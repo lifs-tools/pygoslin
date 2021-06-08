@@ -31,7 +31,7 @@ from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidLevel import LipidLevel
 
 class Cycle(FunctionalGroup):
-    def __init__(self, cycle, start = None, end = None, double_bonds = None, functional_groups = None):
+    def __init__(self, cycle, start = None, end = None, double_bonds = None, functional_groups = None, bridge_chain = None):
         super().__init__("cy", functional_groups = functional_groups)
         self.count = 1
         self.cycle = cycle
@@ -40,13 +40,11 @@ class Cycle(FunctionalGroup):
         self.end = end
         self.double_bonds = double_bonds if double_bonds != None else 0
         self.elements[Element.H] = -2
+        self.bridge_chain = bridge_chain if bridge_chain != None else []
         
         if type(start) != type(end):
             raise ConstraintViolationException("Cycle data start and end values not of same type!")
         
-        if type(start) == int:
-            if end - start + 1 != cycle:
-                raise ConstraintViolationException("Cycle data start (%i) and end (%i) values do not correspond to count (%i)!" % (start, end, cycle))
             
                 
         
@@ -113,15 +111,38 @@ class Cycle(FunctionalGroup):
         
     
     def compute_elements(self):
+        self.elements = {e: 0 for e in element_order}
         self.elements[Element.H] = -2
         if self.double_bonds != None:
             self.elements[Element.H] -= 2 * (self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds))
+            
+        for chain_element in self.bridge_chain:
+            if chain_element == Element.C:
+                self.elements[Element.C] += 1
+                self.elements[Element.H] += 2
+                
+            if chain_element == Element.N:
+                self.elements[Element.N] += 1
+                self.elements[Element.H] += 1
+                
+            if chain_element == Element.O:
+                self.elements[Element.O] += 1
+            
+        # add all implicit carbon chain elements
+        if self.start != None and self.end != None:
+            for i in range(self.end - self.start + 1 + len(self.bridge_chain), self.cycle):
+                self.elements[Element.C] += 1
+                self.elements[Element.H] += 2
+            
         
         
     def to_string(self, level):
         cycle_string = ["["]
         if self.start != None and level == LipidLevel.ISOMERIC_SUBSPECIES:
             cycle_string.append("%i-%i" % (self.start, self.end))
+        
+        if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES} and len(self.bridge_chain) > 0:
+            cycle_string.append("(%s)" % "".join(element_shortcut[e] for e in self.bridge_chain))
         cycle_string.append("cy%i" % self.cycle)    
             
         if self.double_bonds != None:

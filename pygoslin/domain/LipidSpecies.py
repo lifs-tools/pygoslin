@@ -58,6 +58,8 @@ class LipidSpecies:
                 self.info.double_bonds += decorator.get_double_bonds()
         
         
+        
+        
     def get_extended_class(self):
         special_case = self.lipid_category == LipidCategory.GP if self.info != None and self.info.num_carbon > 0 else False
         if special_case and self.info.lipid_FA_bond_type in [LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_UNSPECIFIED]:

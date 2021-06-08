@@ -136,6 +136,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["cycle_db_positions_post_event"] = self.check_cycle_db_positions
         self.registered_events["cycle_db_position_number_pre_event"] = self.set_cycle_db_position
         self.registered_events["cycle_db_position_cis_trans_pre_event"] = self.set_cycle_db_position_cistrans
+        self.registered_events["cylce_element_pre_event"] = self.add_cycle_element
         
         ## set linkage events
         self.registered_events["fatty_acyl_linkage_pre_event"] = self.set_acyl_linkage
@@ -177,6 +178,18 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def set_lipid_level(self, level):
         self.level = self.level if self.level.value < level.value else level
+        
+        
+        
+    def add_cycle_element(self, node):
+        element = node.get_text()
+        if element == "O":
+            self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(Element.O)
+        elif element == "N":
+            self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(Element.N)
+        elif element == "C":
+            self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(Element.C)
+        
         
         
     def set_headgroup_name(self, node):
@@ -332,13 +345,21 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = "cy"
         self.current_fa.append(Cycle(0))
         fa_i = "fa%i" % len(self.current_fa)
-        self.tmp[fa_i] = {}
+        self.tmp[fa_i] = {"cycle_elements": []}
         
         
         
     def add_cycle(self, node):
+        cycle_elements = self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"]
         del self.tmp["fa%i" % len(self.current_fa)]
         cycle = self.current_fa.pop()
+        cycle.bridge_chain = cycle_elements
+        
+        
+        if type(cycle.start) == int and type(cycle.end) == int:
+            if cycle.end - cycle.start + 1 + len(cycle.bridge_chain) != cycle.cycle:
+                raise ConstraintViolationException("Cycle length '%i' does not match with cycle description" % cycle.cycle)
+        
         if "cy" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["cy"] = []
         self.current_fa[-1].functional_groups["cy"].append(cycle)
         

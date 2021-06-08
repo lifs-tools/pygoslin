@@ -119,6 +119,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.db_cistrans = ""
         self.unspecified_ether = False
         self.db_numbers = -1
+        self.debug = "full"
         
 
     def set_head_group_name(self, node):
@@ -167,11 +168,13 @@ class GoslinParserEventHandler(BaseParserEventHandler):
             self.unspecified_ether = False
         else:
             lipid_FA_bond_type = LipidFaBondType.ESTER
-        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1))
+        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1), lipid_FA_bond_type = lipid_FA_bond_type)
 
         
             
     def append_fa(self, node):
+        if self.current_fa.lipid_FA_bond_type == LipidFaBondType.ETHER_UNSPECIFIED:
+            raise LipidException("Lipid with unspecified ether bond cannot be treated properly.")
         
         if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
             raise LipidException("Double bond count does not match with number of double bond positions")

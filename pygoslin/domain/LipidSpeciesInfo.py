@@ -37,7 +37,6 @@ class LipidSpeciesInfo(FattyAcid):
         super().__init__("info")
         
         self.level = None
-        self.num_oxygen = 0
         self.num_ethers = 0
         self.num_specified_fa = 0
         self.total_fa = all_lipids[lipid_class]["max_fa"]

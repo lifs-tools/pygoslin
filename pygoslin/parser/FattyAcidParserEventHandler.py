@@ -567,7 +567,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         t = node.get_text()
         
         if t[-2:] == "ol": self.headgroup = "FOH"
-        elif t in {"noic acid", "dioic_acid"}: self.headgroup = "FA"
+        elif t in {"noic acid", "nic acid", "dioic_acid"}: self.headgroup = "FA"
         elif t in {"nal", "dial"}: self.headgroup = "FAL"
         elif t in {"acetate", "noate", "nate"}: self.headgroup = "WE"
         elif t == "ne":
@@ -719,11 +719,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         t = self.tmp["fg_type"]
         
-        #if t != "acetoxy":
-        if t not in func_groups: raise LipidException("Unknown functional group: '%s'" % t)
-        t = func_groups[t]
-        if len(t) == 0: return
-        fg = get_functional_group(t)
+        if t != "acetoxy":
+            if t not in func_groups: raise LipidException("Unknown functional group: '%s'" % t)
+            t = func_groups[t]
+            if len(t) == 0: return
+            fg = get_functional_group(t)
+        else:
+            fg = AcylAlkylGroup(FattyAcid("O", num_carbon = 2))
         
         if t not in self.fatty_acyl_stack[-1].functional_groups: self.fatty_acyl_stack[-1].functional_groups[t] = []
         for pos in self.tmp["fg_pos"]:
