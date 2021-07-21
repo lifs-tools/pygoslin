@@ -122,7 +122,7 @@ class FattyAcid(FunctionalGroup):
                 if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
         
         elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            for fg in sorted(self.functional_groups.keys()):
+            for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):
                 fg_list = self.functional_groups[fg]
                 if len(fg_list) > 0:
                     

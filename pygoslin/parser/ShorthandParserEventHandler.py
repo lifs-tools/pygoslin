@@ -31,6 +31,7 @@ from pygoslin.domain.LipidCategory import LipidCategory
 from pygoslin.domain.LipidClass import all_lipids
 from pygoslin.domain.Adduct import Adduct
 from pygoslin.domain.HeadGroup import HeadGroup
+from pygoslin.domain.Element import element_positions
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
@@ -183,12 +184,10 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def add_cycle_element(self, node):
         element = node.get_text()
-        if element == "O":
-            self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(Element.O)
-        elif element == "N":
-            self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(Element.N)
-        elif element == "C":
-            self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(Element.C)
+        if element not in element_positions:
+            raise LipidParsingException("Element '%s' unknown" % element);
+            
+        self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(element_positions[element])
         
         
         

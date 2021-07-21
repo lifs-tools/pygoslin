@@ -125,8 +125,19 @@ class Cycle(FunctionalGroup):
                 self.elements[Element.N] += 1
                 self.elements[Element.H] += 1
                 
+            if chain_element == Element.As:
+                self.elements[Element.As] += 1
+                self.elements[Element.H] += 1
+                
+            if chain_element == Element.P:
+                self.elements[Element.P] += 1
+                self.elements[Element.H] += 1
+                
             if chain_element == Element.O:
                 self.elements[Element.O] += 1
+                
+            if chain_element == Element.S:
+                self.elements[Element.S] += 1
             
         # add all implicit carbon chain elements
         if self.start != None and self.end != None:
@@ -142,18 +153,19 @@ class Cycle(FunctionalGroup):
             cycle_string.append("%i-%i" % (self.start, self.end))
         
         if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES} and len(self.bridge_chain) > 0:
-            cycle_string.append("(%s)" % "".join(element_shortcut[e] for e in self.bridge_chain))
+            cycle_string.append("".join(element_shortcut[e] for e in self.bridge_chain))
         cycle_string.append("cy%i" % self.cycle)    
+          
+        if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+            if self.double_bonds != None:
+                if type(self.double_bonds) != int:
+                    cycle_string.append(":%i" % len(self.double_bonds))
+                    db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())] if level == LipidLevel.ISOMERIC_SUBSPECIES else ["%i" % k for k in sorted(self.double_bonds.keys())]
+                    db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
+                    cycle_string.append(db_pos)
+                else:
+                    cycle_string.append(":%i" % self.double_bonds)
             
-        if self.double_bonds != None:
-            if type(self.double_bonds) != int:
-                cycle_string.append(":%i" % len(self.double_bonds))
-                db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())]
-                db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
-                cycle_string.append(db_pos)
-            else:
-                cycle_string.append(":%i" % self.double_bonds)
-        
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
             for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):

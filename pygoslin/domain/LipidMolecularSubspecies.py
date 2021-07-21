@@ -61,7 +61,6 @@ class LipidMolecularSubspecies(LipidSpecies):
             self.fa_list.append(fas)
     
 
-
     def get_extended_class(self):
         return super().get_extended_class()
     
@@ -88,7 +87,6 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     def get_elements(self):
         dummy = FunctionalGroup("headgroup", elements = self.headgroup.get_elements())
-        
         
         # add elements from all fatty acyl chains
         for fa in self.fa_list:

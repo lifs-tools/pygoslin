@@ -16,7 +16,7 @@ import unittest
 
 data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_16:0", "PC 34:1", "C42H82NO8P"],
                 
-        "CL O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me": ["CL O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me", "CL O-16:0;(Me)4/O-16:0;(Me)4/O-16:0;(Me)4/O-16:0;(Me)4", "CL O-20:0_O-20:0_O-20:0_O-20:0", "CL eO-80:0"], # CL eO-80:0
+        "CL O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me": ["CL O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me/O-16:0;3Me,7Me,11Me,15Me", "CL O-16:0;(Me)4/O-16:0;(Me)4/O-16:0;(Me)4/O-16:0;(Me)4", "CL O-20:0_O-20:0_O-20:0_O-20:0", "CL eO-80:0", "C89H182O13P2"], # CL eO-80:0
         
         "PC O-16:0/O-18:1(9Z)": ["PC O-16:0/O-18:1(9Z)", "PC O-16:0/O-18:1(9)", "PC O-16:0_O-18:1", "PC dO-34:1"], # PC dO-34:1
         
@@ -28,7 +28,7 @@ data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_
         
         "Gal-Gal-Glc-Cer(1) 18:1(4E);3OH/24:0": ["Gal-Gal-Glc-Cer(1) 18:1(4E);3OH/24:0", "Gal-Gal-Glc-Cer 18:1(4);OH/24:0", "GalGalGlcCer 18:1;O/24:0", "GalGalGlcCer 42:1;O2", "C60H113NO18"], # GalGalGlcCer 42:1;O2 / C60H113NO18
         
-        "PC 16:0/20:2(5Z,13E);[8-12cy5;11OH;9oxo];15OH": ["PC 16:0/20:2(5Z,13E);[8-12cy5:0;11OH;9oxo];15OH", "PC 16:0/20:2(5,13);OH;[cy5:0;OH;oxo]", "PC 16:0_20:4;O3", "PC 36:4;O3"], # PC 36:4;O3
+        "PC 16:0/20:2(5Z,13E);[8-12cy5;11OH;9oxo];15OH": ["PC 16:0/20:2(5Z,13E);[8-12cy5:0;11OH;9oxo];15OH", "PC 16:0/20:2(5,13);[cy5:0;OH;oxo];OH", "PC 16:0_20:4;O3", "PC 36:4;O3"], # PC 36:4;O3
         
         "PE-N(FA 18:1(9Z)) 16:0/20:4(4Z,8Z,11Z,14Z)": ["PE-N(FA 18:1(9Z)) 16:0/20:4(4Z,8Z,11Z,14Z)", "PE-N(FA 18:1(9)) 16:0/20:4(4,8,11,14)", "PE-N(FA 18:1) 16:0_20:4", "PE-N(FA) 54:5"], # PE-N(FA) 54:5
         
@@ -60,9 +60,9 @@ data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_
         
         "TG O-18:1(9Z)/O-16:0/O-18:1(9Z)": ["TG O-18:1(9Z)/O-16:0/O-18:1(9Z)", "TG O-18:1(9)/O-16:0/O-18:1(9)", "TG O-18:1_O-16:0_O-18:1", "TG tO-52:2"], # TG tO-52:2
         
-        "FA 22:4(4Z,7Z,10Z,18E);[13-17cy5;14OH,16OH];20OH": ["FA 22:4(4Z,7Z,10Z,18E);[13-17cy5:0;14OH,16OH];20OH", "FA 22:4(4,7,10,18);OH;[cy5:0;(OH)2]", "FA 22:5;O3", "FA 22:5;O3", "C22H34O5"], # FA 22:5;O3 / C22H34O5
+        "FA 22:4(4Z,7Z,10Z,18E);[13-17cy5;14OH,16OH];20OH": ["FA 22:4(4Z,7Z,10Z,18E);[13-17cy5:0;14OH,16OH];20OH", "FA 22:4(4,7,10,18);[cy5:0;(OH)2];OH", "FA 22:5;O3", "FA 22:5;O3", "C22H34O5"], # FA 22:5;O3 / C22H34O5
         
-        "FA 20:2(5Z,13E);[8-13cy6;9OH,11OH;11oxy];15OH": ["FA 20:2(5Z,13E);[8-13cy6:0;9OH,11OH;11oxy];15OH", "FA 20:2(5,13);OH;[cy6:0;(OH)2;oxy]", "FA 20:3;O4", "FA 20:3;O4", "C20H34O6"], # FA 20:3;O4 / C20H34O6
+        "FA 20:2(5Z,13E);[8-13cy6;9OH,11OH;11oxy];15OH": ["FA 20:2(5Z,13E);[8-13cy6:0;9OH,11OH;11oxy];15OH", "FA 20:2(5,13);[cy6:0;(OH)2;oxy];OH", "FA 20:3;O4", "FA 20:3;O4", "C20H34O6"], # FA 20:3;O4 / C20H34O6
         
         "FA 20:4(6Z,8E,10E,14Z);5OH,12OH": ["FA 20:4(6Z,8E,10E,14Z);5OH,12OH", "FA 20:4(6,8,10,14);(OH)2", "FA 20:4;O2", "FA 20:4;O2", "C20H32O4"], # FA 20:4;O2 / C20H32O4
         
@@ -88,7 +88,11 @@ data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_
 
         "Hex2Cer(1) 17:1(5E);15Me;3OH,4OH/22:0;2OH": ["Hex2Cer(1) 17:1(5E);15Me;3OH,4OH/22:0;2OH", "Hex2Cer 17:1(5);Me;(OH)2/22:0;OH", "Hex2Cer 18:1;O2/22:0;O", "Hex2Cer 40:1;O4", "C52H99NO15"],
         
-        "Glc-Cer(1) 21:0;[13-15cy3:0];3OH,4OH/22:1(16E);2OH;15oxo": ["Glc-Cer(1) 21:0;[13-15cy3:0];3OH,4OH/22:1(16E);2OH;15oxo", "Glc-Cer 21:0;(OH)2;[cy3:0]/22:1(16);OH;oxo", "GlcCer 21:1;O2/22:2;O2", "GlcCer 43:3;O5", "C49H91NO11"]
+        "Glc-Cer(1) 21:0;[13-15cy3:0];3OH,4OH/22:1(16E);2OH;15oxo": ["Glc-Cer(1) 21:0;[13-15cy3:0];3OH,4OH/22:1(16E);2OH;15oxo", "Glc-Cer 21:0;[cy3:0];(OH)2/22:1(16);OH;oxo", "GlcCer 21:1;O2/22:2;O2", "GlcCer 43:3;O5", "C49H91NO11"],
+        
+        "FA 8:0;[6-8SScy5:0]": ["FA 8:0;[6-8SScy5:0]", "FA 8:0;[SScy5:0]", "FA 8:1;S2", "FA 8:1;S2", "C8H14O2S2"],
+        
+        "FA 20:0;[12-15Ocy5:2(12E,13E);13Me,14Me]": ["FA 20:0;[12-15Ocy5:2(12E,13E);13Me,14Me]", "FA 20:0;[Ocy5:2(12,13);(Me)2]", "FA 22:3;O", "FA 22:3;O", "C22H38O3"]
         }
 
 class ShorthandTest(unittest.TestCase):
@@ -102,6 +106,7 @@ class ShorthandTest(unittest.TestCase):
             results = data[lipid_name]
             lipid = parser.parse(lipid_name)
             formula = results[4] if len(results) > 4 else lipid.get_sum_formula()
+            print(lipid_name, formula)
             
             if len(results) > 4:
                 formula = results[4]

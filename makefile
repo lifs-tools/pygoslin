@@ -9,6 +9,7 @@ test:
 	python3 -m unittest pygoslin.tests.TestFormulas
 	python3 -m unittest pygoslin.tests.MassesTest
 	python3 -m unittest pygoslin.tests.SwissLipidsTest
+	python3 -m unittest pygoslin.tests.ShorthandTest
 	python3 -m unittest pygoslin.tests.GoslinTest
 	python3 -m unittest pygoslin.tests.LipidMapsTest
 	python3 -m unittest pygoslin.tests.HmdbTest
