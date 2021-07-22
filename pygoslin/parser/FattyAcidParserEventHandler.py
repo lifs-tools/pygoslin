@@ -151,6 +151,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["fg_pos_summary_post_event"] = self.add_summary
         self.registered_events["func_stereo_pre_event"] = self.add_func_stereo
         
+        self.debug = "ful"
         
         
     def reset_lipid(self, node):
@@ -158,7 +159,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.headgroup = ""
         self.fatty_acyl_stack = [FattyAcid("FA")]
         self.tmp = {"fa1": {}}
-        #self.debug = "full"
         
         
         
@@ -298,7 +298,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def add_amine(self, node):
-        fa_i = "fa%i" % len(self.fatty_acyl_stack)
         fa = self.fatty_acyl_stack.pop()
         
         fa.name += "1"
@@ -373,7 +372,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def add_wax_ester(self, node):
-        fa_i = "fa%i" % len(self.fatty_acyl_stack)
         fa = self.fatty_acyl_stack.pop()
         
         fa.name += "1"
@@ -540,6 +538,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
         if type(self.fatty_acyl_stack[-1].double_bonds) == int: self.fatty_acyl_stack[-1].double_bonds = {}
+        
+        print(pos, cistrans)
         
         if pos not in self.fatty_acyl_stack[-1].double_bonds or len(self.fatty_acyl_stack[-1].double_bonds[pos]) == 0:
             self.fatty_acyl_stack[-1].double_bonds[pos] = cistrans
