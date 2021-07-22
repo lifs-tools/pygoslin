@@ -151,7 +151,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["fg_pos_summary_post_event"] = self.add_summary
         self.registered_events["func_stereo_pre_event"] = self.add_func_stereo
         
-        self.debug = "ful"
+        #self.debug = "full"
         
         
     def reset_lipid(self, node):
@@ -410,9 +410,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             del curr_fa.functional_groups["noyloxy"]
             
             
-        elif "nyloxy" in curr_fa.functional_groups:
-            while len(curr_fa.functional_groups["nyloxy"]) > 0:
-                fa = curr_fa.functional_groups["nyloxy"].pop()
+        elif "nyloxy" in curr_fa.functional_groups or "yloxy" in curr_fa.functional_groups:
+            yloxy = "nyloxy" if "nyloxy" in curr_fa.functional_groups else "yloxy"
+            
+            while len(curr_fa.functional_groups[yloxy]) > 0:
+                fa = curr_fa.functional_groups[yloxy].pop()
             
                 
                 alkyl = AcylAlkylGroup(fa, alkyl = True)
@@ -420,7 +422,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 
                 if "alkyl" not in curr_fa.functional_groups: curr_fa.functional_groups["alkyl"] = []
                 curr_fa.functional_groups["alkyl"].append(alkyl)
-            del curr_fa.functional_groups["nyloxy"]
+            del curr_fa.functional_groups[yloxy]
             
                 
         elif sum([k[-2:] == "yl" for k in curr_fa.functional_groups]) > 0:
@@ -437,7 +439,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         cyclo_len = curr_fa.num_carbon
                         self.tmp['cyclo_len'] = cyclo_len
                         switch_position(curr_fa, 2 + cyclo_len)
-                        if type(curr_fa.double_bonds) == dict: curr_fa.double_bonds = {2 + cyclo_len - k: v for k, v in curr_fa.double_bonds.items()}
+                        #if type(curr_fa.double_bonds) == dict: curr_fa.double_bonds = {2 + cyclo_len - k: v for k, v in curr_fa.double_bonds.items()}
                         fa.shift_positions(cyclo_len)
                         
                         for fg, fg_list in fa.functional_groups.items():
@@ -538,8 +540,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
         if type(self.fatty_acyl_stack[-1].double_bonds) == int: self.fatty_acyl_stack[-1].double_bonds = {}
-        
-        print(pos, cistrans)
         
         if pos not in self.fatty_acyl_stack[-1].double_bonds or len(self.fatty_acyl_stack[-1].double_bonds[pos]) == 0:
             self.fatty_acyl_stack[-1].double_bonds[pos] = cistrans
