@@ -58,7 +58,7 @@ class LipidMapsTest(unittest.TestCase):
         shorthand_parser = ShorthandParser()
         formula_parser = SumFormulaParser()
     
-        not_implemented, failed, failed_sum = 0, 0, 0
+        not_implemented, failed, failed_sum, sum_masses = 0, 0, 0, 0
         with open("failed.txt", "wt") as output:
             for i, lipid_name in enumerate(lipidnames):
                 name = lipid_name[3]
@@ -77,6 +77,8 @@ class LipidMapsTest(unittest.TestCase):
                 
                 lipid_formula = lipid.get_sum_formula()
                 formula = compute_sum_formula(formula_parser.parse(lipid_name[2]))
+                
+                sum_masses += lipid.get_mass()
                 
                 if formula != lipid_formula:
                     print("%i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
@@ -114,3 +116,5 @@ class LipidMapsTest(unittest.TestCase):
                 
         print("In the test, %i of %i lipids can not be described by nomenclature" % (not_implemented, len(lipidnames)))
         print("In the test, %i of %i lipids failed" % (failed, len(lipidnames) - not_implemented))
+        print("In the test, %i of %i lipid sum formulas failed" % (failed_sum, len(lipidnames) - not_implemented))
+        print("Total mass: %0.3f" % sum_masses)

@@ -54,6 +54,6 @@ class BaseParserEventHandler:
             
             
         if event_name in self.registered_events:
-            if self.debug != None and self.debug != "full": print(event_name)
+            if self.debug != "" and self.debug != None and self.debug != "full": print("%s: \"%s\"" % (event_name, node.get_text()))
             self.registered_events[event_name](node)
             

@@ -151,7 +151,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["fg_pos_summary_post_event"] = self.add_summary
         self.registered_events["func_stereo_pre_event"] = self.add_func_stereo
         
-        #self.debug = "full"
+        self.debug = ""
         
         
     def reset_lipid(self, node):
@@ -253,7 +253,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             if type(curr_fa.double_bonds) != dict: curr_fa.double_bonds = {}
             for k, v in self.tmp[fa_i]["fg_pos_summary"].items():
                 if v in {"E", "Z", ""} and k > 0 and k not in curr_fa.double_bonds: curr_fa.double_bonds[k] = v
-                    
         
         
     def add_car(self, node):
@@ -533,10 +532,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     def add_double_bond_information(self, node):
         fa_i = "fa%i" % len(self.fatty_acyl_stack)
         pos = self.tmp[fa_i]["db_position"]
-        cistrans = self.tmp[fa_i]["db_cistrans"].upper()
+        cistrans = self.tmp[fa_i]["db_cistrans"]
         if cistrans == "" and "fg_pos_summary" in self.tmp[fa_i] and pos in self.tmp[fa_i]["fg_pos_summary"]: cistrans = self.tmp[fa_i]["fg_pos_summary"][pos]
         if pos == 0: return
         
+        cistrans = cistrans.upper();
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
         if type(self.fatty_acyl_stack[-1].double_bonds) == int: self.fatty_acyl_stack[-1].double_bonds = {}

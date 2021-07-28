@@ -94,8 +94,13 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["hydroxyl_lcb_pre_event"] = self.add_hydroxyl_lcb
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
-        
-        self.registered_events["mod_text_pre_event"] = self.increment_hydroxyl
+    
+        self.registered_events["structural_mod_pre_event"] = self.set_structural_subspecies_level
+        self.registered_events["single_mod_pre_event"] = self.set_mod
+        self.registered_events["mod_text_pre_event"] = self.set_mod_text
+        self.registered_events["mod_pos_pre_event"] = self.set_mod_pos
+        self.registered_events["mod_num_pre_event"] = self.set_mod_num
+        self.registered_events["single_mod_post_event"] = self.add_functional_group
         
         
         
@@ -111,6 +116,9 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.db_position = 0
         self.db_cistrans = ""
         self.db_numbers = -1
+        self.mod_text = ""
+        self.mod_pos = -1
+        self.mod_num = 1
         
         
     def set_molecular_subspecies_level(self, node):
@@ -162,11 +170,33 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.level = LipidLevel.SPECIES
         
         
+    def set_structural_subspecies_level(self, node):
+        level = level if level < LipidLevel.STRUCTURAL_SUBSPECIES else LipidLevel.STRUCTURAL_SUBSPECIES
+
+
+    def set_mod(self, node):
+        mod_text = ""
+        mod_pos = -1
+        mod_num = 1
+
+
+    def set_mod_text(self, node):
+        mod_text = node.get_text()
+
+
+    def set_mod_pos(self, node):
+        mod_pos = int(node.get_text())
+
+
+    def set_mod_num(self, node):
+        mod_pos = int(node.get_text())
         
-    def increment_hydroxyl(self, node):
-        functional_group = get_functional_group("OH").copy()
-        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
-        self.current_fa.functional_groups["OH"].append(functional_group)
+        
+        
+    def add_functional_group(self, node):
+        functional_group = get_functional_group(mod_text).copy()
+        if mod_text not in self.current_fa.functional_groups: self.current_fa.functional_groups[mod_text] = []
+        self.current_fa.functional_groups[mod_text].append(functional_group)
           
           
     def new_fa(self, node):
