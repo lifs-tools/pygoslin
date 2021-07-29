@@ -210,6 +210,9 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         lipid = None
         
         headgroup = HeadGroup(self.head_group)
+    
+        max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
+        if max_num_fa != len(self.fa_list): self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
 
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
