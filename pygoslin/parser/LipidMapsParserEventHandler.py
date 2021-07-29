@@ -48,7 +48,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
         
-        self.registered_events["mediator_post_event"] = self.mediator_event
+        self.registered_events["mediator_pre_event"] = self.mediator_event
         self.registered_events["sphingoxine_pre_event"] = self.mediator_event
         self.registered_events["fa_no_hg_pre_event"] = self.pure_fa
         
@@ -102,6 +102,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["mod_num_pre_event"] = self.set_mod_num
         self.registered_events["single_mod_post_event"] = self.add_functional_group
         
+        self.debug = ""
         
         
     def reset_lipid(self, node):
@@ -132,7 +133,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def set_isomeric_level(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.db_position = 0
         self.db_cistrans = ""
         
@@ -145,6 +145,8 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
             else:
                 self.current_fa.double_bonds[self.db_position] = self.db_cistrans
             
+            if self.db_cistrans not in {'E', 'Z'}:
+                self.set_structural_subspecies_level(node)
         
 
     def add_db_position_number(self, node):
@@ -207,8 +209,12 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
             
     def append_fa(self, node):
-        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
-            raise LipidException("Double bond count does not match with number of double bond positions")
+        if type(self.current_fa.double_bonds) != int:
+            if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+                raise LipidException("Double bond count does not match with number of double bond positions")
+        elif self.current_fa.double_bonds > 0:
+                self.set_structural_subspecies_level(node)
+            
         
         if self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
             self.current_fa.position = len(self.fa_list) + 1
@@ -225,9 +231,16 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
     def new_lcb(self, node):
         self.lcb = FattyAcid("LCB")
         self.current_fa = self.lcb
+        self.set_structural_subspecies_level(node)
+        self.current_fa.lcb = True
             
             
     def clean_lcb(self, node):
+        if type(self.current_fa.double_bonds) != int:
+            if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+                raise LipidException("Double bond count does not match with number of double bond positions")
+        elif self.current_fa.double_bonds > 0:
+                self.set_structural_subspecies_level(node)
         self.current_fa = None
         
         
@@ -258,7 +271,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         elif hydroxyl == "t": num_h = 3
         
         if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
-        
         functional_group = get_functional_group("OH").copy()
         functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
@@ -275,7 +287,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
 
     def build_lipid(self, node):
-        
         if self.omit_fa and self.head_group in set(["PA", "PC", "PE", "PG", "PI", "PS"]):
             self.head_group = "L" + self.head_group
         

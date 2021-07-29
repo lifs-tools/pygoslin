@@ -173,11 +173,13 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
             
     def append_fa(self, node):
-        if self.current_fa.lipid_FA_bond_type == LipidFaBondType.ETHER_UNSPECIFIED:
-            raise LipidException("Lipid with unspecified ether bond cannot be treated properly.")
-        
         if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
             raise LipidException("Double bond count does not match with number of double bond positions")
+        elif self.current_fa.double_bonds > 0:
+            self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+            
+        if self.current_fa.lipid_FA_bond_type == LipidFaBondType.ETHER_UNSPECIFIED:
+            raise LipidException("Lipid with unspecified ether bond cannot be treated properly.")
         
         if self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
             self.current_fa.position = len(self.fa_list) + 1
@@ -197,7 +199,10 @@ class GoslinParserEventHandler(BaseParserEventHandler):
             
             
     def clean_lcb(self, node):
-        
+        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+            raise LipidException("Double bond count does not match with number of double bond positions")
+        elif self.current_fa.double_bonds > 0:
+            self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
         self.current_fa = None
         
         
