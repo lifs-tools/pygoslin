@@ -105,7 +105,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.STRUCTURAL_SUBSPECIES
+        self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.lipid = None
         self.head_group = ""
         self.lcb = None
@@ -171,32 +171,33 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def set_structural_subspecies_level(self, node):
-        level = level if level < LipidLevel.STRUCTURAL_SUBSPECIES else LipidLevel.STRUCTURAL_SUBSPECIES
+        self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
 
 
     def set_mod(self, node):
-        mod_text = ""
-        mod_pos = -1
-        mod_num = 1
+        self.mod_text = ""
+        self.mod_pos = -1
+        self.mod_num = 1
 
 
     def set_mod_text(self, node):
-        mod_text = node.get_text()
+        self.mod_text = node.get_text()
 
 
     def set_mod_pos(self, node):
-        mod_pos = int(node.get_text())
+        self.mod_pos = int(node.get_text())
 
 
     def set_mod_num(self, node):
-        mod_pos = int(node.get_text())
+        self.mod_num = int(node.get_text())
         
         
         
     def add_functional_group(self, node):
-        functional_group = get_functional_group(mod_text).copy()
-        if mod_text not in self.current_fa.functional_groups: self.current_fa.functional_groups[mod_text] = []
-        self.current_fa.functional_groups[mod_text].append(functional_group)
+        functional_group = get_functional_group(self.mod_text).copy()
+        functional_group.position = self.mod_pos
+        functional_group.count = self.mod_num
+        self.current_fa.add_functional_group(functional_group)
           
           
     def new_fa(self, node):

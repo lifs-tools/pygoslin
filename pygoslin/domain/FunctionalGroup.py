@@ -88,6 +88,10 @@ class FunctionalGroup:
         
         
         
+    def add_functional_group(self, func_group):
+        if func_group.name not in self.functional_groups: self.functional_groups[func_group.name] = []
+        self.functional_groups[func_group.name].append(func_group)
+        
         
     def to_string(self, level):
         fg_string = ""
@@ -239,6 +243,8 @@ _known_functional_groups = {"OH": FunctionalGroup("OH", elements = {Element.O: 1
                            "My": FunctionalGroup("My", elements = {Element.C: 1}, double_bonds = 1), # methylene
                            "dMe": FunctionalGroup("dMe", elements = {Element.C: 1}), # methylen
                            "oxo": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
+                           "CHO": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
+                           "Ke": FunctionalGroup("oxo", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # keto
                            "COOH": FunctionalGroup("COOH", elements = {Element.C: 1, Element.O: 2}, double_bonds = 1), # carboxyl
                            "Ep": FunctionalGroup("Ep", elements = {Element.O: 1, Element.H: -2}, double_bonds = 1), # epoxy
                            "OO": FunctionalGroup("OO", elements = {Element.O: 2}),  # peroxy
