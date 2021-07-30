@@ -120,4 +120,3 @@ class LipidParser:
             
         raise LipidException("Lipid not found")
 
-#init_tables()

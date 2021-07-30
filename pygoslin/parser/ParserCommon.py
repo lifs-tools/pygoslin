@@ -395,14 +395,14 @@ class Parser:
     
     
     
-    def split_string(text, separator, quote = DEFAULT_QUOTE):
+    def split_string(text, separator, quote = DEFAULT_QUOTE, with_empty = False):
         in_quote, tokens, sb, last_char, last_escaped_backslash = False, [], [], '\0', False
         
         for c in text:
             escaped_backslash = False
             if not in_quote:
                 if c == separator:
-                    if len(sb) > 0: tokens.append("".join(sb))
+                    if len(sb) > 0 or with_empty: tokens.append("".join(sb))
                     sb = []
                 else:
                     if c == quote: in_quote = not in_quote
@@ -418,7 +418,7 @@ class Parser:
             last_escaped_backslash = escaped_backslash
             last_char = c
                 
-        if len(sb) > 0:
+        if len(sb) > 0 or (last_char == ',' and with_empty):
             tokens.append("".join(sb))
         if in_quote: raise ParserException("Error: corrupted token in grammar")
         
