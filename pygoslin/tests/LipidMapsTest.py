@@ -55,9 +55,11 @@ class LipidMapsTest(unittest.TestCase):
         
         for i, lipid_name in enumerate(lipidnames):
             try:
-                lipid = lipid_parser.parse(lipid_name[0])
-                lipid_class = lipid.get_lipid_string(LipidLevel.CLASS)
-                self.assertTrue(lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}, "testing lipid '%s' at position %i" % (lipid_name[0], i))
+                lipidname, correct_lipid_name = lipid_name
+                lipid = lipid_parser.parse(lipidname)
+                self.assertTrue(lipid != None)
+                if correct_lipid_name != "Unsupported lipid" and len(correct_lipid_name) > 0:
+                    self.assertTrue(correct_lipid_name == lipid.get_lipid_string(), "wrong: %s != %s (reference)" % (lipid.get_lipid_string(), correct_lipid_name))
                 
             except Exception as e:
                 if len(lipid_name[1]) > 0:

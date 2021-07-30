@@ -77,7 +77,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["pk_hg_pre_event"] = self.set_head_group_name
         self.registered_events["hg_fa_pre_event"] = self.set_head_group_name
         self.registered_events["hg_che_pre_event"] = self.set_head_group_name
-        self.registered_events["mediator_pre_event"] = self.set_head_group_name
         
         self.registered_events["lcb_pre_event"] = self.new_lcb
         self.registered_events["lcb_post_event"] = self.clean_lcb

@@ -35,7 +35,7 @@ from pygoslin.domain.LipidFaBondType import *
 from pygoslin.domain.Element import Element
 
 class HeadGroup:
-    def __init__(self, headgroup, decorators = None, use_headgroup = None):
+    def __init__(self, headgroup, decorators = None, use_headgroup = False):
         self.headgroup = headgroup.strip(" ")
         self.lipid_category = get_category(self.headgroup)
         self.lipid_class = get_class(self.headgroup)

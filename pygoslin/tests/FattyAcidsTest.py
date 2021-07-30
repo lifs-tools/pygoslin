@@ -62,7 +62,7 @@ class LipidMapsTest(unittest.TestCase):
         with open("failed.txt", "wt") as output:
             for i, lipid_name in enumerate(lipidnames):
                 name = lipid_name[3]
-                if i and i % 100 == 0: print(i)
+                #if i and i % 100 == 0: print(i)
                 
                 if name.find("yn") >= 0 or name.find("furan") >= 0 or name[-3:] == "ane" or name[-3:] == "one" or name.find("phosphate") >= 0 or name.find("pyran") >= 0 or name[-5:] == "olide" or name[-4:] == "-one":
                     not_implemented += 1

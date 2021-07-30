@@ -106,7 +106,6 @@ class ShorthandTest(unittest.TestCase):
             results = data[lipid_name]
             lipid = parser.parse(lipid_name)
             formula = results[4] if len(results) > 4 else lipid.get_sum_formula()
-            print(lipid_name, formula)
             
             if len(results) > 4:
                 formula = results[4]
@@ -128,7 +127,7 @@ class ShorthandTest(unittest.TestCase):
         
         
         
-    def test_performance(self):
+    def teest_performance(self):
         cycles, parser = 50, ShorthandParser()
         length = 0
         
