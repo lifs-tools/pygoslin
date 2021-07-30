@@ -86,10 +86,11 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
         
+        self.debug = ""
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.STRUCTURAL_SUBSPECIES
+        self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.lipid = None
         self.head_group = ""
         self.lcb = None
@@ -112,6 +113,10 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
     def add_db_position_number(self, node):
         self.db_position = int(node.get_text())
         
+        
+    def set_structural_subspecies_level(self, node):
+        self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+        
 
     def add_cistrans(self, node):
         self.db_cistrans = node.get_text()
@@ -125,17 +130,16 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
         
     def set_isomeric_level(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.db_position = 0
         self.db_cistrans = ""
         
     
     def set_species_level(self, node):
-        self.level = LipidLevel.SPECIES
+        self.level = self.level if self.level.value < LipidLevel.SPECIES.value else LipidLevel.SPECIES
         
         
     def set_molecular_level(self, node):
-        self.level = LipidLevel.MOLECULAR_SUBSPECIES
+        self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
         
         
     def mediator_event(self, node):
@@ -152,22 +156,26 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.lcb = FattyAcid("LCB")
         self.lcb.lcb = True
         self.current_fa = self.lcb
+        self.set_structural_subspecies_level(node)
             
             
     def clean_lcb(self, node):
-        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
-            raise LipidException("Double bond count does not match with number of double bond positions")
+        if type(self.current_fa.double_bonds) != int:
+            if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+                raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
-            self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+                self.set_structural_subspecies_level(node)
+                
         self.current_fa = None
         
         
             
     def append_fa(self, node):
-        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
-            raise LipidException("Double bond count does not match with number of double bond positions")
+        if type(self.current_fa.double_bonds) != int:
+            if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+                raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
-            self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+                self.set_structural_subspecies_level(node)
         
         elif self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
             self.current_fa.position = len(self.fa_list) + 1
@@ -188,8 +196,8 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
-        if max_num_fa != len(self.fa_list): self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
-
+        if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
+        
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
         if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
@@ -211,8 +219,8 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
             
     def se_species_fa(self, node):
         self.head_group += " 27:1"
-        self.fa_list[-1].num_carbon = 0
-        self.fa_list[-1].num_double_bonds = 0
+        self.fa_list[-1].num_carbon -= 27
+        self.fa_list[-1].double_bonds -= 1
         
         
         

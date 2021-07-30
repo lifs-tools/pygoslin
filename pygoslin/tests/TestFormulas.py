@@ -39,6 +39,8 @@ except:
 swiss_lipids_parser = SwissLipidsParser()
 lipids_maps_parser = LipidMapsParser()
 
+
+
 class TestFormulas(unittest.TestCase):
 
     def test_formulas_swiss_lipids(self):
@@ -62,8 +64,7 @@ class TestFormulas(unittest.TestCase):
                         print("assert for %s: %s != %s" % (row[0], formula, row[1]))
                         assert False
                 except Exception as e:
-                    print(row[0], e)
-                    assert False
+                    assert False, "wrong in %s: %s != %s (reference)" % (row[0], formula, row[1])
 
 
     def test_formulas_lipid_maps(self):

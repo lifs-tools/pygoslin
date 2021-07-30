@@ -89,7 +89,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.STRUCTURAL_SUBSPECIES
+        self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.lipid = None
         self.head_group = ""
         self.lcb = None
@@ -122,17 +122,16 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         
         
     def set_isomeric_level(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.db_position = 0
         self.db_cistrans = ""
         
     
     def set_species_level(self, node):
-        self.level = LipidLevel.SPECIES
+        self.level = self.level if self.level.value < LipidLevel.SPECIES.value else LipidLevel.SPECIES
         
         
     def set_molecular_level(self, node):
-        self.level = LipidLevel.MOLECULAR_SUBSPECIES
+        self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
         
         
     def mediator_event(self, node):
@@ -149,23 +148,26 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.lcb = FattyAcid("LCB")
         self.lcb.lcb = True
         self.current_fa = self.lcb
+        self.set_structural_subspecies_level(node)
             
             
     def clean_lcb(self, node):
-        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
-            raise LipidException("Double bond count does not match with number of double bond positions")
+        if type(self.current_fa.double_bonds) != int:
+            if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+                raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
-            self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+                self.set_structural_subspecies_level(node)
             
         self.current_fa = None
         
         
             
     def append_fa(self, node):
-        if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
-            raise LipidException("Double bond count does not match with number of double bond positions")
+        if type(self.current_fa.double_bonds) != int:
+            if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
+                raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
-            self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+                self.set_structural_subspecies_level(node)
             
         if self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
             self.current_fa.position = len(self.fa_list) + 1
@@ -183,7 +185,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
-        if max_num_fa != len(self.fa_list): self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
+        if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
 
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
@@ -202,6 +204,10 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         if ether in {"o-", "O-"}: self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
         elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         else: raise UnsupportedLipidException("Fatty acyl chain of type '%s' is currently not supported" % ether)
+        
+        
+    def set_structural_subspecies_level(self, node):
+        self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
             
         
     def add_hydroxyl(self, node):

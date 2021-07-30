@@ -61,11 +61,11 @@ class LipidSpecies:
         
         
     def get_extended_class(self):
-        special_case = self.lipid_category == LipidCategory.GP if self.info != None and self.info.num_carbon > 0 else False
-        if special_case and self.info.lipid_FA_bond_type in [LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_UNSPECIFIED]:
+        special_case = self.headgroup.lipid_category == LipidCategory.GP if self.info != None and self.info.num_carbon > 0 else False
+        if special_case and self.info.extended_class in [LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER_UNSPECIFIED]:
             return all_lipids[self.headgroup.lipid_class]["name"] + "-O"
         
-        if special_case and self.info.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
+        if special_case and self.info.extended_class == LipidFaBondType.ETHER_PLASMENYL:
             return all_lipids[self.headgroup.lipid_class]["name"] + "-p"
         
         return all_lipids[self.headgroup.lipid_class]["name"]

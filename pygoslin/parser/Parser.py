@@ -28,7 +28,6 @@ SOFTWARE.
 import pygoslin
 from os import path
 from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
-from pygoslin.parser.GoslinFragmentParserEventHandler import GoslinFragmentParserEventHandler
 from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEventHandler
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
@@ -82,14 +81,6 @@ class FattyAcidParser(Parser):
         return super().parse(lipid_name.lower())
         
         
-class GoslinFragmentParser(Parser):
-    def __init__(self):
-        self.event_handler = GoslinFragmentParserEventHandler()
-        dir_name = path.dirname(pygoslin.__file__)
-        file_name = path.join(dir_name, "data", "goslin", "GoslinFragments.g4")
-        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
-        
-        
 class LipidMapsParser(Parser):
     def __init__(self):
         self.event_handler = LipidMapsParserEventHandler()
@@ -119,7 +110,7 @@ class HmdbParser(Parser):
         
 class LipidParser:
     def __init__(self):
-        self.parser_list = [ShorthandParser(), GoslinParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
+        self.parser_list = [ShorthandParser(), GoslinParser(), FattyAcidParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
         
     def parse(self, lipid_name):
         for parser in self.parser_list:

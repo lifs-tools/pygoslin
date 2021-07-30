@@ -123,7 +123,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def set_molecular_subspecies_level(self, node):
-        self.level = LipidLevel.MOLECULAR_SUBSPECIES
+        self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
         
         
     def mediator_event(self, node):
@@ -169,7 +169,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def set_species_level(self, node):
-        self.level = LipidLevel.SPECIES
+        self.level = self.level if self.level.value < LipidLevel.SPECIES.value else LipidLevel.SPECIES
         
         
     def set_structural_subspecies_level(self, node):

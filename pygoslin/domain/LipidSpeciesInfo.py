@@ -40,6 +40,7 @@ class LipidSpeciesInfo(FattyAcid):
         self.num_ethers = 0
         self.num_specified_fa = 0
         self.total_fa = all_lipids[lipid_class]["max_fa"]
+        self.extended_class = LipidFaBondType.ESTER
         
         
     def add(self, fa):
@@ -48,6 +49,7 @@ class LipidSpeciesInfo(FattyAcid):
         if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
             self.num_ethers += 1
             self.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
+            self.extended_class = fa.lipid_FA_bond_type
                 
         else:
             self.num_specified_fa += 1
