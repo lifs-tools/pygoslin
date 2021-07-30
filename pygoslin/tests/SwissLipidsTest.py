@@ -45,7 +45,7 @@ class SwissLipidsParserTest(unittest.TestCase):
     
     def test_swiss_lipids_parser(self):
         lipidnames = []
-        file_name = os.path.join("pygoslin", "tests", "swiss-lipids-test.csv")
+        file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "swiss-lipids-test.csv")
         with open(file_name, mode = "rt") as infile:
             for line in infile:
                 line = line.strip().strip(" ")

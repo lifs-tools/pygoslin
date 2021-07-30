@@ -511,7 +511,7 @@ class ParserTest(unittest.TestCase):
     def test_parser_read(self):
         global lipid_parser
         lipidnames = []
-        file_name = os.path.join("pygoslin/tests/lipidnames.txt")
+        file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "lipidnames.csv")
         with open(file_name, mode = "rt") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
