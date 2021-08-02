@@ -77,8 +77,8 @@ class FattyAcidParser(Parser):
         file_name = path.join(dir_name, "data", "goslin", "FattyAcids.g4")
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
-    def parse(self, lipid_name):
-        return super().parse(lipid_name.lower())
+    def parse(self, lipid_name, raise_error = True):
+        return super().parse(lipid_name.lower(), raise_error = raise_error)
         
         
 class LipidMapsParser(Parser):
@@ -114,7 +114,7 @@ class LipidParser:
         
     def parse(self, lipid_name):
         for parser in self.parser_list:
-            lipid = parser.parse(lipid_name, False)
+            lipid = parser.parse(lipid_name, raise_error = False)
             if lipid != None:
                 return lipid
             

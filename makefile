@@ -16,7 +16,7 @@ test:
 	python3 -m unittest pygoslin.tests.HmdbTest
 
 distclean:
-	rm -rf build dist pygoslin.egg-info
+	rm -rf build dist pygoslin.egg-info .eggs
 	
 build:
 	python3 -m build
