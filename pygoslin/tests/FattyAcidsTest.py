@@ -60,6 +60,7 @@ class LipidMapsTest(unittest.TestCase):
     
         not_implemented, failed, failed_sum, sum_masses = 0, 0, 0, 0
         with open("failed.txt", "wt") as output:
+            cyclo = open("cyclo.txt", "wt")
             for i, lipid_name in enumerate(lipidnames):
                 name = lipid_name[3]
                 #if i and i % 100 == 0: print(i)
@@ -74,6 +75,8 @@ class LipidMapsTest(unittest.TestCase):
                     failed += 1
                     output.write("'%s','%s',''\n" % (lipid_name[0], name.replace("'", "\\'")))
                     continue
+                
+                if "cy" in lipid.lipid.fa_list[0].functional_groups: cyclo.write("%s,%s,%s\n" % (lipid_name[0], lipid_name[3], lipid.get_lipid_string()))
                 
                 lipid_formula = lipid.get_sum_formula()
                 formula = compute_sum_formula(formula_parser.parse(lipid_name[2]))
@@ -112,7 +115,7 @@ class LipidMapsTest(unittest.TestCase):
                     print("species, %i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
                     failed_sum += 1
                     exit()
-                
+            cyclo.close()   
                 
         print("In the test, %i of %i lipids can not be described by nomenclature" % (not_implemented, len(lipidnames)))
         print("In the test, %i of %i lipids failed" % (failed, len(lipidnames) - not_implemented))

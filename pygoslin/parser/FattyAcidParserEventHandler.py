@@ -437,8 +437,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                     if "cyclo" in self.tmp:
                         cyclo_len = curr_fa.num_carbon
                         self.tmp['cyclo_len'] = cyclo_len
-                        switch_position(curr_fa, 2 + cyclo_len)
-                        #if type(curr_fa.double_bonds) == dict: curr_fa.double_bonds = {2 + cyclo_len - k: v for k, v in curr_fa.double_bonds.items()}
+                        if fa.position != cyclo_len: switch_position(curr_fa, 2 + cyclo_len)
                         fa.shift_positions(cyclo_len)
                         
                         for fg, fg_list in fa.functional_groups.items():
@@ -510,10 +509,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             
             
         elif "cyclo" in self.tmp:
+            self.tmp["cyclo_yl"] = True
             self.tmp["fg_pos"] = [[1, ""], [curr_fa.num_carbon, ""]]
-            self.add_cyclo(node)
+            #self.add_cyclo(node)
             del self.tmp["cyclo"]
-        
+            
             
         
     def set_double_bond_information(self, node):
@@ -751,6 +751,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def build_lipid(self, node):
+        
         if "cyclo_yl" in self.tmp:
             self.tmp["fg_pos"] = [[1, ""], [self.tmp["cyclo_len"], ""]]
             self.add_cyclo(node)
