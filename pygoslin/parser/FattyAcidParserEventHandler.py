@@ -436,7 +436,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                     
                     if "cyclo" in self.tmp:
                         cyclo_len = curr_fa.num_carbon
-                        self.tmp['cyclo_len'] = cyclo_len
+                        self.tmp["cyclo_len"] = cyclo_len
                         if fa.position != cyclo_len: switch_position(curr_fa, 2 + cyclo_len)
                         fa.shift_positions(cyclo_len)
                         
@@ -483,7 +483,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         if "cyclo" in curr_fa.functional_groups:
             fa = curr_fa.functional_groups["cyclo"][0]
             del curr_fa.functional_groups["cyclo"]
-            start_pos, end_pos = curr_fa.num_carbon + 1, curr_fa.num_carbon + (self.tmp["cyclo_len"] if 'cyclo_len' in self.tmp else 5)
+            self.tmp["cyclo_len"] = curr_fa.num_carbon
+            start_pos, end_pos = curr_fa.num_carbon + 1, curr_fa.num_carbon + (self.tmp["cyclo_len"] if "cyclo_len" in self.tmp else 5)
             fa.shift_positions(start_pos - 1)
             
             if "cy" in curr_fa.functional_groups:
@@ -510,8 +511,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             
         elif "cyclo" in self.tmp:
             self.tmp["cyclo_yl"] = True
+            self.tmp["cyclo_len"] = curr_fa.num_carbon
             self.tmp["fg_pos"] = [[1, ""], [curr_fa.num_carbon, ""]]
-            #self.add_cyclo(node)
             del self.tmp["cyclo"]
             
             
