@@ -59,6 +59,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
         self.registered_events["fatty_acid_post_event"] = self.set_fatty_acid
+        self.registered_events["fatty_acid_recursion_post_event"] = self.set_fatty_acid
         
         self.registered_events["acid_single_type_pre_event"] = self.set_fatty_acyl_type
         self.registered_events["ol_ending_pre_event"] = self.set_fatty_acyl_type
@@ -133,12 +134,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["isobut_post_event"] = self.set_iso
         
         ## CoA
-        self.registered_events["CoA_post_event"] = self.set_coa
+        self.registered_events["coa_post_event"] = self.set_coa
         self.registered_events["methyl_pre_event"] = self.set_methyl
         
         ## CAR
-        self.registered_events["CAR_pre_event"] = self.set_car
-        self.registered_events["CAR_post_event"] = self.add_car
+        self.registered_events["car_pre_event"] = self.set_car
+        self.registered_events["car_post_event"] = self.add_car
         
         ## amine
         self.registered_events["ethanolamine_post_event"] = self.add_ethanolamine
