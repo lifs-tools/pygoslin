@@ -28,96 +28,61 @@ import unittest
 import os
 import csv
 
-"""
-try:
-    import pyximport
-    pyximport.install(setup_args = {"script_args" : ["--force"]}, language_level = 3)
-except:
-    print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
-"""
 
 import pygoslin
 from pygoslin.parser.Parser import *
 from pygoslin.parser.ParserCommon import *
 from pygoslin.domain.LipidLevel import *
-from pygoslin.domain.Element import *
-from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.Element import compute_sum_formula
 
 class LipidMapsTest(unittest.TestCase):
     
     def test_parser(self):
-        lipidnames = []
+        lipid_data = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "fatty-acids-test.csv")
         with open(file_name, mode = "rt") as infile:
             lipidreader = csv.reader(infile, delimiter=',', quotechar='"')
             for row in lipidreader:
-                lipidnames.append(row)
+                lipid_data.append(row)
         
         
         lipid_parser = FattyAcidParser()
         shorthand_parser = ShorthandParser()
         formula_parser = SumFormulaParser()
     
-        not_implemented, failed, failed_sum, sum_masses = 0, 0, 0, 0
-        with open("failed.txt", "wt") as output:
-            cyclo = open("cyclo.txt", "wt")
-            for i, lipid_name in enumerate(lipidnames):
-                name = lipid_name[3]
-                #if i and i % 100 == 0: print(i)
+        for lipid_row in lipid_data:
+            
+            
+            lipid_name, formula, expected_lipid_name = lipid_row[0], compute_sum_formula(formula_parser.parse(lipid_row[1])), lipid_row[2]
+            
+            try:
+                lipid = lipid_parser.parse(lipid_name)
+            except Exception:
+                print(lipid_name)
+                continue
+            
+            self.assertEqual(expected_lipid_name, lipid.get_lipid_string(), "%s != %s (computed)" % (expected_lipid_name, lipid.get_lipid_string()))
+            
+            lipid_formula = lipid.get_sum_formula()
+            
+            self.assertEqual(formula, lipid_formula, "lipid '%s': %s != %s (computed)" % (lipid_name, formula, lipid_formula))
                 
-                if name.find("yn") >= 0 or name.find("furan") >= 0 or name[-3:] == "ane" or name[-3:] == "one" or name.find("phosphate") >= 0 or name.find("pyran") >= 0 or name[-5:] == "olide" or name[-4:] == "-one":
-                    not_implemented += 1
-                    continue                
+            if lipid_name.lower().find("cyano") >= 0: continue
+            
+            lipid2 = shorthand_parser.parse(lipid.get_lipid_string())
+            lipid_formula = lipid2.get_sum_formula()
+            
+            self.assertEqual(formula, lipid_formula, "lipid '%s': %s != %s (computed)" % (lipid.get_lipid_string(), formula, lipid_formula))
                 
-                try:
-                    lipid = lipid_parser.parse(name)
-                except Exception as e:
-                    failed += 1
-                    output.write("'%s','%s',''\n" % (lipid_name[0], name.replace("'", "\\'")))
-                    continue
+            lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES))
+            lipid_formula = lipid2.get_sum_formula()
+            
+            self.assertEqual(formula, lipid_formula, "molecular lipid '%s': %s != %s (computed)" % (lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), formula, lipid_formula))
                 
-                if "cy" in lipid.lipid.fa_list[0].functional_groups: cyclo.write("%s,%s,%s\n" % (lipid_name[0], lipid_name[3], lipid.get_lipid_string()))
+            
+            lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.SPECIES))
+            lipid_formula = lipid2.get_sum_formula()
+            
+            self.assertEqual(formula, lipid_formula, "species lipid '%s': %s != %s (computed)" % (lipid.get_lipid_string(LipidLevel.SPECIES), formula, lipid_formula))
                 
-                lipid_formula = lipid.get_sum_formula()
-                formula = compute_sum_formula(formula_parser.parse(lipid_name[2]))
                 
-                sum_masses += lipid.get_mass()
-                
-                if formula != lipid_formula:
-                    print("%i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
-                    failed_sum += 1
-                    exit()
-                    
-                if name.lower().find("cyano") >= 0:
-                    continue
-                
-                lipid2 = shorthand_parser.parse(lipid.get_lipid_string())
-                lipid_formula = lipid2.get_sum_formula()
-                
-                if formula != lipid_formula:
-                    print("current, %i, %s: %s != %s / %s" % (i, lipid_name, formula, lipid_formula, lipid.get_lipid_string()))
-                    failed_sum += 1
-                    exit()
-                    
-                
-                lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES))
-                lipid_formula = lipid2.get_sum_formula()
-                
-                if formula != lipid_formula:
-                    print("molecular subspecies, %i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
-                    failed_sum += 1
-                    exit()
-                
-                lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.SPECIES))
-                lipid_formula = lipid2.get_sum_formula()
-                
-                if formula != lipid_formula:
-                    print("species, %i, %s: %s != %s" % (i, lipid_name, formula, lipid_formula))
-                    failed_sum += 1
-                    exit()
-            cyclo.close()   
-                
-        print("In the test, %i of %i lipids can not be described by nomenclature" % (not_implemented, len(lipidnames)))
-        print("In the test, %i of %i lipids failed" % (failed, len(lipidnames) - not_implemented))
-        print("In the test, %i of %i lipid sum formulas failed" % (failed_sum, len(lipidnames) - not_implemented))
-        print("Total mass: %0.3f" % sum_masses)
