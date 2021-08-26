@@ -110,6 +110,7 @@ class Cycle(FunctionalGroup):
             self.double_bonds = {k + shift: v for k, v in self.double_bonds.items()}
         
     
+    
     def compute_elements(self):
         self.elements = {e: 0 for e in element_order}
         self.elements[Element.H] = -2

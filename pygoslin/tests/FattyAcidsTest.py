@@ -55,11 +55,7 @@ class LipidMapsTest(unittest.TestCase):
             
             lipid_name, formula, expected_lipid_name = lipid_row[0], compute_sum_formula(formula_parser.parse(lipid_row[1])), lipid_row[2]
             
-            try:
-                lipid = lipid_parser.parse(lipid_name)
-            except Exception:
-                print(lipid_name)
-                continue
+            lipid = lipid_parser.parse(lipid_name)
             
             self.assertEqual(expected_lipid_name, lipid.get_lipid_string(), "%s != %s (computed)" % (expected_lipid_name, lipid.get_lipid_string()))
             
@@ -84,5 +80,4 @@ class LipidMapsTest(unittest.TestCase):
             lipid_formula = lipid2.get_sum_formula()
             
             self.assertEqual(formula, lipid_formula, "species lipid '%s': %s != %s (computed)" % (lipid.get_lipid_string(LipidLevel.SPECIES), formula, lipid_formula))
-                
-                
+                    
