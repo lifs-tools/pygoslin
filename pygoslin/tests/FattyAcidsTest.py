@@ -49,35 +49,34 @@ class LipidMapsTest(unittest.TestCase):
         lipid_parser = FattyAcidParser()
         shorthand_parser = ShorthandParser()
         formula_parser = SumFormulaParser()
-    
         for lipid_row in lipid_data:
             
-            
-            lipid_name, formula, expected_lipid_name = lipid_row[0], compute_sum_formula(formula_parser.parse(lipid_row[1])), lipid_row[2]
+            lmid, lipid_name, formula, expected_lipid_name = lipid_row
+            formula = compute_sum_formula(formula_parser.parse(formula))
             
             lipid = lipid_parser.parse(lipid_name)
             
-            self.assertEqual(expected_lipid_name, lipid.get_lipid_string(), "%s != %s (computed)" % (expected_lipid_name, lipid.get_lipid_string()))
+            self.assertEqual(expected_lipid_name, lipid.get_lipid_string(), "%s: %s != %s (computed)" % (lmid, expected_lipid_name, lipid.get_lipid_string()))
             
             lipid_formula = lipid.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "lipid '%s': %s != %s (computed)" % (lipid_name, formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "formula %s: %s != %s (computed)" % (lmid, formula, lipid_formula))
                 
             if lipid_name.lower().find("cyano") >= 0: continue
             
             lipid2 = shorthand_parser.parse(lipid.get_lipid_string())
             lipid_formula = lipid2.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "lipid '%s': %s != %s (computed)" % (lipid.get_lipid_string(), formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "lipid %s: %s != %s (computed)" % (lmid, formula, lipid_formula))
                 
             lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES))
             lipid_formula = lipid2.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "molecular lipid '%s': %s != %s (computed)" % (lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "molecular lipid '%s': %s != %s (computed)" % (lmid, formula, lipid_formula))
                 
             
             lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.SPECIES))
             lipid_formula = lipid2.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "species lipid '%s': %s != %s (computed)" % (lipid.get_lipid_string(LipidLevel.SPECIES), formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "species lipid '%s': %s != %s (computed)" % (lmid, formula, lipid_formula))
                     
