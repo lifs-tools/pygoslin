@@ -78,13 +78,15 @@ class Cycle(FunctionalGroup):
         # shift the cycle
         self.shift_positions(shift)
             
-        ## take back what's mine# check double bonds
+        ## take back what's mine
+        # check double bonds
         if type(parent.double_bonds) == dict and len(parent.double_bonds) > 0:
             self.double_bonds = {db_pos: val for db_pos, val in parent.double_bonds.items() if self.start <= db_pos <= self.end}
             
             for pos in self.double_bonds:
                 del parent.double_bonds[pos]
-                
+        
+        # check functional groups
         remove_list = set()
         for fg, fg_list in fgroup.items():
             remove_item = []
