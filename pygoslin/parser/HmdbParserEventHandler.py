@@ -86,6 +86,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.registered_events["furan_fa_pre_event"] = self.furan_fa
         self.registered_events["interlink_fa_pre_event"] = self.interlink_fa
         self.registered_events["lipid_suffix_pre_event"] = self.lipid_suffix
+        self.registered_events["methyl_pre_event"] = self.add_methyl
         
         
     def reset_lipid(self, node):
@@ -204,6 +205,13 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         if ether in {"o-", "O-"}: self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
         elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
         else: raise UnsupportedLipidException("Fatty acyl chain of type '%s' is currently not supported" % ether)
+    
+    def add_methyl(self, node):
+        functional_group = get_functional_group("Me").copy()
+        functional_group.position = self.current_fa.num_carbon - (1 if node.get_text() == "i-" else 2)
+        self.current_fa.num_carbon -= 1
+        if "Me" not in self.current_fa.functional_groups: self.current_fa.functional_groups["Me"] = []
+        self.current_fa.functional_groups["Me"].append(functional_group)
         
         
     def set_structural_subspecies_level(self, node):
@@ -235,7 +243,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         
         
     def add_carbon(self, node):
-        self.current_fa.num_carbon = int(node.get_text())
+        self.current_fa.num_carbon += int(node.get_text())
         
         
     def furan_fa(self, node):
@@ -247,4 +255,5 @@ class HmdbParserEventHandler(BaseParserEventHandler):
 
 
     def lipid_suffix(self, node):
-        raise UnsupportedLipidException("Lipids with suffix '%s' are currently not supported" % node.get_text())
+        pass
+        #raise UnsupportedLipidException("Lipids with suffix '%s' are currently not supported" % node.get_text())
