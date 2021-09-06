@@ -77,6 +77,10 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["pk_hg_pre_event"] = self.set_head_group_name
         self.registered_events["hg_fa_pre_event"] = self.set_head_group_name
         self.registered_events["hg_che_pre_event"] = self.set_head_group_name
+        self.registered_events["special_cer_hg_pre_event"] = self.set_head_group_name
+        
+        self.registered_events["glyco_struct_pre_event"] = self.add_glyco
+        self.registered_events["glyco_branch_post_event"] = self.glyco_branch
         
         self.registered_events["lcb_pre_event"] = self.new_lcb
         self.registered_events["lcb_post_event"] = self.clean_lcb
@@ -119,6 +123,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.mod_text = ""
         self.mod_pos = -1
         self.mod_num = 1
+        self.headgroup_decorators = []
         
         
     def set_molecular_subspecies_level(self, node):
@@ -183,6 +188,20 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
 
     def set_mod_text(self, node):
         self.mod_text = node.get_text()
+        
+        
+    def add_glyco(self, node):
+        carbohydrate = node.get_text()
+        try:
+            functional_group = get_functional_group(carbohydrate).copy()
+        except Exception:
+            raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
+        
+        self.headgroup_decorators.append(functional_group)
+        
+        
+    def glyco_branch(self, node):
+        self.headgroup_decorators[-1].elements[Element.O] -= 1
 
 
     def set_mod_pos(self, node):
@@ -255,7 +274,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         num_h = int(node.get_text())
         functional_group = get_functional_group("OH").copy()
         
-        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and (self.head_group not in {"Cer", "LCB"} or len(self.headgroup_decorators) > 0): num_h -= 1
         functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
         self.current_fa.functional_groups["OH"].append(functional_group)
@@ -269,7 +288,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         elif hydroxyl == "d": num_h = 2
         elif hydroxyl == "t": num_h = 3
         
-        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and (self.head_group not in {"Cer", "LCB"} or len(self.headgroup_decorators) > 0): num_h -= 1
         functional_group = get_functional_group("OH").copy()
         functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
@@ -294,7 +313,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
         
-        headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
+        headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
         if max_num_fa != len(self.fa_list): self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
