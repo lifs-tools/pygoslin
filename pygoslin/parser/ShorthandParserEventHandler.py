@@ -201,6 +201,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         except Exception:
             raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
         
+        functional_group.elements[Element.O] -= 1
         if "func_group_head" in self.tmp and self.tmp["func_group_head"]:
             self.headgroup_decorators.append(functional_group)
         else:
