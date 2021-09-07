@@ -77,6 +77,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["pk_hg_pre_event"] = self.set_head_group_name
         self.registered_events["hg_fa_pre_event"] = self.set_head_group_name
         self.registered_events["hg_che_pre_event"] = self.set_head_group_name
+        self.registered_events["special_cer_pre_event"] = self.set_head_group_name
         self.registered_events["special_cer_hg_pre_event"] = self.set_head_group_name
         self.registered_events["omega_linoleoyloxy_Cer_pre_event"] = self.set_omega_head_group_name
         
