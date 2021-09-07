@@ -80,7 +80,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["special_cer_hg_pre_event"] = self.set_head_group_name
         
         self.registered_events["glyco_struct_pre_event"] = self.add_glyco
-        self.registered_events["glyco_branch_post_event"] = self.glyco_branch
         
         self.registered_events["lcb_pre_event"] = self.new_lcb
         self.registered_events["lcb_post_event"] = self.clean_lcb
@@ -191,17 +190,16 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
         
     def add_glyco(self, node):
-        carbohydrate = node.get_text()
+        glyco = node.get_text()
         try:
-            functional_group = get_functional_group(carbohydrate).copy()
+            functional_group = get_functional_group(glyco).copy()
         except Exception:
-            raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
+            raise LipidParsingException("Carbohydrate '%s' unknown" % glyco)
         
+        functional_group.elements[Element.O] -= 1
+        print("adding %i" % functional_group.elements[Element.O])
         self.headgroup_decorators.append(functional_group)
         
-        
-    def glyco_branch(self, node):
-        self.headgroup_decorators[-1].elements[Element.O] -= 1
 
 
     def set_mod_pos(self, node):

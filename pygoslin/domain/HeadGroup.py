@@ -71,7 +71,9 @@ class HeadGroup:
             raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
         dummy = FunctionalGroup("dummy", elements = all_lipids[self.lipid_class]["elements"])
-        for hgd in self.decorators: dummy += hgd
+        
+        for hgd in self.decorators:
+            dummy += hgd
         
         if self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] in {"Cer", "SPB"} and len(self.decorators) == 0:
             dummy.elements[Element.O] -= 1
