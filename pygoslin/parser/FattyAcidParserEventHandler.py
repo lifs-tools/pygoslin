@@ -45,7 +45,7 @@ last_numbers = {'un': 1, 'hen': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but':
 
 second_numbers = {'deca': 10, 'dec': 10, 'eicosa': 20, 'eicos': 20 , 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50, 'hexaconta': 60, 'hexacont': 60, 'heptaconta': 70, 'heptacont': 70, 'octaconta': 80, 'octacont': 80, 'nonaconta': 90, 'nonacont': 90}
 
-special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20}
+special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'furan': 5, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20}
 
 func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'phospho': 'Ph', 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluro': 'F', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'Su', 'amino': 'NH2', 'sulfanyl': 'SH', 'methoxy': 'OMe', 'iodo': 'I', 'cyano': 'CN', 'nitro': 'NO2', 'OH': 'OH', 'thio': 'SH', 'mercapto': 'SH', 'carboxy': "COOH", 'acetoxy': 'Ac', 'cysteinyl': 'Cys', 'phenyl': 'Phe', 's-glutathionyl': "SGlu", 's-cysteinyl': "SCys", "butylperoxy": "BOO", "dimethylarsinoyl": "MMAs", "methylsulfanyl": "SMe", "imino": "NH", 's-cysteinylglycinyl': "SCG"}
 
@@ -108,6 +108,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["reduction_pre_event"] = self.set_functional_group
         self.registered_events["reduction_post_event"] = self.reduction
         self.registered_events["homo_post_event"] = self.homo
+        
+        ## furan
+        self.registered_events["tetrahydrofuran_pre_event"] = self.set_furan
         
         
         ## recursion
@@ -201,6 +204,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         if l == 0: return
     
         curr_fa = self.fatty_acyl_stack[-1]
+        
+        if "furan" in self.tmp:
+            curr_fa.num_carbon -= l
+            curr_fa.shift_positions(-l)
+            return
+        
+        
         if l == 1:
             fname = "Me"
             fg = get_functional_group(fname)
@@ -625,6 +635,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def add_cyclo(self, node):
+        
         start = self.tmp["fg_pos"][0][0]
         end = self.tmp["fg_pos"][1][0]
         
@@ -666,8 +677,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             if len(fg_list) == 0: remove_list.add(fg)
             
         for fg in remove_list: del curr_fa.functional_groups[fg]
-
-        cycle = Cycle(end - start + 1, start = start, end = end, double_bonds = cyclo_db, functional_groups = cyclo_fg)
+        
+        bridge_chain = None
+        if "furan" in self.tmp:
+            del self.tmp["furan"]
+            bridge_chain = [Element.O]
+        
+        cycle = Cycle(end - start + 1, start = start, end = end, double_bonds = cyclo_db, functional_groups = cyclo_fg, bridge_chain = bridge_chain)
         if "cy" not in self.fatty_acyl_stack[-1].functional_groups: self.fatty_acyl_stack[-1].functional_groups["cy"] = []
         self.fatty_acyl_stack[-1].functional_groups["cy"].append(cycle)
         
@@ -704,6 +720,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         minus_pos = (sum([1 for p in self.tmp["reduction"] if p < 8]) if "reduction" in self.tmp else 0)
         self.tmp["fg_pos"] = [[8 - minus_pos, ""], [12 - minus_pos, ""]]
         self.tmp["fg_type"] = "cy"
+        
+        
+    def set_furan(self, node):
+        self.tmp["furan"] = True
+        self.set_cycle(node)
         
         
         
