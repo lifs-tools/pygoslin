@@ -78,6 +78,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_fa_pre_event"] = self.set_head_group_name
         self.registered_events["hg_che_pre_event"] = self.set_head_group_name
         self.registered_events["special_cer_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["omega_linoleoyloxy_Cer_pre_event"] = self.set_omega_head_group_name
         
         self.registered_events["glyco_struct_pre_event"] = self.add_glyco
         
@@ -123,6 +124,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.mod_pos = -1
         self.mod_num = 1
         self.headgroup_decorators = []
+        self.add_omega_linoleoyloxy_Cer = False
         
         
     def set_molecular_subspecies_level(self, node):
@@ -168,6 +170,12 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         
     def set_head_group_name(self, node):
         self.head_group = node.get_text()
+        
+        
+        
+    def set_omega_head_group_name(self, node):
+        self.set_head_group_name(node)
+        self.add_omega_linoleoyloxy_Cer = True
         
         
         
@@ -309,6 +317,13 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         if self.lcb != None:
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
+            
+            
+        if self.add_omega_linoleoyloxy_Cer:
+            if len(self.fa_list) != 2:
+                raise LipidException("omega-linoleoyloxy-Cer with a different combination to one long chain base and one fatty acyl chain unknown")
+            if "acyl" not in self.fa_list[-1].functional_groups: self.fa_list[-1].functional_groups["acyl"] = []
+            self.fa_list[-1].functional_groups["acyl"].append(AcylAlkylGroup(FattyAcid("FA", 18, {9: "Z", 12: "Z"})))
         
         headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
     
