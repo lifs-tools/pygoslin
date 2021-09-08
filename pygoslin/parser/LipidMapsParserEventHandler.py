@@ -206,7 +206,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
             raise LipidParsingException("Carbohydrate '%s' unknown" % glyco)
         
         functional_group.elements[Element.O] -= 1
-        print("adding", functional_group.elements[Element.O])
         self.headgroup_decorators.append(functional_group)
         
 

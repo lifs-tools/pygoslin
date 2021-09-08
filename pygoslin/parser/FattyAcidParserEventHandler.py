@@ -207,7 +207,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         if "furan" in self.tmp:
             curr_fa.num_carbon -= l
-            curr_fa.shift_positions(-l)
+            #curr_fa.shift_positions(-l)
             return
         
         
@@ -447,7 +447,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                     if "cyclo" in self.tmp:
                         cyclo_len = curr_fa.num_carbon
                         self.tmp["cyclo_len"] = cyclo_len
-                        if fa.position != cyclo_len: switch_position(curr_fa, 2 + cyclo_len)
+                        if fa.position != cyclo_len: switch_position(curr_fa, 2 - ("furan" in self.tmp) + cyclo_len)
                         fa.shift_positions(cyclo_len)
                         
                         for fg, fg_list in fa.functional_groups.items():
@@ -753,7 +753,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             fg_insert = fg.copy()
             fg_insert.position = pos[0] - (sum([1 for p in self.tmp["reduction"] if p < pos[0]]) if "reduction" in self.tmp else 0)
             self.fatty_acyl_stack[-1].functional_groups[t].append(fg_insert)
-        
         
         
     def set_functional_position(self, node):
