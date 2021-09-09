@@ -110,7 +110,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["homo_post_event"] = self.homo
         
         ## furan
-        self.registered_events["tetrahydrofuran_pre_event"] = self.set_furan
+        self.registered_events["tetrahydrofuran_pre_event"] = self.set_tetrahydrofuran
+        self.registered_events["furan_pre_event"] = self.set_furan
         
         
         ## recursion
@@ -445,6 +446,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 while len(curr_fa.functional_groups[yl]) > 0:
                     fa = curr_fa.functional_groups[yl].pop()
                     if "cyclo" in self.tmp:
+                        
                         cyclo_len = curr_fa.num_carbon
                         self.tmp["cyclo_len"] = cyclo_len
                         if fa.position != cyclo_len: switch_position(curr_fa, 2 - ("furan" in self.tmp) + cyclo_len)
@@ -461,6 +463,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         if type(fa.double_bonds) == dict:
                             for pos, ez in fa.double_bonds.items():
                                 curr_fa.double_bonds[pos + cyclo_len] = ez
+                        if "furan" in self.tmp and self.tmp["furan"] > 0:
+                            if type(curr_fa.double_bonds) == int:
+                                curr_fa.double_bonds += 2
+                            else:
+                                curr_fa.double_bonds[1] = "E"
+                                curr_fa.double_bonds[3] = "E"
                         self.tmp["cyclo_yl"] = True
                         
                     else:
@@ -722,8 +730,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.tmp["fg_type"] = "cy"
         
         
+    def set_tetrahydrofuran(self, node):
+        self.tmp["furan"] = 0
+        self.set_cycle(node)
+        
     def set_furan(self, node):
-        self.tmp["furan"] = True
+        self.tmp["furan"] = 2
         self.set_cycle(node)
         
         
