@@ -68,6 +68,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_number_post_event"] = self.set_double_bond_position
         self.registered_events["cistrans_post_event"] = self.set_cistrans
         self.registered_events["acid_type_double_post_event"] = self.check_db
+        self.registered_events["db_length_pre_event"] = self.open_db_length
+        self.registered_events["db_length_post_event"] = self.close_db_length
         
         ## lengths
         self.registered_events["functional_length_pre_event"] = self.reset_length
@@ -404,40 +406,41 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 for fg in fg_list:
                     switch_position(fg, switch)
                     
-        l, d, num, length_pattern = 0, 0, self.tmp["length_tokens"], self.tmp["length_pattern"]
-        if length_pattern in {"L", "S"}:
-            l += num[0]
+        if "length_pattern" in self.tmp:
+            l, d, num, length_pattern = 0, 0, self.tmp["length_tokens"], self.tmp["length_pattern"]
+            if length_pattern in {"L", "S"}:
+                l += num[0]
+                
+            elif length_pattern == "LS":
+                l += num[0] + num[1]
             
-        elif length_pattern == "LS":
-            l += num[0] + num[1]
-        
-        
-        elif length_pattern in {"LL", "SL", "SS"}:
-            l += num[0]
-            d += num[1]
             
-        elif length_pattern in {"LSL", "LSS"}:
-            l += num[0] + num[1]
-            d += num[2]
+            elif length_pattern in {"LL", "SL", "SS"}:
+                l += num[0]
+                d += num[1]
+                
+            elif length_pattern in {"LSL", "LSS"}:
+                l += num[0] + num[1]
+                d += num[2]
+                
+            elif length_pattern == "LSLS":
+                l += num[0] + num[1]
+                d += num[2] + num[3]
+                
+            elif length_pattern == "SLS":
+                l += num[0]
+                d += num[1] + num[2]
+                
+            elif len(length_pattern) > 0 and length_pattern[0] == "X":
+                l += num[0]
+                d += sum(num[1:])
             
-        elif length_pattern == "LSLS":
-            l += num[0] + num[1]
-            d += num[2] + num[3]
+            elif length_pattern == "LLS": # false
+                raise RuntimeException("Cannot determine fatty acid and double bond length in '%s'" % node.get_text())
             
-        elif length_pattern == "SLS":
-            l += num[0]
-            d += num[1] + num[2]
-            
-        elif length_pattern[0] == "X":
-            l += num[0]
-            d += sum(num[1:])
-        
-        elif length_pattern == "LLS": # false
-            raise RuntimeException("Cannot determine fatty acid and double bond length in '%s'" % node.get_text())
-        
-        curr_fa = self.fatty_acyl_stack[-1]
-        curr_fa.num_carbon += l
-        if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = d
+            curr_fa = self.fatty_acyl_stack[-1]
+            curr_fa.num_carbon += l
+            if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = d
         
         
         if "noyloxy" in curr_fa.functional_groups:
@@ -498,12 +501,13 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         if type(fa.double_bonds) == dict:
                             for pos, ez in fa.double_bonds.items():
                                 curr_fa.double_bonds[pos + cyclo_len] = ez
-                        if "furan" in self.tmp and self.tmp["furan"] > 0:
+                        if "furan" in self.tmp and "tetrahydrofuran" not in self.tmp:
                             if type(curr_fa.double_bonds) == int:
                                 curr_fa.double_bonds += 2
                             else:
                                 curr_fa.double_bonds[1] = "E"
                                 curr_fa.double_bonds[3] = "E"
+                            
                         self.tmp["cyclo_yl"] = True
                         
                     else:
@@ -567,6 +571,11 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             self.tmp["cyclo_len"] = curr_fa.num_carbon
             self.tmp["fg_pos"] = [[1, ""], [curr_fa.num_carbon, ""]]
             del self.tmp["cyclo"]
+        
+        
+        self.tmp["length_pattern"] = ""
+        self.tmp["length_tokens"] = []
+        self.tmp["add_lengths"] = False
             
         
     def set_double_bond_information(self, node):
@@ -789,11 +798,14 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def set_tetrahydrofuran(self, node):
-        self.tmp["furan"] = 0
+        self.tmp["furan"] = True
+        self.tmp["tetrahydrofuran"] = True
         self.set_cycle(node)
         
+        
+        
     def set_furan(self, node):
-        self.tmp["furan"] = 2
+        self.tmp["furan"] = True
         self.set_cycle(node)
         
         
