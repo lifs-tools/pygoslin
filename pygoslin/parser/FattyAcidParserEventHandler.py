@@ -501,13 +501,14 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         if type(fa.double_bonds) == dict:
                             for pos, ez in fa.double_bonds.items():
                                 curr_fa.double_bonds[pos + cyclo_len] = ez
+                        """
                         if "furan" in self.tmp and "tetrahydrofuran" not in self.tmp:
                             if type(curr_fa.double_bonds) == int:
                                 curr_fa.double_bonds += 2
                             else:
                                 curr_fa.double_bonds[1] = "E"
                                 curr_fa.double_bonds[3] = "E"
-                            
+                        """
                         self.tmp["cyclo_yl"] = True
                         
                     else:
@@ -552,12 +553,19 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
                 else: curr_fa.functional_groups[fg] += fg_list
             
-            curr_fa.num_carbon += fa.num_carbon
             
             if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = {}
             if type(fa.double_bonds) == dict:
                 for pos, ez in fa.double_bonds.items():
                     curr_fa.double_bonds[pos + start_pos - 1] = ez
+            if "furan" in self.tmp and "tetrahydrofuran" not in self.tmp:
+                if type(curr_fa.double_bonds) == int:
+                    curr_fa.double_bonds += 2
+                else:
+                    curr_fa.double_bonds[1 + curr_fa.num_carbon] = "E"
+                    curr_fa.double_bonds[3 + curr_fa.num_carbon] = "E"
+                    
+            curr_fa.num_carbon += fa.num_carbon
                     
             self.tmp["fg_pos"] = [[start_pos, ""], [end_pos, ""]]
             self.add_cyclo(node)
@@ -694,7 +702,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         start = self.tmp["fg_pos"][0][0]
         end = self.tmp["fg_pos"][1][0]
-        
             
         cyclo_db = None
         # check double bonds

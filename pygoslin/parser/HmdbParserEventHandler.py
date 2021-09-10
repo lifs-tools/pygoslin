@@ -187,6 +187,24 @@ class HmdbParserEventHandler(BaseParserEventHandler):
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
         if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
+        
+        
+        true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
+        
+        poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        # make lyso
+        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group[:2] != "PIP":
+            self.head_group = "L" + self.head_group
+            headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        
+        if self.level == LipidLevel.SPECIES:
+            if true_fa == 0 and poss_fa != 0:
+                raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
+            
+        elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+            raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
+        
 
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
