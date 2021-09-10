@@ -144,9 +144,9 @@ class Cycle(FunctionalGroup):
             
         # add all implicit carbon chain elements
         if self.start != None and self.end != None:
-            for i in range(self.end - self.start + 1 + len(self.bridge_chain), self.cycle):
-                self.elements[Element.C] += 1
-                self.elements[Element.H] += 2
+            n = max(0, self.cycle - (self.end - self.start + 1 + len(self.bridge_chain)))
+            self.elements[Element.C] += n
+            self.elements[Element.H] += 2 * n
             
         
         

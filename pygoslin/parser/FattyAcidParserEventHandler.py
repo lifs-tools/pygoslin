@@ -45,7 +45,7 @@ last_numbers = {'un': 1, 'hen': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but':
 
 second_numbers = {'deca': 10, 'dec': 10, 'eicosa': 20, 'eicos': 20 , 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50, 'hexaconta': 60, 'hexacont': 60, 'heptaconta': 70, 'heptacont': 70, 'octaconta': 80, 'octacont': 80, 'nonaconta': 90, 'nonacont': 90}
 
-special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'furan': 5, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'docos': 20, 'docosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20}
+special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'furan': 5, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20}
 
 func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'phospho': 'Ph', 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluro': 'F', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'Su', 'amino': 'NH2', 'sulfanyl': 'SH', 'methoxy': 'OMe', 'iodo': 'I', 'cyano': 'CN', 'nitro': 'NO2', 'OH': 'OH', 'thio': 'SH', 'mercapto': 'SH', 'carboxy': "COOH", 'acetoxy': 'Ac', 'cysteinyl': 'Cys', 'phenyl': 'Phe', 's-glutathionyl': "SGlu", 's-cysteinyl': "SCys", "butylperoxy": "BOO", "dimethylarsinoyl": "MMAs", "methylsulfanyl": "SMe", "imino": "NH", 's-cysteinylglycinyl': "SCG"}
 
@@ -404,10 +404,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                 for fg in fg_list:
                     switch_position(fg, switch)
                     
-                    
-        length_pattern = "".join(t[0] for t in self.tmp["length-tokens"])
-        
-        l, d, num = 0, 0, [t[1] for t in self.tmp["length-tokens"]]
+        l, d, num, length_pattern = 0, 0, self.tmp["length_tokens"], self.tmp["length_pattern"]
         if length_pattern in {"L", "S"}:
             l += num[0]
             
@@ -486,8 +483,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         
                         cyclo_len = curr_fa.num_carbon
                         self.tmp["cyclo_len"] = cyclo_len
-                        if fa.position != cyclo_len: switch_position(curr_fa, 2 - ("furan" in self.tmp) + cyclo_len)
+                        if fa.position != cyclo_len and "furan" not in self.tmp: switch_position(curr_fa, 2 + cyclo_len)
                         fa.shift_positions(cyclo_len)
+                        if "furan" in self.tmp: curr_fa.shift_positions(-1)
                         
                         for fg, fg_list in fa.functional_groups.items():
                             if fg not in curr_fa.functional_groups: curr_fa.functional_groups[fg] = fg_list
@@ -651,7 +649,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     def reset_length(self, node):
         self.tmp["length"] = 0
-        self.tmp["length-tokens"] = []
+        self.tmp["length_pattern"] = ""
+        self.tmp["length_tokens"] = []
+        self.tmp["add_lengths"] = True
     
     
     
@@ -662,8 +662,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     
     def set_fatty_length(self, node):
-        pass
-        #self.fatty_acyl_stack[-1].num_carbon += self.tmp["length"]
+        self.tmp["add_lengths"] = False
         
         
         
@@ -744,20 +743,36 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     
     def special_number(self, node):
-        self.tmp["length"] += special_numbers[node.get_text()]
-        self.tmp["length-tokens"].append(["X", special_numbers[node.get_text()]])
+        if self.tmp["add_lengths"]:
+            self.tmp["length"] += special_numbers[node.get_text()]
+            self.tmp["length_pattern"] += "X"
+            self.tmp["length_tokens"].append(special_numbers[node.get_text()])
         
         
         
     def last_number(self, node):
-        self.tmp["length"] += last_numbers[node.get_text()]
-        self.tmp["length-tokens"].append(["L", last_numbers[node.get_text()]])
+        if self.tmp["add_lengths"]:
+            self.tmp["length"] += last_numbers[node.get_text()]
+            self.tmp["length_pattern"] += "L"
+            self.tmp["length_tokens"].append(last_numbers[node.get_text()])
         
         
         
     def second_number(self, node):
-        self.tmp["length"] += second_numbers[node.get_text()]
-        self.tmp["length-tokens"].append(["S", second_numbers[node.get_text()]])
+        if self.tmp["add_lengths"]:
+            self.tmp["length"] += second_numbers[node.get_text()]
+            self.tmp["length_pattern"] += "S"
+            self.tmp["length_tokens"].append(second_numbers[node.get_text()])
+        
+        
+        
+    def open_db_length(self, node):
+        self.tmp["add_lengths"] = True
+        
+        
+        
+    def close_db_length(self, node):
+        self.tmp["add_lengths"] = False
         
         
         
