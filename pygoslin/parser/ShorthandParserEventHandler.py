@@ -356,7 +356,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
         if type(cycle.start) == int and type(cycle.end) == int:
-            if cycle.end - cycle.start + 1 + len(cycle.bridge_chain) != cycle.cycle:
+            if cycle.end - cycle.start + 1 + len(cycle.bridge_chain) < cycle.cycle:
                 raise ConstraintViolationException("Cycle length '%i' does not match with cycle description" % cycle.cycle)
         
         if "cy" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["cy"] = []

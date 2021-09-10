@@ -734,12 +734,12 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             
         for fg in remove_list: del curr_fa.functional_groups[fg]
         
-        bridge_chain = None
+        bridge_chain = []
         if "furan" in self.tmp:
             del self.tmp["furan"]
             bridge_chain = [Element.O]
         
-        cycle = Cycle(end - start + 1, start = start, end = end, double_bonds = cyclo_db, functional_groups = cyclo_fg, bridge_chain = bridge_chain)
+        cycle = Cycle(end - start + 1 + len(bridge_chain), start = start, end = end, double_bonds = cyclo_db, functional_groups = cyclo_fg, bridge_chain = bridge_chain)
         if "cy" not in self.fatty_acyl_stack[-1].functional_groups: self.fatty_acyl_stack[-1].functional_groups["cy"] = []
         self.fatty_acyl_stack[-1].functional_groups["cy"].append(cycle)
         
