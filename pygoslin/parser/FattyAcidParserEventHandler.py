@@ -45,7 +45,7 @@ last_numbers = {'un': 1, 'hen': 1, 'do': 2, 'di': 2, 'tri': 3, 'buta': 4, 'but':
 
 second_numbers = {'deca': 10, 'dec': 10, 'eicosa': 20, 'eicos': 20 , 'cosa': 20, 'cos': 20, 'triaconta': 30, 'triacont': 30, 'tetraconta': 40, 'tetracont': 40, 'pentaconta': 50, 'pentacont': 50, 'hexaconta': 60, 'hexacont': 60, 'heptaconta': 70, 'heptacont': 70, 'octaconta': 80, 'octacont': 80, 'nonaconta': 90, 'nonacont': 90}
 
-special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'furan': 5, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20}
+special_numbers = {'meth': 1, 'etha': 2, 'eth': 2,  'propa': 3, 'isoprop': 3, 'prop': 3, 'propi': 3, 'propio': 3, 'buta': 4, 'but': 4, 'butr': 4, 'furan': 5, 'valer': 5, 'eicosa': 20, 'eicos': 20, 'icosa': 20, 'docos': 20, 'docosa': 20, 'icos': 20, 'prosta': 20, 'prost': 20, 'prostan': 20}
 
 func_groups = {'keto': 'oxo', 'ethyl': 'Et', 'hydroxy': "OH", 'phospho': 'Ph', 'oxo': 'oxo', 'bromo': 'Br', 'methyl': 'Me', 'hydroperoxy': 'OOH', 'homo': '', 'Epoxy': 'Ep', 'fluro': 'F', 'fluoro': 'F', 'chloro': 'Cl', 'methylene': 'My', 'sulfooxy': 'Su', 'amino': 'NH2', 'sulfanyl': 'SH', 'methoxy': 'OMe', 'iodo': 'I', 'cyano': 'CN', 'nitro': 'NO2', 'OH': 'OH', 'thio': 'SH', 'mercapto': 'SH', 'carboxy': "COOH", 'acetoxy': 'Ac', 'cysteinyl': 'Cys', 'phenyl': 'Phe', 's-glutathionyl': "SGlu", 's-cysteinyl': "SCys", "butylperoxy": "BOO", "dimethylarsinoyl": "MMAs", "methylsulfanyl": "SMe", "imino": "NH", 's-cysteinylglycinyl': "SCG"}
 
@@ -403,8 +403,45 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
             for fg_name, fg_list in func_group.functional_groups.items():
                 for fg in fg_list:
                     switch_position(fg, switch)
+                    
+                    
+        length_pattern = "".join(t[0] for t in self.tmp["length-tokens"])
+        
+        l, d, num = 0, 0, [t[1] for t in self.tmp["length-tokens"]]
+        if length_pattern in {"L", "S"}:
+            l += num[0]
             
+        elif length_pattern == "LS":
+            l += num[0] + num[1]
+        
+        
+        elif length_pattern in {"LL", "SL", "SS"}:
+            l += num[0]
+            d += num[1]
+            
+        elif length_pattern in {"LSL", "LSS"}:
+            l += num[0] + num[1]
+            d += num[2]
+            
+        elif length_pattern == "LSLS":
+            l += num[0] + num[1]
+            d += num[2] + num[3]
+            
+        elif length_pattern == "SLS":
+            l += num[0]
+            d += num[1] + num[2]
+            
+        elif length_pattern[0] == "X":
+            l += num[0]
+            d += sum(num[1:])
+        
+        elif length_pattern == "LLS": # false
+            raise RuntimeException("Cannot determine fatty acid and double bond length in '%s'" % node.get_text())
+        
         curr_fa = self.fatty_acyl_stack[-1]
+        curr_fa.num_carbon += l
+        if type(curr_fa.double_bonds) == int: curr_fa.double_bonds = d
+        
         
         if "noyloxy" in curr_fa.functional_groups:
             if self.headgroup == "FA": self.headgroup = "FAHFA"
@@ -559,6 +596,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         del self.tmp[fa_i]["db_cistrans"]
         if type(self.fatty_acyl_stack[-1].double_bonds) == int: self.fatty_acyl_stack[-1].double_bonds = {}
         
+        
         if pos not in self.fatty_acyl_stack[-1].double_bonds or len(self.fatty_acyl_stack[-1].double_bonds[pos]) == 0:
             self.fatty_acyl_stack[-1].double_bonds[pos] = cistrans
         
@@ -613,6 +651,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     def reset_length(self, node):
         self.tmp["length"] = 0
+        self.tmp["length-tokens"] = []
     
     
     
@@ -623,7 +662,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     
     def set_fatty_length(self, node):
-        self.fatty_acyl_stack[-1].num_carbon += self.tmp["length"]
+        pass
+        #self.fatty_acyl_stack[-1].num_carbon += self.tmp["length"]
         
         
         
@@ -705,16 +745,19 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
     
     def special_number(self, node):
         self.tmp["length"] += special_numbers[node.get_text()]
+        self.tmp["length-tokens"].append(["X", special_numbers[node.get_text()]])
         
         
         
     def last_number(self, node):
         self.tmp["length"] += last_numbers[node.get_text()]
+        self.tmp["length-tokens"].append(["L", last_numbers[node.get_text()]])
         
         
         
     def second_number(self, node):
         self.tmp["length"] += second_numbers[node.get_text()]
+        self.tmp["length-tokens"].append(["S", second_numbers[node.get_text()]])
         
         
         
@@ -821,4 +864,4 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         self.content = LipidAdduct()
         self.content.lipid = lipid_level_class(headgroup, self.fatty_acyl_stack)
-            
+
