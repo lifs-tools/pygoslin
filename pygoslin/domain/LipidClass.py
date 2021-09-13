@@ -54,7 +54,7 @@ all_lipids = [{"name": "UNDEFINED",
                 "category": LipidCategory.UNDEFINED,
                 "description": "Undefined lipid class",
                 "max_fa": 0,
-                "poss_fa": set(),
+                "poss_fa": 0,
                 "synonyms": [],
                 "specials": set(),
                 "elements": {}}]

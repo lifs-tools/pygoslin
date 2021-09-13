@@ -61,6 +61,9 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_subspecies_level
+        self.registered_events["hg_dg_pre_event"] = self.set_molecular_subspecies_level
+        self.registered_events["fa_lpl_molecular_pre_event"] = self.set_molecular_subspecies_level
+        self.registered_events["hg_lbpa_pre_event"] = self.set_molecular_subspecies_level
         
         self.registered_events["hg_sgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_gl_pre_event"] = self.set_head_group_name
@@ -74,6 +77,7 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["ch_pre_event"] = self.set_head_group_name
         self.registered_events["pk_hg_pre_event"] = self.set_head_group_name
         self.registered_events["hg_fa_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_cpa_pre_event"] = self.set_head_group_name
         self.registered_events["hg_che_pre_event"] = self.set_head_group_name
         self.registered_events["special_cer_pre_event"] = self.set_head_group_name
         self.registered_events["special_cer_hg_pre_event"] = self.set_head_group_name
