@@ -74,7 +74,8 @@ class ParserTest(unittest.TestCase):
         lipid_name = "SLBPA 16:1/12:0/14:1"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "SLBPA 16:1_12:0_14:1"
+        
+        assert lipid.get_lipid_string() == "SLBPA 16:1_12:0_14:1", "w: %s" % lipid.get_lipid_string()
         
         lipid_name = "MLCL 16:1/12:0/14:1"
         lipid = lipid_parser.parse(lipid_name)
@@ -113,7 +114,7 @@ class ParserTest(unittest.TestCase):
         lipid_name = "NAPE 16:1(6Z)/12:0/14:1"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "NAPE 16:1(6)/12:0/14:1"
+        assert lipid.get_lipid_string() == "PE-N(FA 14:1) 16:1(6)/12:0"
         
         lipid_name = "PE-NMe 12:1(6Z)/10:0"
         lipid = lipid_parser.parse(lipid_name)
@@ -264,7 +265,7 @@ class ParserTest(unittest.TestCase):
         lipid_name = "LPE O-16:1p"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "LPE P-16:0"
+        assert lipid.get_lipid_string() == "LPE P-16:0", "w: %s" % lipid.get_lipid_string()
             
             
             
@@ -502,7 +503,18 @@ class ParserTest(unittest.TestCase):
         lipid_name = "NAPE (12:0/30:4(15Z,18Z,21Z,24Z)/12:0)"
         lipid = swiss_lipids_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_lipid_string() == "NAPE 12:0/30:4(15Z,18Z,21Z,24Z)/12:0"
+        assert lipid.get_lipid_string() == "PE-N(FA 12:0) 12:0/30:4(15Z,18Z,21Z,24Z)"
+        
+        lipid_name = "NAPE (12:0/0:0/12:0)"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "LPE-N(FA 12:0) 12:0/0:0"
+        
+        lipid_name = "NAPE (30:5(12Z,15Z,18Z,21Z,24Z)/18:0/8:0)"
+        lipid = swiss_lipids_parser.parse(lipid_name)
+        assert lipid != None
+        assert lipid.get_lipid_string() == "PE-N(FA 8:0) 30:5(12Z,15Z,18Z,21Z,24Z)/18:0"
+        assert lipid.get_sum_formula() == "C61H110NO9P"
       
       
       

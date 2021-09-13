@@ -128,6 +128,9 @@ class FunctionalGroup:
         
         return self
 
+
+
+
     
 class HeadgroupDecorator(FunctionalGroup):
     def __init__(self, name, position = -1, count = 1, elements = None, suffix = False, level = None):
@@ -146,7 +149,6 @@ class HeadgroupDecorator(FunctionalGroup):
     
         decorator_string = ""
         if self.lowest_visible_level == None or self.lowest_visible_level.value <= level.value:
-            
             if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
                 decorator_string = self.functional_groups["decorator_alkyl"][0].to_string(level) if level != LipidLevel.SPECIES else "Alk"
                 

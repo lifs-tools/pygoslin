@@ -210,7 +210,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         if "furan" in self.tmp:
             curr_fa.num_carbon -= l
-            #curr_fa.shift_positions(-l)
             return
         
         
@@ -501,14 +500,14 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
                         if type(fa.double_bonds) == dict:
                             for pos, ez in fa.double_bonds.items():
                                 curr_fa.double_bonds[pos + cyclo_len] = ez
-                        """
+                        
                         if "furan" in self.tmp and "tetrahydrofuran" not in self.tmp:
                             if type(curr_fa.double_bonds) == int:
                                 curr_fa.double_bonds += 2
                             else:
                                 curr_fa.double_bonds[1] = "E"
                                 curr_fa.double_bonds[3] = "E"
-                        """
+                        
                         self.tmp["cyclo_yl"] = True
                         
                     else:

@@ -55,7 +55,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_cl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_mlcl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_pl_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_lpl_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_lpl_pre_event"] = self.set_lpl_head_group_name
         self.registered_events["hg_lpl_o_pre_event"] = self.set_head_group_name
         self.registered_events["hg_pl_o_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
@@ -79,6 +79,9 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_subspecies_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_subspecies_level
+        self.registered_events["slbpa_pre_event"] = self.set_molecular_subspecies_level
+        self.registered_events["dlcl_pre_event"] = self.set_molecular_subspecies_level
+        self.registered_events["mlcl_pre_event"] = self.set_molecular_subspecies_level
         
         self.registered_events["lcb_pre_event"] = self.new_lcb
         self.registered_events["lcb_post_event"] = self.clean_lcb
@@ -95,6 +98,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
+        self.registered_events["tpl_post_event"] = self.set_nape
         
         
         self.registered_events["adduct_info_pre_event"] = self.new_adduct
@@ -120,6 +124,13 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.db_cistrans = ""
         self.unspecified_ether = False
         self.db_numbers = -1
+        self.headgroup_decorators = []
+        
+        
+    def set_lpl_head_group_name(self, node):
+        self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
+        self.head_group = node.get_text()
+        
         
 
     def set_head_group_name(self, node):
@@ -128,6 +139,16 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
     def set_unspecified_ether(self, node):
         self.unspecified_ether = True
+        
+
+        
+    def set_nape(self, node):
+        if self.head_group == "NAPE":
+            self.head_group = "PE-N"
+            hgd = HeadgroupDecorator("decorator_acyl", suffix = True)
+            self.headgroup_decorators.append(hgd)
+            hgd.functional_groups["decorator_acyl"] = [self.fa_list[-1]]
+            self.fa_list.pop()
         
     
     def set_species_level(self, node):
@@ -221,10 +242,37 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         lipid = None
         
-        headgroup = HeadGroup(self.head_group)
+        headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
-        if max_num_fa != len(self.fa_list): self.set_molecular_subspecies_level(node)
+        if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
+    
+        true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
+        
+        poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        
+        
+        # make lyso
+        can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.head_group)]["specials"] if get_class("L" + self.head_group) < len(all_lipids) else False
+        
+        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
+            self.head_group = "L" + self.head_group
+            headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+        
+        elif true_fa + 2 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group == "CL":
+            self.head_group = "DL" + self.head_group
+            headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+
+
+
+        if self.level == LipidLevel.SPECIES:
+            if true_fa == 0 and poss_fa != 0:
+                raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
+            
+        elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+            raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
 
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies

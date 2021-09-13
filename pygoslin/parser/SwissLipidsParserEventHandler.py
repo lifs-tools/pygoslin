@@ -68,7 +68,8 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_level
         
-        self.registered_events["st_species_fa_post_event"] = self.se_species_fa
+        self.registered_events["st_species_fa_post_event"] = self.set_species_fa
+        self.registered_events["pl_three_post_event"] = self.set_nape
         
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
@@ -100,6 +101,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.db_cistrans = ""
         self.use_head_group = False
         self.db_numbers = -1
+        self.headgroup_decorators = []
         
 
     def add_db_position(self, node):
@@ -108,6 +110,16 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
                 self.db_numbers = self.current_fa.double_bonds
                 self.current_fa.double_bonds = {}
             self.current_fa.double_bonds[self.db_position] = self.db_cistrans
+        
+        
+        
+    def set_nape(self, node):
+        self.head_group = "PE-N"
+        hgd = HeadgroupDecorator("decorator_acyl", suffix = True)
+        self.headgroup_decorators.append(hgd)
+        hgd.functional_groups["decorator_acyl"] = [self.fa_list[-1]]
+        self.fa_list.pop()
+    
         
 
     def add_db_position_number(self, node):
@@ -193,10 +205,37 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
         
-        headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
+        headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
         if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
+    
+        true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
+        
+        poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        
+        
+        # make lyso
+        can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.head_group)]["specials"] if get_class("L" + self.head_group) < len(all_lipids) else False
+        
+        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
+            self.head_group = "L" + self.head_group
+            headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+        
+        elif true_fa + 2 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group == "CL":
+            self.head_group = "DL" + self.head_group
+            headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+
+
+
+        if self.level == LipidLevel.SPECIES:
+            if true_fa == 0 and poss_fa != 0:
+                raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
+            
+        elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+            raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
         
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
@@ -217,7 +256,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
             self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
             
             
-    def se_species_fa(self, node):
+    def set_species_fa(self, node):
         self.head_group += " 27:1"
         self.fa_list[-1].num_carbon -= 27
         self.fa_list[-1].double_bonds -= 1

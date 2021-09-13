@@ -38,6 +38,7 @@ from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
+from pygoslin.domain.LipidClass import *
 
 
 class LipidMapsParserEventHandler(BaseParserEventHandler):
@@ -49,7 +50,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_post_event"] = self.build_lipid
         
         self.registered_events["mediator_pre_event"] = self.mediator_event
-        self.registered_events["sphingoxine_pre_event"] = self.mediator_event
         self.registered_events["fa_no_hg_pre_event"] = self.pure_fa
         
         self.registered_events["sgl_species_pre_event"] = self.set_species_level
@@ -69,8 +69,6 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         self.registered_events["hg_lpl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_fourpl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_threepl_pre_event"] = self.set_head_group_name
-        self.registered_events["sphingosine_name_pre_event"] = self.set_head_group_name
-        self.registered_events["sphinganine_name_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
         self.registered_events["ch_pre_event"] = self.set_head_group_name
@@ -331,12 +329,23 @@ class LipidMapsParserEventHandler(BaseParserEventHandler):
         true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
         
         poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
-        # make lyso
-        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group[:2] != "PIP":
-            self.head_group = "L" + self.head_group
-            headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
-            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
         
+        
+        # make lyso
+        can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.head_group)]["specials"] if get_class("L" + self.head_group) < len(all_lipids) else False
+        
+        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
+            self.head_group = "L" + self.head_group
+            headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+        
+        elif true_fa + 2 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group == "CL":
+            self.head_group = "DL" + self.head_group
+            headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+
+
+
         if self.level == LipidLevel.SPECIES:
             if true_fa == 0 and poss_fa != 0:
                 raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)

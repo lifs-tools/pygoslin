@@ -45,6 +45,7 @@ from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
 from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 
 from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.LipidClass import *
 
 class ShorthandParserEventHandler(BaseParserEventHandler):
     
@@ -605,10 +606,18 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
         
         # make lyso
-        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.headgroup[:2] != "PIP":
+        can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.headgroup)]["specials"] if get_class("L" + self.headgroup) < len(all_lipids) else False
+        
+        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
             self.headgroup = "L" + self.headgroup
             headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
             poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        
+        elif true_fa + 2 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group == "CL":
+            self.head_group = "DL" + self.head_group
+            headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
+            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+
         
         if self.level == LipidLevel.SPECIES:
             if true_fa == 0 and poss_fa != 0:
