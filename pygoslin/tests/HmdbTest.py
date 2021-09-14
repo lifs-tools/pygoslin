@@ -60,9 +60,4 @@ class HMDBTest(unittest.TestCase):
         lipid_parser = HmdbParser()
         
         for i, lipid_name in enumerate(lipidnames):
-            try:
-                lipid = lipid_parser.parse(lipid_name)
-            except Exception as e:
-                if type(e) == LipidParsingException: 
-                    print("hier: '%s' -> %i" % (lipid_name, i))
-                    assert(False)
+            lipid = lipid_parser.parse(lipid_name)
