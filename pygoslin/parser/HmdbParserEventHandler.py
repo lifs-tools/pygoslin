@@ -39,6 +39,7 @@ from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
 from pygoslin.domain.LipidClass import *
+from pygoslin.domain.Cycle import *
 
 class HmdbParserEventHandler(BaseParserEventHandler):
     
@@ -84,10 +85,16 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
         
-        self.registered_events["furan_fa_pre_event"] = self.furan_fa
         self.registered_events["interlink_fa_pre_event"] = self.interlink_fa
         self.registered_events["lipid_suffix_pre_event"] = self.lipid_suffix
         self.registered_events["methyl_pre_event"] = self.add_methyl
+        
+        self.registered_events["furan_fa_pre_event"] = self.furan_fa
+        self.registered_events["furan_fa_post_event"] = self.furan_fa_post
+        self.registered_events["furan_fa_mono_pre_event"] = self.furan_fa_mono
+        self.registered_events["furan_fa_di_pre_event"] = self.furan_fa_di
+        self.registered_events["furan_first_number_pre_event"] = self.furan_fa_first_number
+        self.registered_events["furan_second_number_pre_event"] = self.furan_fa_second_number
         
         
     def reset_lipid(self, node):
@@ -101,6 +108,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.db_cistrans = ""
         self.use_head_group = False
         self.db_number = -1
+        self.furan = {}
         
 
     def add_db_position(self, node):
@@ -176,7 +184,6 @@ class HmdbParserEventHandler(BaseParserEventHandler):
             
         self.fa_list.append(self.current_fa)
         self.current_fa = None
-        
     
         
     def build_lipid(self, node):
@@ -188,7 +195,6 @@ class HmdbParserEventHandler(BaseParserEventHandler):
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
         if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
-        
         
         true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
         
@@ -209,12 +215,11 @@ class HmdbParserEventHandler(BaseParserEventHandler):
             headgroup = HeadGroup(self.head_group, use_headgroup = self.use_head_group)
             poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
 
-        
         if self.level == LipidLevel.SPECIES:
             if true_fa == 0 and poss_fa != 0:
                 raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
             
-            
+        
         elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
             raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
         
@@ -278,7 +283,49 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         
         
     def furan_fa(self, node):
-        raise UnsupportedLipidException("Furan fatty acyl chains are currently not supported")
+        self.furan = {}
+        
+    
+    def furan_fa_post(self, node):
+        l = 4 + self.furan["len_first"] + self.furan["len_second"]
+        self.current_fa.num_carbon = l
+        
+        start = 1 + self.furan["len_first"]
+        end = 4 + self.furan["len_first"]
+        cyclo_db = {start: "E", 2 + start: "E"}
+        cyclo_fg = {"Me": []}
+        if self.furan["type"] == "m":
+            fg = get_functional_group("Me")
+            fg.position = 1 + start
+            cyclo_fg["Me"].append(fg)
+            
+        elif self.furan["type"] == "d":
+            fg = get_functional_group("Me")
+            fg.position = 1 + start
+            cyclo_fg["Me"].append(fg)
+            fg = get_functional_group("Me")
+            fg.position = 2 + start
+            cyclo_fg["Me"].append(fg)
+           
+        bridge_chain = [Element.O]
+        
+        self.current_fa.functional_groups["cy"] = [Cycle(5, start = start, end = end, double_bonds = cyclo_db, functional_groups = cyclo_fg, bridge_chain = bridge_chain)]
+        
+    
+    def furan_fa_mono(self, node):
+        self.furan["type"] = "m"
+        
+    
+    def furan_fa_di(self, node):
+        self.furan["type"] = "d"
+    
+    
+    def furan_fa_first_number(self, node):
+        self.furan["len_first"] = int(node.get_text())
+    
+    
+    def furan_fa_second_number(self, node):
+        self.furan["len_second"] = int(node.get_text())
         
         
     def interlink_fa(self, node):
