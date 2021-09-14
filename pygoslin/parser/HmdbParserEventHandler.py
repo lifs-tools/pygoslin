@@ -60,6 +60,7 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         self.registered_events["st_species_hg_pre_event"] = self.set_head_group_name
         self.registered_events["st_sub1_hg_pre_event"] = self.set_head_group_name
         self.registered_events["st_sub2_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["ganglioside_names_pre_event"] = self.set_head_group_name
         self.registered_events["fa_species_pre_event"] = self.set_species_level
         self.registered_events["gl_molecular_pre_event"] = self.set_molecular_level
         self.registered_events["unsorted_fa_separator_pre_event"] = self.set_molecular_level
