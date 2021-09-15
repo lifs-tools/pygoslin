@@ -80,12 +80,13 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
-        self.registered_events["fa_lcb_suffix_type_pre_event"] = self.add_one_hydroxyl
+        self.registered_events["fa_lcb_suffix_type_pre_event"] = self.add_fa_lcb_suffix_type
         
         self.registered_events["ether_pre_event"] = self.add_ether
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
+        self.registered_events["fa_lcb_suffix_number_pre_event"] = self.add_suffix_number
         
         self.debug = ""
         
@@ -102,6 +103,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.use_head_group = False
         self.db_numbers = -1
         self.headgroup_decorators = []
+        self.suffix_number = -1
         
 
     def add_db_position(self, node):
@@ -119,6 +121,10 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         self.headgroup_decorators.append(hgd)
         hgd.functional_groups["decorator_acyl"] = [self.fa_list[-1]]
         self.fa_list.pop()
+        
+        
+    def set_level(self, level):
+        self.level = self.level if self.level.value < level.value else level
     
         
 
@@ -127,7 +133,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
         
     def set_structural_subspecies_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+        self.set_level(LipidLevel.STRUCTURAL_SUBSPECIES)
         
 
     def add_cistrans(self, node):
@@ -147,11 +153,11 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
     
     def set_species_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.SPECIES.value else LipidLevel.SPECIES
+        self.set_level(LipidLevel.SPECIES)
         
         
     def set_molecular_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
+        self.set_level(LipidLevel.MOLECULAR_SUBSPECIES)
         
         
     def mediator_event(self, node):
@@ -262,8 +268,28 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
         
         
+    def add_suffix_number(self, node):
+        self.suffix_number = int(node.get_text())
+        
+        
+        
+    def add_fa_lcb_suffix_type(self, node):
+        suffix_type = node.get_text()
+        if suffix_type == "me":
+            suffix_type = "Me"
+            self.current_fa.num_carbon -= 1
+            
+        functional_group = get_functional_group(suffix_type)
+        functional_group.position = self.suffix_number
+        if functional_group.position == -1: self.set_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        if suffix_type not in self.current_fa.functional_groups: self.current_fa.functional_groups[suffix_type] = []
+        self.current_fa.functional_groups[suffix_type].append(functional_group)
+                
+        self.suffix_number = -1
+        
+        
     def add_one_hydroxyl(self, node):
-        functional_group = get_functional_group("OH").copy()
+        functional_group = get_functional_group("OH")
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
         self.current_fa.functional_groups["OH"].append(functional_group)
         
@@ -277,7 +303,7 @@ class SwissLipidsParserEventHandler(BaseParserEventHandler):
         
         if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
         
-        functional_group = get_functional_group("OH").copy()
+        functional_group = get_functional_group("OH")
         functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
         self.current_fa.functional_groups["OH"].append(functional_group)
