@@ -59,8 +59,7 @@ class HeadGroup:
             prefix = ["%s-" % hgd.to_string(level) for hgd in self.decorators if not hgd.suffix]
             
         suffix = [hgd.to_string(level) for hgd in self.decorators if hgd.suffix]
-        if level == LipidLevel.ISOMERIC_SUBSPECIES and self.sp_exception:
-            suffix.append("(1)")
+        if level == LipidLevel.ISOMERIC_SUBSPECIES and self.lipid_category == LipidCategory.SP and not self.sp_exception: suffix.append("(1)")
             
         return "".join(prefix + headgoup_string + suffix)
         
