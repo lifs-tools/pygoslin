@@ -156,9 +156,9 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         
     def new_lcb(self, node):
         self.lcb = FattyAcid("LCB")
-        self.lcb.lcb = True
-        self.current_fa = self.lcb
+        self.lcb.set_type(LipidFaBondType.LCB_REGULAR)
         self.set_structural_subspecies_level(node)
+        self.current_fa = self.lcb
             
             
     def clean_lcb(self, node):
@@ -223,6 +223,9 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
             raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
         
+        # make LBC exception
+        if len(self.fa_list) > 0 and headgroup.sp_exception:
+            self.fa_list[0].set_type(LipidFaBondType.LCB_EXCEPTION)
 
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
@@ -260,7 +263,8 @@ class HmdbParserEventHandler(BaseParserEventHandler):
         if hydroxyl == "d": num_h = 2
         if hydroxyl == "t": num_h = 3
         
-        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lipid_FA_bond_type in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION} and self.head_group not in {"Cer", "LCB"}:
+            num_h -= 1
         
         functional_group = get_functional_group("OH").copy()
         functional_group.count = num_h

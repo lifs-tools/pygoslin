@@ -619,10 +619,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
             self.fa_list[0].set_type(LipidFaBondType.LCB_EXCEPTION)
         
         
-        #if len(self.fa_list) > 0 and not headgroup.sp_exception and self.level.value <= LipidLevel.MOLECULAR_SUBSPECIES.value and "O" in self.fa_list[0].functional_groups:
-        #    self.fa_list[0].functional_groups["O"][0].count -= 1
-        
-        
         # add count numbers for fatty acyl chains
         fa_it = len(self.fa_list) > 0 and self.fa_list[0].lipid_FA_bond_type in {LipidFaBondType.LCB_EXCEPTION, LipidFaBondType.LCB_REGULAR}
         for it in range(fa_it, len(self.fa_list)):
