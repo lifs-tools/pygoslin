@@ -45,7 +45,6 @@ class LipidSpeciesInfo(FattyAcid):
         
     def add(self, fa):
         
-        self.lcb |= fa.lcb
         if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL} and fa.lipid_FA_bond_type not in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION}:
             self.num_ethers += 1
             self.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL

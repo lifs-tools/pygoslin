@@ -33,11 +33,10 @@ from pygoslin.domain.FunctionalGroup import *
 
 class FattyAcid(FunctionalGroup):
 
-    def __init__(self, name, num_carbon = 0, double_bonds = 0, functional_groups = None, lipid_FA_bond_type = LipidFaBondType.ESTER, lcb = False, position = 0):
+    def __init__(self, name, num_carbon = 0, double_bonds = 0, functional_groups = None, lipid_FA_bond_type = LipidFaBondType.ESTER, position = 0):
         super().__init__(name, double_bonds = double_bonds, position = position, functional_groups = functional_groups)
         self.num_carbon = num_carbon
         self.lipid_FA_bond_type = lipid_FA_bond_type
-        self.lcb = lcb
         
         if lipid_FA_bond_type == lipid_FA_bond_type.LCB_REGULAR: self.functional_groups["[X]"] = [get_functional_group("X")]
         
@@ -57,19 +56,19 @@ class FattyAcid(FunctionalGroup):
         fa.position = self.position
         fa.num_carbon = self.num_carbon
         fa.lipid_FA_bond_type = self.lipid_FA_bond_type
-        fa.lcb = self.lcb
         fa.double_bonds = {key: value for key, value in self.double_bonds.items()} if type(self.double_bonds) != int else self.double_bonds
         for fg, fg_list in self.functional_groups.items():
             fa.functional_groups[fg] = [func_group.copy() for func_group in fg_list]
         return fa
 
         
+        
+        
     def clone(self, fa):
         self.name = fa.name
         self.position = fa.position
         self.num_carbon = fa.num_carbon
         self.lipid_FA_bond_type = fa.lipid_FA_bond_type
-        self.lcb = fa.lcb
         self.double_bonds = {key: value for key, value in fa.double_bonds.items()} if type(fa.double_bonds) != int else fa.double_bonds
         self.functional_groups = {}
         for fg, fg_list in fa.functional_groups.items():
