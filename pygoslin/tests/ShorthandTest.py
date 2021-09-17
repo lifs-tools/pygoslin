@@ -97,8 +97,99 @@ data = {"PC 18:1(11Z)/16:0": ["PC 18:1(11Z)/16:0", "PC 18:1(11)/16:0", "PC 18:1_
 
 class ShorthandTest(unittest.TestCase):
     
+    def test_sphingolipids(self):
+        parser = ShorthandParser()
         
-    def test_nomenclature(self):
+        l = parser.parse("Cer(1) 18:1(8Z);1OH,3OH/24:0")
+        self.assertEqual(l.get_lipid_string(), "Cer(1) 18:1(8Z);1OH,3OH/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "Cer 18:1(8);(OH)2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "Cer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "Cer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C42H83NO3")
+        
+        l = parser.parse("Cer 18:1(8);(OH)2/24:0")
+        self.assertEqual(l.get_lipid_string(), "Cer 18:1(8);(OH)2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "Cer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "Cer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C42H83NO3")
+        
+        l = parser.parse("Cer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(), "Cer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "Cer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "Cer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C42H83NO3")
+        
+        l = parser.parse("Cer 42:1;O2")
+        self.assertEqual(l.get_lipid_string(), "Cer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C42H83NO3")
+        
+        
+        
+        l = parser.parse("Gal-Cer 18:1(5Z);3OH/24:0")
+        self.assertEqual(l.get_lipid_string(), "Gal-Cer 18:1(5Z);3OH/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "Gal-Cer 18:1(5);OH/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "GalCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C48H93NO8")
+        
+        l = parser.parse("Gal-Cer 18:1(5);OH/24:0")
+        self.assertEqual(l.get_lipid_string(), "Gal-Cer 18:1(5);OH/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "GalCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C48H93NO8")
+        
+        l = parser.parse("GalCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(), "GalCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C48H93NO8")
+        
+        l = parser.parse("GalCer 42:1;O2")
+        self.assertEqual(l.get_lipid_string(), "GalCer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C48H93NO8")
+        
+        
+        
+        l = parser.parse("SPB(1) 18:1(4Z);1OH,3OH")
+        self.assertEqual(l.get_lipid_string(), "SPB(1) 18:1(4Z);1OH,3OH")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "SPB 18:1(4);(OH)2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "SPB 18:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "SPB 18:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C18H37NO2")
+        
+        l = parser.parse("SPB 18:1(4);(OH)2")
+        self.assertEqual(l.get_lipid_string(), "SPB 18:1(4);(OH)2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "SPB 18:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "SPB 18:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C18H37NO2")
+        
+        l = parser.parse("SPB 18:1;O2")
+        self.assertEqual(l.get_lipid_string(), "SPB 18:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "SPB 18:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C18H37NO2")
+        
+
+        
+        l = parser.parse("LSM 17:1(4E);3OH")
+        self.assertEqual(l.get_lipid_string(), "LSM 17:1(4E);3OH")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "LSM 17:1(4);OH")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C22H47N2O5P")
+        
+        l = parser.parse("LSM 17:1(4);OH")
+        self.assertEqual(l.get_lipid_string(), "LSM 17:1(4);OH")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C22H47N2O5P")
+        
+        l = parser.parse("LSM 17:1;O2")
+        self.assertEqual(l.get_lipid_string(), "LSM 17:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C22H47N2O5P")
+
+        
+        
+    def teest_nomenclature(self):
         parser = ShorthandParser()
 
         for lipid_name in data:

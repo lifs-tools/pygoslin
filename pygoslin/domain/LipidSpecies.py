@@ -47,9 +47,9 @@ class LipidSpecies:
         for fas in fa: self.info.add(fas)
         
         
-        if self.headgroup.sp_exception:
-            if "OH" not in self.info.functional_groups: self.info.functional_groups["OH"] = []
-            self.info.functional_groups["OH"].append(get_functional_group("OH").copy())
+        #if self.headgroup.sp_exception:
+        #    if "OH" not in self.info.functional_groups: self.info.functional_groups["OH"] = []
+        #    self.info.functional_groups["OH"].append(get_functional_group("OH").copy())
         
         
         for decorator in self.headgroup.decorators:

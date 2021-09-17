@@ -46,10 +46,14 @@ class LipidSpeciesInfo(FattyAcid):
     def add(self, fa):
         
         self.lcb |= fa.lcb
-        if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL}:
+        if fa.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMENYL, LipidFaBondType.ETHER_PLASMANYL} and fa.lipid_FA_bond_type not in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION}:
             self.num_ethers += 1
             self.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
             self.extended_class = fa.lipid_FA_bond_type
+            
+        elif fa.lipid_FA_bond_type in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION}:
+            self.lipid_FA_bond_type = fa.lipid_FA_bond_type
+        
                 
         else:
             self.num_specified_fa += 1
@@ -66,11 +70,11 @@ class LipidSpeciesInfo(FattyAcid):
         
     def get_elements(self):
         elements = super().get_elements()
-        elements[Element.O] -= (self.num_ethers == 0)
+        if self.lipid_FA_bond_type != LipidFaBondType.LCB_EXCEPTION:
+            elements[Element.O] -= (self.num_ethers == 0)
         elements[Element.H] += 1 if self.num_ethers == 0 else -1
         
         return elements
-        
         
     
     def to_string(self):

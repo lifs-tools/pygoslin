@@ -41,7 +41,7 @@ class HeadGroup:
         self.lipid_class = get_class(self.headgroup)
         self.use_headgroup = use_headgroup
         self.decorators = [d for d in decorators] if decorators != None else []
-        self.sp_exception = self.lipid_category == LipidCategory.SP and (all_lipids[self.lipid_class]["name"] not in {"Cer", "SPB"} or len(self.decorators) > 0)
+        self.sp_exception = self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] in {"Cer", "SPB"} and len(self.decorators) == 0
         
         
     def get_lipid_string(self, level = None):
@@ -74,8 +74,5 @@ class HeadGroup:
         
         for hgd in self.decorators:
             dummy += hgd
-        
-        if self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] in {"Cer", "SPB"} and len(self.decorators) == 0:
-            dummy.elements[Element.O] -= 1
         
         return dummy.elements

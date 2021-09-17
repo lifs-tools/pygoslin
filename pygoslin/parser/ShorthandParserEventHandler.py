@@ -56,11 +56,6 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
         
-        ## set categories
-        self.registered_events["sl_pre_event"] = self.pre_sphingolipid
-        self.registered_events["sl_post_event"] = self.post_sphingolipid
-        self.registered_events["sl_hydroxyl_pre_event"] = self.set_hydroxyl
-        
         ## set adduct events
         self.registered_events["adduct_info_pre_event"] = self.new_adduct
         self.registered_events["adduct_pre_event"] = self.add_adduct
@@ -234,25 +229,12 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         self.set_headgroup_name(node)
         
         
-    def pre_sphingolipid(self, node):
-        self.tmp["sl_hydroxyl"] = False
-        
-        
     def set_ring_stereo(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_ring_stereo"] = node.get_text()
         
         
-    def post_sphingolipid(self, node):
-        if not self.tmp["sl_hydroxyl"] and self.headgroup not in {"Cer", "SPB"}: self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
-        
-        
-    def set_hydroxyl(self, node):
-        self.tmp["sl_hydroxyl"] = True
-        
-        
     def set_lcb(self, node):
-        self.fa_list[-1].lcb = True
-        self.fa_list[-1].name = "LCB"
+        self.fa_list[-1].set_type(LipidFaBondType.LCB_REGULAR)
         
         
     def add_pl_species_data(self, node):
@@ -529,6 +511,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def set_molecular_func_group(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = node.get_text()
+        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
         
         
     def add_functional_group(self, node):
@@ -631,10 +614,21 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
             self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.AMINE
         
         
+        # make LBC exception
+        if len(self.fa_list) > 0 and headgroup.sp_exception:
+            self.fa_list[0].set_type(LipidFaBondType.LCB_EXCEPTION)
+        
+        
+        #if len(self.fa_list) > 0 and not headgroup.sp_exception and self.level.value <= LipidLevel.MOLECULAR_SUBSPECIES.value and "O" in self.fa_list[0].functional_groups:
+        #    self.fa_list[0].functional_groups["O"][0].count -= 1
+        
+        
         # add count numbers for fatty acyl chains
-        fa_it = len(self.fa_list) > 0 and self.fa_list[0].lcb
+        fa_it = len(self.fa_list) > 0 and self.fa_list[0].lipid_FA_bond_type in {LipidFaBondType.LCB_EXCEPTION, LipidFaBondType.LCB_REGULAR}
         for it in range(fa_it, len(self.fa_list)):
             self.fa_list[it].name += "%i" % (it + 1)
+            
+        
         
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
@@ -651,8 +645,8 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         l = self.lipid.lipid
         
         
-        if self.level == LipidLevel.SPECIES and l.headgroup.sp_exception and "O" in l.info.functional_groups:
-            l.info.functional_groups["O"][0].count -= 1
+        #if self.level == LipidLevel.SPECIES and l.headgroup.sp_exception and "O" in l.info.functional_groups:
+        #    l.info.functional_groups["O"][0].count -= 1
         
         
         self.content = self.lipid

@@ -29,6 +29,7 @@ from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.Element import Element
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.FunctionalGroup import *
 
 class FattyAcid(FunctionalGroup):
 
@@ -37,6 +38,8 @@ class FattyAcid(FunctionalGroup):
         self.num_carbon = num_carbon
         self.lipid_FA_bond_type = lipid_FA_bond_type
         self.lcb = lcb
+        
+        if lipid_FA_bond_type == lipid_FA_bond_type.LCB_REGULAR: self.functional_groups["[X]"] = [get_functional_group("X")]
         
         num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
         if num_carbon < 0 or num_carbon == 1:
@@ -76,6 +79,18 @@ class FattyAcid(FunctionalGroup):
                 func_group.clone(fg_item)
                 self.function_groups[fg].append(func_group.copy())
                 
+    
+    
+    def set_type(self, lipid_FA_bond_type):
+        self.lipid_FA_bond_type = lipid_FA_bond_type
+        if self.lipid_FA_bond_type == LipidFaBondType.LCB_REGULAR and "[X]" not in self.functional_groups:
+            self.functional_groups["[X]"] = [get_functional_group("X")]
+            
+        elif "[X]" in self.functional_groups:
+            del self.functional_groups["[X]"]
+            
+        self.name = "FA" if self.lipid_FA_bond_type not in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION} else "LCB"
+                
                 
                 
     def get_double_bonds(self):
@@ -88,7 +103,6 @@ class FattyAcid(FunctionalGroup):
         fa_string = [self.lipid_FA_bond_type.prefix()]
         num_carbon = self.num_carbon
         double_bonds = self.double_bonds
-        num_oxygen = 0
         
         if num_carbon == 0 and double_bonds == 0 and level not in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
             return ""
@@ -96,7 +110,6 @@ class FattyAcid(FunctionalGroup):
         if level == LipidLevel.MOLECULAR_SUBSPECIES:
             num_carbon = self.get_elements()[Element.C]
             double_bonds = self.get_double_bonds() - (self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL)
-            num_oxygen = self.get_functional_group_elements()[Element.O]
             
 
         fa_string.append("%i" % num_carbon)
@@ -117,12 +130,14 @@ class FattyAcid(FunctionalGroup):
         
         if level == LipidLevel.ISOMERIC_SUBSPECIES:
             for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):
+                if fg == "[X]": continue
                 fg_list = self.functional_groups[fg]
                 fg_summary = ",".join([func_group.to_string(level) for func_group in sorted(fg_list, key = lambda x: x.position)])
                 if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
         
         elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
             for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):
+                if fg == "[X]": continue
                 fg_list = self.functional_groups[fg]
                 if len(fg_list) > 0:
                     
@@ -147,6 +162,17 @@ class FattyAcid(FunctionalGroup):
     
     
 
+        
+    
+    def get_functional_group_elements(self):
+        elements = super().get_functional_group_elements()
+        # subtract the invisible [X] functional group for regular LCBs
+        if self.lipid_FA_bond_type == LipidFaBondType.LCB_REGULAR and "O" in self.functional_groups:
+            elements[Element.O] -= 1 
+            
+        return elements
+    
+    
 
     def compute_elements(self):
         self.elements = {e: 0 for e in Element}
@@ -157,7 +183,7 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.H] = 1
             return
         
-        if not self.lcb:
+        if self.lipid_FA_bond_type not in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION}:
             
             self.elements[Element.C] = self.num_carbon # carbon
             if self.lipid_FA_bond_type == LipidFaBondType.ESTER:
@@ -181,6 +207,6 @@ class FattyAcid(FunctionalGroup):
             self.elements[Element.C] = self.num_carbon # carbon
             self.elements[Element.H] = (2 * (self.num_carbon - num_double_bonds) + 1) # hydrogen
             self.elements[Element.N] = 1 # nitrogen
-            self.elements[Element.O] = 1 # oxygen
+            #self.elements[Element.O] = 1 # oxygen
             
             

@@ -31,8 +31,10 @@ class LipidFaBondType(Enum):
     ESTER = 1
     ETHER_PLASMANYL = 2
     ETHER_PLASMENYL = 3
-    AMINE = 4
-    ETHER_UNSPECIFIED = 5
+    LCB_REGULAR = 4
+    LCB_EXCEPTION = 5
+    AMINE = 6
+    ETHER_UNSPECIFIED = 7
 
     def prefix(self):
         if self == self.ETHER_PLASMANYL: return "O-"
