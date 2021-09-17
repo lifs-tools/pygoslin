@@ -47,6 +47,45 @@ class HMDBTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
     
+    def test_sphingolipids(self):
+        parser = HmdbParser()
+        
+        l = parser.parse("Cer(d18:1(8Z)/24:0)")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "Cer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "Cer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C42H83NO3")
+        
+        l = parser.parse("GalCer(d18:1(5Z)/24:0)")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "GalCer 18:1(5);OH/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "GalCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C48H93NO8")
+        
+        l = parser.parse("LysoSM(d17:1(4E))")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "LSM 17:1(4);OH")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C22H47N2O5P")
+
+        l = parser.parse("PE-Cer(d14:1(4E)/20:1(11Z))")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "EPC 14:1(4);OH/20:1(11)")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "EPC 14:1;O2/20:1")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "EPC 34:2;O2")
+        self.assertEqual(l.get_sum_formula(), "C36H71N2O6P")
+        
+        l = parser.parse("MIPC(t18:0/24:0)")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "MIPC 18:0;(OH)2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "MIPC 18:0;O3/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "MIPC 42:0;O3")
+        self.assertEqual(l.get_sum_formula(), "C54H106NO17P")
+        
+        l = parser.parse("PE-Cer(d16:2(4E,6E)/22:1(13Z)(2OH))")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURAL_SUBSPECIES), "EPC 16:2(4,6);OH/22:1(13);OH")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES), "EPC 16:2;O2/22:1;O")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "EPC 38:3;O3")
+        self.assertEqual(l.get_sum_formula(), "C40H77N2O7P")
+    
+    
     
     def test_parser(self):
         lipidnames = []
