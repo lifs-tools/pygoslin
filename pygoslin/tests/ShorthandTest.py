@@ -135,24 +135,26 @@ class ShorthandTest(unittest.TestCase):
         
         
     def test_nomenclature(self):
-        data = {}
+        data = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "shorthand-test.csv")
         with open(file_name, mode = "rt") as infile:
             lipidreader = csv.reader(infile, delimiter=',', quotechar='"')
             for row in lipidreader:
                 row[-1] = row[-1].strip(" ")
-                data[row[0]] = row[1:]
+                data.append(row)
                 
         parser = ShorthandParser()
+        
+        
+        
 
-        for lipid_name in data:
-            
-            results = data[lipid_name]
+        for row in data:
+            lipid_name = row[0]
             lipid = parser.parse(lipid_name)
-            formula = results[4] if len(results) > 4 else lipid.get_sum_formula()
+            formula = row[4] if len(row) > 4 else lipid.get_sum_formula()
             
-            if len(results) > 4 and len(results[4]) > 0:
-                formula = results[4]
+            if len(row) > 4 and len(row[4]) > 0:
+                formula = row[4]
                 self.assertEqual(formula, lipid.get_sum_formula(), "test on lipid '%s'" % lipid_name)
             else:
                 formula = lipid.get_sum_formula()
@@ -160,13 +162,13 @@ class ShorthandTest(unittest.TestCase):
             levels = [LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.SPECIES]
             for l, lipid_level in enumerate(levels):
                 n = lipid.get_lipid_string(lipid_level)
-                self.assertEqual(results[l], n, "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
+                self.assertEqual(row[l], n, "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
                 self.assertEqual(formula, lipid.get_sum_formula(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
 
 
                 lipid2 = parser.parse(n)
                 for ll in range(l, 4):
-                    self.assertEqual(results[ll], lipid2.get_lipid_string(levels[ll]), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
+                    self.assertEqual(row[ll], lipid2.get_lipid_string(levels[ll]), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
                     self.assertEqual(formula, lipid2.get_sum_formula(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
         
         
@@ -176,7 +178,7 @@ class ShorthandTest(unittest.TestCase):
         length = 0
         
         start = time.time()
-        for lipid_name in data:
+        for lipid_name in [row[0] for row in data]:
             for i in range(cycles):
                 lipid = parser.parse(lipid_name)
                 length += len(lipid_name)
