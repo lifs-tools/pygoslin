@@ -38,7 +38,7 @@ class FattyAcid(FunctionalGroup):
         self.num_carbon = num_carbon
         self.lipid_FA_bond_type = lipid_FA_bond_type
         
-        if lipid_FA_bond_type == lipid_FA_bond_type.LCB_REGULAR: self.functional_groups["[X]"] = [get_functional_group("X")]
+        if lipid_FA_bond_type == LipidFaBondType.LCB_REGULAR: self.functional_groups["[X]"] = [get_functional_group("X")]
         
         num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
         if num_carbon < 0 or num_carbon == 1:
