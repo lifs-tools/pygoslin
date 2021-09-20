@@ -74,7 +74,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
-        if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
+        if max_num_fa != len(self.fa_list): self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
     
         true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
         
