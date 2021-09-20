@@ -35,12 +35,12 @@ from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
 
-
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
+from pygoslin.domain.LipidFullStructure import LipidFullStructure
+from pygoslin.domain.LipidStructureDefined import LipidStructureDefined
+from pygoslin.domain.LipidSnPosition import LipidSnPosition
+from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
 from pygoslin.domain.LipidSpecies import LipidSpecies
-from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 
 from pygoslin.domain.LipidExceptions import *
 
@@ -49,7 +49,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     def __init__(self):
         super().__init__()
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
+        self.level = LipidLevel.FULL_STRUCTURE
         self.head_group = ""
         self.lcb = None
         self.fa_list = []
@@ -57,6 +57,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         self.adduct = None
         self.headgroup_decorators = []
         self.use_head_group = False
+        self.adduct = None
         
     
     
@@ -74,7 +75,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
-        if max_num_fa != len(self.fa_list): self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        if max_num_fa != len(self.fa_list): self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
     
         true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
         
@@ -97,7 +98,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             if true_fa == 0 and poss_fa != 0:
                 raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
             
-        elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+        elif true_fa != poss_fa and self.level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION}:
             raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
         
         if "HC" in all_lipids[headgroup.lipid_class]["specials"] and len(self.fa_list) > 0:
@@ -108,3 +109,16 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             self.fa_list[0].set_type(LipidFaBondType.LCB_EXCEPTION)
             
         return headgroup
+    
+    
+    
+    def assemble_lipid(self, headgroup):
+        lipid_level_class = None
+        if self.level == LipidLevel.COMPLETE_STRUCTURE: lipid_level_class = LipidCompleteStructure
+        if self.level == LipidLevel.FULL_STRUCTURE: lipid_level_class = LipidFullStructure
+        elif self.level == LipidLevel.STRUCTURE_DEFINED: lipid_level_class = LipidStructureDefined
+        elif self.level == LipidLevel.SN_POSITION: lipid_level_class = LipidSnPosition
+        elif self.level == LipidLevel.MOLECULAR_SPECIES: lipid_level_class = LipidMolecularSpecies
+        elif self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
+        
+        return lipid_level_class(headgroup, self.fa_list)

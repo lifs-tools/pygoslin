@@ -25,15 +25,13 @@ SOFTWARE.
 
 
 from pygoslin.domain.LipidSpecies import LipidSpecies
-from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.LipidExceptions import *
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.FunctionalGroup import FunctionalGroup
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
 from pygoslin.domain.FattyAcid import FattyAcid
 
-class LipidMolecularSubspecies(LipidSpecies):
+class LipidMolecularSpecies(LipidSpecies):
 
 
     def __init__(self, head_group, fa = []):
@@ -41,7 +39,7 @@ class LipidMolecularSubspecies(LipidSpecies):
         self.fa = {}
         self.fa_list = []
         
-        self.info.level = LipidLevel.MOLECULAR_SUBSPECIES
+        self.info.level = LipidLevel.MOLECULAR_SPECIES
         
         for fas in fa:
             if fas.name in self.fa:
@@ -67,14 +65,14 @@ class LipidMolecularSubspecies(LipidSpecies):
     
 
     def build_lipid_subspecies_name(self, level):
-        if level == None: level = LipidLevel.MOLECULAR_SUBSPECIES
-        fa_separator = "/" if level != LipidLevel.MOLECULAR_SUBSPECIES or all_lipids[self.headgroup.lipid_class]["category"] == LipidCategory.SP else "_"
+        if level == None: level = LipidLevel.MOLECULAR_SPECIES
+        fa_separator = "/" if level != LipidLevel.MOLECULAR_SPECIES or all_lipids[self.headgroup.lipid_class]["category"] == LipidCategory.SP else "_"
 
         lipid_name = [self.headgroup.get_lipid_string(level)]
 
         fa_headgroup_separator = " " if all_lipids[self.headgroup.lipid_class]["category"] != LipidCategory.ST else "/"
         
-        if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+        if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION}:
             fa_string = fa_separator.join(fatty_acid.to_string(level) for fatty_acid in self.fa_list)
             if len(fa_string) > 0: lipid_name += [fa_headgroup_separator, fa_string]
         else:
@@ -95,12 +93,12 @@ class LipidMolecularSubspecies(LipidSpecies):
     
     
     def get_lipid_string(self, level = None):
-        if level == None or level == LipidLevel.MOLECULAR_SUBSPECIES:
-            return self.build_lipid_subspecies_name(LipidLevel.MOLECULAR_SUBSPECIES)
+        if level == None or level == LipidLevel.MOLECULAR_SPECIES:
+            return self.build_lipid_subspecies_name(LipidLevel.MOLECULAR_SPECIES)
         
         elif level in (LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)
         else:
-            raise Exception("LipidMolecularSubspecies does not know how to create a lipid string for level %s" % level)
+            raise Exception("LipidMolecularSpecies does not know how to create a lipid string for level %s" % level)
     
     

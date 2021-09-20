@@ -24,21 +24,17 @@ SOFTWARE.
 """
 
 
-from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from pygoslin.domain.LipidFaBondType import LipidFaBondType
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidLevel import LipidLevel
-from pygoslin.domain.FattyAcid import FattyAcid
 
-class LipidIsomericSubspecies(LipidStructuralSubspecies):
+class LipidSnPosition(LipidMolecularSpecies):
 
 
     def __init__(self, head_group, fa = []):
         super().__init__(head_group, fa)
                 
-        self.info.level = LipidLevel.ISOMERIC_SUBSPECIES
+        self.info.level = LipidLevel.SN_POSITION
         
 
     
@@ -49,10 +45,10 @@ class LipidIsomericSubspecies(LipidStructuralSubspecies):
 
     def get_lipid_string(self, level = None):
         
-        if level == None or level == LipidLevel.ISOMERIC_SUBSPECIES:
-            return self.build_lipid_subspecies_name(LipidLevel.ISOMERIC_SUBSPECIES)
+        if level == None or level == LipidLevel.SN_POSITION:
+            return self.build_lipid_subspecies_name(LipidLevel.SN_POSITION)
         
-        elif level in (LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
+        elif level in (LipidLevel.MOLECULAR_SPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)
         
         else:

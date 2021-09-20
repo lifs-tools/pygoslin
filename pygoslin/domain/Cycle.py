@@ -152,31 +152,31 @@ class Cycle(FunctionalGroup):
         
     def to_string(self, level):
         cycle_string = ["["]
-        if self.start != None and level == LipidLevel.ISOMERIC_SUBSPECIES:
+        if self.start != None and level == LipidLevel.FULL_STRUCTURE:
             cycle_string.append("%i-%i" % (self.start, self.end))
         
-        if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES} and len(self.bridge_chain) > 0:
+        if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED} and len(self.bridge_chain) > 0:
             cycle_string.append("".join(element_shortcut[e] for e in self.bridge_chain))
         cycle_string.append("cy%i" % self.cycle)    
           
-        if level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+        if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED}:
             if self.double_bonds != None:
                 if type(self.double_bonds) != int:
                     cycle_string.append(":%i" % len(self.double_bonds))
-                    db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())] if level == LipidLevel.ISOMERIC_SUBSPECIES else ["%i" % k for k in sorted(self.double_bonds.keys())]
+                    db_positions = ["%i%s" % (k, self.double_bonds[k]) for k in sorted(self.double_bonds.keys())] if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE} else ["%i" % k for k in sorted(self.double_bonds.keys())]
                     db_pos = "(%s)" % ",".join(db_positions) if len (self.double_bonds) > 0 else ""
                     cycle_string.append(db_pos)
                 else:
                     cycle_string.append(":%i" % self.double_bonds)
             
         
-        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+        if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE}:
             for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):
                 fg_list = self.functional_groups[fg]
                 fg_summary = ",".join([func_group.to_string(level) for func_group in sorted(fg_list, key = lambda x: x.position)])
                 if len(fg_summary) > 0: cycle_string.append(";%s" % fg_summary)
         
-        elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
+        elif level == LipidLevel.STRUCTURE_DEFINED:
             for fg in sorted(self.functional_groups.keys()):
                 fg_list = self.functional_groups[fg]
                 if len(fg_list) > 0:
@@ -190,7 +190,7 @@ class Cycle(FunctionalGroup):
                         else: cycle_string.append(";%s" % fg)
                     
         cycle_string.append("]")
-        if self.stereochemistry != None: cycle_string.append("[%s]" % self.stereochemistry)
+        if level == LipidLevel.COMPLETE_STRUCTURE and self.stereochemistry != None: cycle_string.append("[%s]" % self.stereochemistry)
         
         return "".join(cycle_string)
         

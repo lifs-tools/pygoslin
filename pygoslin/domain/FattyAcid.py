@@ -52,6 +52,7 @@ class FattyAcid(FunctionalGroup):
             raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
         
         
+        
     def copy(self):
         fa = FattyAcid(self.name)
         fa.position = self.position
@@ -104,10 +105,10 @@ class FattyAcid(FunctionalGroup):
         num_carbon = self.num_carbon
         double_bonds = self.double_bonds
         
-        if num_carbon == 0 and double_bonds == 0 and level not in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
+        if num_carbon == 0 and double_bonds == 0 and level not in {LipidLevel.STRUCTURE_DEFINED, LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
             return ""
         
-        if level == LipidLevel.MOLECULAR_SUBSPECIES:
+        if level == LipidLevel.MOLECULAR_SPECIES:
             num_carbon = self.get_elements()[Element.C]
             double_bonds = self.get_double_bonds() - (self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL)
             
@@ -116,11 +117,11 @@ class FattyAcid(FunctionalGroup):
         
         if type(double_bonds) != int:
             fa_string.append(":%i" % len(double_bonds))
-            if level == LipidLevel.ISOMERIC_SUBSPECIES:
+            if level == LipidLevel.FULL_STRUCTURE:
                 db_positions = ["%i%s" % (k, double_bonds[k]) for k in sorted(double_bonds.keys())]
                 db_pos = "(%s)" % ",".join(db_positions) if len (double_bonds) > 0 else ""
                 fa_string.append(db_pos)
-            elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
+            elif level == LipidLevel.STRUCTURE_DEFINED:
                 db_positions = ["%i" % k for k in sorted(double_bonds.keys())]
                 db_pos = "(%s)" % ",".join(db_positions) if len (double_bonds) > 0 else ""
                 fa_string.append(db_pos)
@@ -128,14 +129,14 @@ class FattyAcid(FunctionalGroup):
         else:
             fa_string.append(":%i" % double_bonds)
         
-        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+        if level in {LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
             for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):
                 if fg == "[X]": continue
                 fg_list = self.functional_groups[fg]
                 fg_summary = ",".join([func_group.to_string(level) for func_group in sorted(fg_list, key = lambda x: x.position)])
                 if len(fg_summary) > 0: fa_string.append(";%s" % fg_summary)
         
-        elif level == LipidLevel.STRUCTURAL_SUBSPECIES:
+        elif level == LipidLevel.STRUCTURE_DEFINED:
             for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):
                 if fg == "[X]": continue
                 fg_list = self.functional_groups[fg]

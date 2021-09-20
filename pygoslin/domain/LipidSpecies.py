@@ -93,7 +93,7 @@ class LipidSpecies:
         
         
     def get_elements(self):
-        if self.info.level not in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.SPECIES, LipidLevel.MOLECULAR_SUBSPECIES}:
+        if self.info.level not in {LipidLevel.STRUCTURE_DEFINED, LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.SPECIES, LipidLevel.MOLECULAR_SPECIES, LipidLevel.SN_POSITION}:
             raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
         dummy = FunctionalGroup("dummy", elements = self.headgroup.get_elements())

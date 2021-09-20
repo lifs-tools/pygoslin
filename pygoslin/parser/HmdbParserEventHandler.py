@@ -29,12 +29,14 @@ from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.Adduct import Adduct
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
-from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.FattyAcid import FattyAcid
-from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
+from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
+from pygoslin.domain.LipidFullStructure import LipidFullStructure
+from pygoslin.domain.LipidStructureDefined import LipidStructureDefined
+from pygoslin.domain.LipidSnPosition import LipidSnPosition
+from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
+from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
@@ -98,7 +100,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
+        self.level = LipidLevel.FULL_STRUCTURE
         self.lipid = None
         self.head_group = ""
         self.lcb = None
@@ -141,7 +143,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_molecular_level(self, node):
-        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+        self.set_lipid_level(LipidLevel.MOLECULAR_SPECIES)
         
         
     def mediator_event(self, node):
@@ -179,7 +181,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         elif self.current_fa.double_bonds > 0:
                 self.set_structural_subspecies_level(node)
             
-        if self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+        if self.level in {LipidLevel.SN_POSITION, LipidLevel.STRUCTURE_DEFINED, LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
             self.current_fa.position = len(self.fa_list) + 1
             
         self.fa_list.append(self.current_fa)
@@ -192,17 +194,11 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
             self.fa_list = [self.lcb] + self.fa_list
         
         headgroup = self.prepare_headgroup_and_checks()
-
-        lipid_level_class = None
-        if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
-        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
-        if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
-        if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
-        self.lipid = LipidAdduct()
-        self.lipid.lipid = lipid_level_class(headgroup, self.fa_list)
+        lipid = LipidAdduct()
+        lipid.lipid = self.assemble_lipid(headgroup)
         
-        self.content = self.lipid
+        self.content = lipid
         
         
     def add_ether(self, node):
@@ -220,7 +216,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_structural_subspecies_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+        self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
             
         
     def add_hydroxyl(self, node):

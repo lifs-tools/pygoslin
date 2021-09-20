@@ -33,7 +33,8 @@ from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEvent
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
 from pygoslin.parser.ShorthandParserEventHandler import ShorthandParserEventHandler
 from pygoslin.parser.FattyAcidParserEventHandler import FattyAcidParserEventHandler
-from pygoslin.parser.SystematicParserEventHandler import SystematicParserEventHandler
+#from pygoslin.parser.SystematicParserEventHandler import SystematicParserEventHandler
+
 from pygoslin.parser.ParserCommon import Parser
 from pygoslin.domain.LipidExceptions import LipidException
 
@@ -48,7 +49,7 @@ class GoslinParser(Parser):
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
-        
+
 class ShorthandParser(Parser):
     def __init__(self):
         self.event_handler = ShorthandParserEventHandler()
@@ -57,7 +58,7 @@ class ShorthandParser(Parser):
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
-        
+"""
 class SystematicParser(Parser):
     def __init__(self):
         self.event_handler = SystematicParserEventHandler()
@@ -67,7 +68,7 @@ class SystematicParser(Parser):
         
     def parse(self, lipid_name):
         return super().parse(lipid_name.lower())
-        
+"""
         
         
 class FattyAcidParser(Parser):

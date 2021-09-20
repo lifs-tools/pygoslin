@@ -29,12 +29,15 @@ from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.Adduct import Adduct
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
-from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.FattyAcid import FattyAcid
-from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
+
+from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
+from pygoslin.domain.LipidFullStructure import LipidFullStructure
+from pygoslin.domain.LipidStructureDefined import LipidStructureDefined
+from pygoslin.domain.LipidSnPosition import LipidSnPosition
+from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
+from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
@@ -162,7 +165,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
+        self.level = LipidLevel.FULL_STRUCTURE
         self.headgroup = ""
         self.fatty_acyl_stack = [FattyAcid("FA")]
         self.tmp = {"fa1": {}}
@@ -885,13 +888,15 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         if type(self.fatty_acyl_stack[-1].double_bonds) == dict and len(self.fatty_acyl_stack[-1].double_bonds) > 0:
             if sum(len(ct) > 0 for p, ct in self.fatty_acyl_stack[-1].double_bonds.items()) != len(self.fatty_acyl_stack[-1].double_bonds):
-                self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+                self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         lipid_level_class = None
-        if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
-        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
-        if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
-        if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
+        if self.level == LipidLevel.COMPLETE_STRUCTURE: lipid_level_class = LipidCompleteStructure
+        elif self.level == LipidLevel.FULL_STRUCTURE: lipid_level_class = LipidFullStructure
+        elif self.level == LipidLevel.STRUCTURE_DEFINED: lipid_level_class = LipidStructureDefined
+        elif self.level == LipidLevel.SN_POSITION: lipid_level_class = LipidSnPosition
+        elif self.level == LipidLevel.MOLECULAR_SPECIES: lipid_level_class = LipidMolecularSpecies
+        elif self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
         headgroup = HeadGroup(self.headgroup)
         

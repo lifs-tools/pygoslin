@@ -24,36 +24,30 @@ SOFTWARE.
 """
 
 
-from enum import Enum
+from pygoslin.domain.LipidFullStructure import LipidFullStructure
+from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.LipidLevel import LipidLevel
 
-class LipidLevel(Enum):
-    # Undefined / non-inferable lipid level
-    UNDEFINED = 0
-    
-    # Mediators, Glycerolipids, Glycerophospholipids, Sphingolipids, Steroids, Prenols
-    CATEGORY = 1
-    
-    # Glyerophospholipids -> Glycerophosphoinositols (PI)
-    CLASS = 2
-    
-    # Phosphatidylinositol (16:0) or PI(16:0)
-    SPECIES = 3
-    
-    # Phosphatidylinositol (8:0-8:0) or PI(8:0-8:0)
-    MOLECULAR_SPECIES = 4
-    
-    # Phosphatidylinositol (8:0;O2/8:0) or PI(8:0;O2/8:0)
-    SN_POSITION = 5
+class LipidCompleteStructure(LipidFullStructure):
 
-    # Phosphatidylinositol (8:0;(OH)2/8:0) or PI(8:0;(OH)2/8:0)
-    STRUCTURE_DEFINED = 6
+
+    def __init__(self, head_group, fa = []):
+        super().__init__(head_group, fa)
+                
+        self.info.level = LipidLevel.COMPLETE_STRUCTURE
+        
     
-    """
-    1,2-dioctanoyl-sn-glycero-3-phospho-1D-myo-inositol
-    PE(P-18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))
-    Phosphatidylethanolamine (P-18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))
-    """
-    FULL_STRUCTURE = 7
+    def get_extended_class(self):
+        return super().get_extended_class()
     
-    # PI 18:1(4E);3OH[R]/16:0[2S]
-    COMPLETE_STRUCTURE = 8
+
+    def get_lipid_string(self, level = None):
+        
+        if level == None or level == LipidLevel.COMPLETE_STRUCTURE:
+            return self.build_lipid_subspecies_name(LipidLevel.COMPLETE_STRUCTURE)
+        
+        elif level in (LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION, LipidLevel.COMPLETE_STRUCTURE, LipidLevel.MOLECULAR_SPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
+            return super().get_lipid_string(level)
+        
+        else:
+            raise Exception("LipidIsomericSubspecies does not know how to create a lipid string for level %s" % level)

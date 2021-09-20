@@ -38,11 +38,13 @@ from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.FunctionalGroup import *
 from pygoslin.domain.Cycle import *
 
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
+from pygoslin.domain.LipidFullStructure import LipidFullStructure
+from pygoslin.domain.LipidStructureDefined import LipidStructureDefined
+from pygoslin.domain.LipidSnPosition import LipidSnPosition
+from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
 from pygoslin.domain.LipidSpecies import LipidSpecies
-from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
@@ -119,7 +121,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["func_group_name_pre_event"] = self.set_functional_group_name
         self.registered_events["func_group_count_pre_event"] = self.set_functional_group_count
         self.registered_events["stereo_type_pre_event"] = self.set_functional_group_stereo
-        self.registered_events["molecular_func_group_name_pre_event"] = self.set_molecular_func_group
+        self.registered_events["molecular_func_group_name_pre_event"] = self.set_sn_position_func_group
         
         ## set cycle events
         self.registered_events["func_group_cycle_pre_event"] = self.set_cycle
@@ -161,7 +163,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
 
 
     def reset_lipid(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
+        self.level = LipidLevel.FULL_STRUCTURE
         self.lipid = None
         self.head_group = ""
         self.adduct = None
@@ -169,7 +171,6 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa = []
         self.headgroup_decorators = []
         self.tmp = {}
-        #self.debug = "full"
         
         
         
@@ -203,7 +204,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_carbohydrate_structural(self, node):
-        self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         self.tmp["func_group_head"] = True
         
         
@@ -212,7 +213,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
     def suffix_decorator_molecular(self, node):
-        self.headgroup_decorators.append(HeadgroupDecorator(node.get_text(), suffix = True, level = LipidLevel.MOLECULAR_SUBSPECIES))
+        self.headgroup_decorators.append(HeadgroupDecorator(node.get_text(), suffix = True, level = LipidLevel.MOLECULAR_SPECIES))
         
         
     def suffix_decorator_species(self, node):
@@ -262,7 +263,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
             
         else:
             if self.current_fa[-1].double_bonds > 0:
-                self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+                self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
                 
         del self.tmp[fa_i]
         
@@ -295,7 +296,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         pos = self.tmp[fa_i]["db_position"]
         cistrans = self.tmp[fa_i]["db_cistrans"]
         
-        if cistrans == "": self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        if cistrans == "": self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         del self.tmp[fa_i]["db_position"]
         del self.tmp[fa_i]["db_cistrans"]
@@ -398,7 +399,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         cc = self.current_fa.pop()
         
         cc.position = linkage_pos
-        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         if "cc" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["cc"] = []
         self.current_fa[-1].functional_groups["cc"].append(cc)
@@ -423,7 +424,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         acyl.position = linkage_pos
         acyl.set_N_bond_type(linkage_type)
-        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         if "acyl" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["acyl"] = []
         self.current_fa[-1].functional_groups["acyl"].append(acyl)
@@ -445,7 +446,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         alkyl = self.current_fa.pop()
         
         alkyl.position = linkage_pos
-        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        if linkage_pos == -1: self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         if "alkyl" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["alkyl"] = []
         self.current_fa[-1].functional_groups["alkyl"].append(alkyl)
@@ -505,9 +506,9 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp["fa%i" % len(self.current_fa)]["fg_stereo"] = node.get_text()
         
         
-    def set_molecular_func_group(self, node):
+    def set_sn_position_func_group(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = node.get_text()
-        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+        self.set_lipid_level(LipidLevel.SN_POSITION)
         
         
     def add_functional_group(self, node):
@@ -522,7 +523,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         if fg_name in {"cy", "cc", "acyl", "alkyl", "decorator_acyl", "decorator_alkyl"}: return
         
         if fg_pos == -1:
-            self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+            self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         try:
             functional_group = get_functional_group(fg_name).copy()
@@ -563,7 +564,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_molecular_level(self, node):
-        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+        self.set_lipid_level(LipidLevel.MOLECULAR_SPECIES)
         
         
     
@@ -585,29 +586,14 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         fa_it = len(self.fa_list) > 0 and self.fa_list[0].lipid_FA_bond_type in {LipidFaBondType.LCB_EXCEPTION, LipidFaBondType.LCB_REGULAR}
         for it in range(fa_it, len(self.fa_list)):
             self.fa_list[it].name += "%i" % (it + 1)
+        
+        lipid = LipidAdduct()
+        lipid.adduct = self.adduct
+        lipid.lipid = self.assemble_lipid(headgroup)
             
+        if "num_ethers" in self.tmp: lipid.lipid.info.num_ethers = self.tmp["num_ethers"]
         
-        
-        lipid_level_class = None
-        if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
-        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
-        if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
-        if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
-        
-        
-        self.lipid = LipidAdduct()
-        self.lipid.adduct = self.adduct
-        self.lipid.lipid = lipid_level_class(headgroup, self.fa_list)
-            
-        if "num_ethers" in self.tmp: self.lipid.lipid.info.num_ethers = self.tmp["num_ethers"]
-        l = self.lipid.lipid
-        
-        
-        #if self.level == LipidLevel.SPECIES and l.headgroup.sp_exception and "O" in l.info.functional_groups:
-        #    l.info.functional_groups["O"][0].count -= 1
-        
-        
-        self.content = self.lipid
+        self.content = lipid
         
         
     def new_adduct(self, node):

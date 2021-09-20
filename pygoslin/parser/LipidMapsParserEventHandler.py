@@ -29,12 +29,16 @@ from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
-from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from pygoslin.domain.LipidStructuralSubspecies import LipidStructuralSubspecies
-from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
-from pygoslin.domain.LipidAdduct import LipidAdduct
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+
+from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
+from pygoslin.domain.LipidFullStructure import LipidFullStructure
+from pygoslin.domain.LipidStructureDefined import LipidStructureDefined
+from pygoslin.domain.LipidSnPosition import LipidSnPosition
+from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
 from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+
+from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
@@ -112,7 +116,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.ISOMERIC_SUBSPECIES
+        self.level = LipidLevel.FULL_STRUCTURE
         self.lipid = None
         self.head_group = ""
         self.lcb = None
@@ -131,7 +135,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_molecular_subspecies_level(self, node):
-        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+        self.set_lipid_level(LipidLevel.MOLECULAR_SPECIES)
         
         
     def mediator_event(self, node):
@@ -188,7 +192,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_structural_subspecies_level(self, node):
-        self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
 
 
     def set_mod(self, node):
@@ -243,7 +247,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
                 self.set_structural_subspecies_level(node)
             
         
-        if self.level in {LipidLevel.STRUCTURAL_SUBSPECIES, LipidLevel.ISOMERIC_SUBSPECIES}:
+        if self.level in {LipidLevel.SN_POSITION, LipidLevel.STRUCTURE_DEFINED, LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
             self.current_fa.position = len(self.fa_list) + 1
             
         if self.current_fa.num_carbon == 0: self.omit_fa = True
@@ -331,15 +335,9 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         headgroup = self.prepare_headgroup_and_checks()
 
-        lipid_level_class = None
-        if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
-        if self.level == LipidLevel.STRUCTURAL_SUBSPECIES: lipid_level_class = LipidStructuralSubspecies
-        if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
-        if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
+        lipid = LipidAdduct()
+        lipid.lipid = self.assemble_lipid(headgroup)
         
-        self.lipid = LipidAdduct()
-        self.lipid.lipid = lipid_level_class(headgroup, self.fa_list)
-        
-        self.content = self.lipid
+        self.content = lipid
         
         

@@ -97,13 +97,13 @@ class FunctionalGroup:
         
     def to_string(self, level):
         fg_string = ""
-        if level == LipidLevel.ISOMERIC_SUBSPECIES:
+        if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE}:
             if str.isnumeric(self.name[0]): fg_string = "%i%s(%s)" % (self.position, self.ring_stereo, self.name) if self.position > -1 else self.name
             else: fg_string = "%i%s%s" % (self.position, self.ring_stereo, self.name) if self.position > -1 else self.name
             
         else:
             fg_string = "(%s)%i" % (self.name, self.count) if self.count > 1 else self.name
-        if self.stereochemistry != None and self.stereochemistry != "" and level == LipidLevel.ISOMERIC_SUBSPECIES: fg_string += "[%s]" % self.stereochemistry
+        if self.stereochemistry != None and self.stereochemistry != "" and level == LipidLevel.COMPLETE_STRUCTURE: fg_string += "[%s]" % self.stereochemistry
                 
         return fg_string
     
@@ -207,7 +207,7 @@ class AcylAlkylGroup(FunctionalGroup):
 
     def to_string(self, level):
         acyl_alkyl_string = []
-        if level == LipidLevel.ISOMERIC_SUBSPECIES: acyl_alkyl_string.append("%i" % self.position)
+        if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE}: acyl_alkyl_string.append("%i" % self.position)
         acyl_alkyl_string.append("%s(" % ("N" if self.N_bond else "O"))
         if not self.alkyl: acyl_alkyl_string.append("FA ")
         fa = self.functional_groups["alkyl" if self.alkyl else "acyl"][0]
@@ -236,7 +236,7 @@ class CarbonChain(FunctionalGroup):
         
 
     def to_string(self, level):
-        return "%s(%s)" % ((str(self.position) if level == LipidLevel.ISOMERIC_SUBSPECIES else ""), self.functional_groups["cc"][0].to_string(level))
+        return "%s(%s)" % ((str(self.position) if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE} else ""), self.functional_groups["cc"][0].to_string(level))
     
     
     

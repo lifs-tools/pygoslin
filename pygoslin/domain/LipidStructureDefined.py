@@ -24,21 +24,17 @@ SOFTWARE.
 """
 
 
-from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
-from pygoslin.domain.LipidFaBondType import LipidFaBondType
-from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
+from pygoslin.domain.LipidSnPosition import LipidSnPosition
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidLevel import LipidLevel
-from pygoslin.domain.LipidClass import *
-from pygoslin.domain.FattyAcid import FattyAcid
 
-class LipidStructuralSubspecies(LipidMolecularSubspecies):
+class LipidStructureDefined(LipidSnPosition):
 
 
     def __init__(self, head_group, fa = []):
         super().__init__(head_group, fa)
         
-        self.info.level = LipidLevel.STRUCTURAL_SUBSPECIES   
+        self.info.level = LipidLevel.STRUCTURE_DEFINED   
     
 
     def get_extended_class(self):
@@ -46,10 +42,10 @@ class LipidStructuralSubspecies(LipidMolecularSubspecies):
     
     
     def get_lipid_string(self, level = None):
-        if level == None or level == LipidLevel.STRUCTURAL_SUBSPECIES:
-            return self.build_lipid_subspecies_name(LipidLevel.STRUCTURAL_SUBSPECIES)
+        if level == None or level == LipidLevel.STRUCTURE_DEFINED:
+            return self.build_lipid_subspecies_name(LipidLevel.STRUCTURE_DEFINED)
         
-        elif level in (LipidLevel.MOLECULAR_SUBSPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
+        elif level in (LipidLevel.SN_POSITION, LipidLevel.MOLECULAR_SPECIES, LipidLevel.CATEGORY, LipidLevel.CLASS, LipidLevel.SPECIES):
             return super().get_lipid_string(level)
             
         else:

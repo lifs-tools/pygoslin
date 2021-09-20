@@ -46,15 +46,15 @@ class LipidMapsTest(unittest.TestCase):
                 lipid_data.append(row)
         
         
-        lipid_parser = FattyAcidParser()
+        parser = FattyAcidParser()
         shorthand_parser = ShorthandParser()
         formula_parser = SumFormulaParser()
         for lipid_row in lipid_data:
             
             lmid, lipid_name, formula, expected_lipid_name = lipid_row
             formula = compute_sum_formula(formula_parser.parse(formula))
+            lipid = parser.parse(lipid_name)
             
-            lipid = lipid_parser.parse(lipid_name)
             
             self.assertEqual(expected_lipid_name, lipid.get_lipid_string(), "%s: %s != %s (computed)" % (lmid, expected_lipid_name, lipid.get_lipid_string()))
             
@@ -69,7 +69,7 @@ class LipidMapsTest(unittest.TestCase):
             
             self.assertEqual(formula, lipid_formula, "lipid %s: %s != %s (computed)" % (lmid, formula, lipid_formula))
                 
-            lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SUBSPECIES))
+            lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SPECIES))
             lipid_formula = lipid2.get_sum_formula()
             
             self.assertEqual(formula, lipid_formula, "molecular lipid '%s': %s != %s (computed)" % (lmid, formula, lipid_formula))
