@@ -45,3 +45,4 @@ class LipidFaBondType(Enum):
     def double_bond_correction(self):
         return 1 if self == self.ETHER_PLASMENYL else 0
     
+    

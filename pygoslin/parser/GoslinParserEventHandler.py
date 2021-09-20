@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.LipidBaseParserEventHandler import LipidBaseParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
@@ -35,6 +35,7 @@ from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
 
+
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidMolecularSubspecies import LipidMolecularSubspecies
@@ -43,7 +44,7 @@ from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 
 from pygoslin.domain.LipidExceptions import *
 
-class GoslinParserEventHandler(BaseParserEventHandler):
+class GoslinParserEventHandler(LipidBaseParserEventHandler):
     
     def __init__(self):
         super().__init__()
@@ -114,7 +115,6 @@ class GoslinParserEventHandler(BaseParserEventHandler):
 
     def reset_lipid(self, node):
         self.level = LipidLevel.ISOMERIC_SUBSPECIES
-        self.lipid = None
         self.head_group = ""
         self.lcb = None
         self.fa_list = []
@@ -127,6 +127,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.headgroup_decorators = []
         
         
+        
     def set_lpl_head_group_name(self, node):
         self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
         self.head_group = node.get_text()
@@ -135,6 +136,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
 
     def set_head_group_name(self, node):
         self.head_group = node.get_text()
+        
         
         
     def set_unspecified_ether(self, node):
@@ -151,8 +153,10 @@ class GoslinParserEventHandler(BaseParserEventHandler):
             self.fa_list.pop()
         
     
+    
     def set_species_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.SPECIES.value else LipidLevel.SPECIES
+        self.set_lipid_level(LipidLevel.SPECIES)
+        
         
         
     def set_isomeric_level(self, node):
@@ -160,8 +164,10 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         self.db_cistrans = ""
         
         
+        
     def set_structural_subspecies_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.STRUCTURAL_SUBSPECIES.value else LipidLevel.STRUCTURAL_SUBSPECIES
+        self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+        
         
 
     def add_db_position(self, node):
@@ -172,16 +178,20 @@ class GoslinParserEventHandler(BaseParserEventHandler):
             self.current_fa.double_bonds[self.db_position] = self.db_cistrans
         
 
+
     def add_db_position_number(self, node):
         self.db_position = int(node.get_text())
+        
         
 
     def add_cistrans(self, node):
         self.db_cistrans = node.get_text()
         
         
+        
     def set_molecular_subspecies_level(self, node):
-        self.level = self.level if self.level.value < LipidLevel.MOLECULAR_SUBSPECIES.value else LipidLevel.MOLECULAR_SUBSPECIES
+        self.set_lipid_level(LipidLevel.MOLECULAR_SUBSPECIES)
+        
         
         
     def new_fa(self, node):
@@ -216,20 +226,19 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         
         
-        
     def new_lcb(self, node):
         self.lcb = FattyAcid("LCB")
         self.current_fa = self.lcb
         self.set_structural_subspecies_level(node)
         self.lcb.set_type(LipidFaBondType.LCB_REGULAR)
+        self.set_lipid_level(LipidLevel.STRUCTURAL_SUBSPECIES)
+            
             
             
     def clean_lcb(self, node):
         if type(self.current_fa.double_bonds) != int:
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
-        elif self.current_fa.double_bonds > 0:
-                self.set_structural_subspecies_level(node)
                 
         self.current_fa = None
         
@@ -242,41 +251,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         
         lipid = None
         
-        headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
-    
-        max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
-        if max_num_fa != len(self.fa_list): self.set_structural_subspecies_level(node)
-    
-        true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
-        
-        poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
-        
-        
-        # make lyso
-        can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.head_group)]["specials"] if get_class("L" + self.head_group) < len(all_lipids) else False
-        
-        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
-            self.head_group = "L" + self.head_group
-            headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
-            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
-        
-        elif true_fa + 2 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group == "CL":
-            self.head_group = "DL" + self.head_group
-            headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
-            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
-
-
-
-        if self.level == LipidLevel.SPECIES:
-            if true_fa == 0 and poss_fa != 0:
-                raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
-            
-        elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
-            raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
-        
-        # make LBC exception
-        if len(self.fa_list) > 0 and headgroup.sp_exception:
-            self.fa_list[0].set_type(LipidFaBondType.LCB_EXCEPTION)
+        headgroup = self.prepare_headgroup_and_checks()
 
         lipid_level_class = None
         if self.level == LipidLevel.ISOMERIC_SUBSPECIES: lipid_level_class = LipidIsomericSubspecies
@@ -284,11 +259,11 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         if self.level == LipidLevel.MOLECULAR_SUBSPECIES: lipid_level_class = LipidMolecularSubspecies
         if self.level == LipidLevel.SPECIES: lipid_level_class = LipidSpecies
         
-        self.lipid = LipidAdduct()
-        self.lipid.adduct = self.adduct
-        self.lipid.lipid = lipid_level_class(headgroup, self.fa_list)
+        lipid = LipidAdduct()
+        lipid.adduct = self.adduct
+        lipid.lipid = lipid_level_class(headgroup, self.fa_list)
         
-        self.content = self.lipid
+        self.content = lipid
         
         
         
@@ -308,7 +283,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         if old_hydroxyl == "d": num_h = 2
         if old_hydroxyl == "t": num_h = 3
         
-        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lcb and self.head_group not in {"Cer", "LCB"}: num_h -= 1
+        if self.sp_regular_lcb(): num_h -= 1
         
         functional_group = get_functional_group("OH").copy()
         functional_group.count = num_h
@@ -329,8 +304,7 @@ class GoslinParserEventHandler(BaseParserEventHandler):
         num_h = int(node.get_text())
         functional_group = get_functional_group("OH").copy()
         
-        if get_category(self.head_group) == LipidCategory.SP and self.current_fa.lipid_FA_bond_type in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION} and self.head_group not in {"Cer", "LCB"}:
-            num_h -= 1
+        if self.sp_regular_lcb(): num_h -= 1
             
         functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []

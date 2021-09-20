@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.BaseParserEventHandler import BaseParserEventHandler
+from pygoslin.parser.LipidBaseParserEventHandler import LipidBaseParserEventHandler
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
@@ -47,7 +47,7 @@ from pygoslin.domain.LipidIsomericSubspecies import LipidIsomericSubspecies
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
 
-class ShorthandParserEventHandler(BaseParserEventHandler):
+class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     def __init__(self):
         super().__init__()
@@ -163,17 +163,13 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
     def reset_lipid(self, node):
         self.level = LipidLevel.ISOMERIC_SUBSPECIES
         self.lipid = None
-        self.headgroup = ""
+        self.head_group = ""
         self.adduct = None
         self.fa_list = []
         self.current_fa = []
         self.headgroup_decorators = []
         self.tmp = {}
         #self.debug = "full"
-        
-        
-    def set_lipid_level(self, level):
-        self.level = self.level if self.level.value < level.value else level
         
         
         
@@ -187,7 +183,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
         
     def set_headgroup_name(self, node):
-        if len(self.headgroup) == 0: self.headgroup = node.get_text()
+        if len(self.head_group) == 0: self.head_group = node.get_text()
         
         
     def set_carbohydrate(self, node):
@@ -582,41 +578,7 @@ class ShorthandParserEventHandler(BaseParserEventHandler):
         
     def build_lipid(self, node):
         
-        headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
-
-        true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
-        
-        poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
-        
-        # make lyso
-        can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.headgroup)]["specials"] if get_class("L" + self.headgroup) < len(all_lipids) else False
-        
-        if true_fa + 1 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
-            self.headgroup = "L" + self.headgroup
-            headgroup = HeadGroup(self.headgroup, self.headgroup_decorators)
-            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
-        
-        elif true_fa + 2 == poss_fa and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and self.head_group == "CL":
-            self.head_group = "DL" + self.head_group
-            headgroup = HeadGroup(self.head_group, self.headgroup_decorators)
-            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
-
-        
-        if self.level == LipidLevel.SPECIES:
-            if true_fa == 0 and poss_fa != 0:
-                raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
-            
-        elif true_fa != poss_fa and self.level in {LipidLevel.ISOMERIC_SUBSPECIES, LipidLevel.STRUCTURAL_SUBSPECIES}:
-            raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
-        
-        
-        if "HC" in all_lipids[headgroup.lipid_class]["specials"]:
-            self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.AMINE
-        
-        
-        # make LBC exception
-        if len(self.fa_list) > 0 and headgroup.sp_exception:
-            self.fa_list[0].set_type(LipidFaBondType.LCB_EXCEPTION)
+        headgroup = self.prepare_headgroup_and_checks()
         
         
         # add count numbers for fatty acyl chains

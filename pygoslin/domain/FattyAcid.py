@@ -32,6 +32,7 @@ from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.FunctionalGroup import *
 
 class FattyAcid(FunctionalGroup):
+    LCB_STATES = set([LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION])
 
     def __init__(self, name, num_carbon = 0, double_bonds = 0, functional_groups = None, lipid_FA_bond_type = LipidFaBondType.ESTER, position = 0):
         super().__init__(name, double_bonds = double_bonds, position = position, functional_groups = functional_groups)
