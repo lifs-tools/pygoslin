@@ -177,6 +177,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
                 self.db_numbers = self.current_fa.double_bonds
                 self.current_fa.double_bonds = {}
             self.current_fa.double_bonds[self.db_position] = self.db_cistrans
+            if self.db_cistrans not in {"E", "Z"}: self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
 
 
@@ -212,7 +213,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
-                self.set_structural_subspecies_level(node)
+                self.set_lipid_level(LipidLevel.SN_POSITION)
             
         if self.current_fa.lipid_FA_bond_type == LipidFaBondType.ETHER_UNSPECIFIED:
             raise LipidException("Lipid with unspecified ether bond cannot be treated properly.")
@@ -241,6 +242,8 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
                 
+        elif self.current_fa.double_bonds > 0:
+                self.set_lipid_level(LipidLevel.SN_POSITION)
         self.current_fa = None
         
         

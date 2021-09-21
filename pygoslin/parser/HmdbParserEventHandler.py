@@ -119,6 +119,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
                 self.db_numbers = self.current_fa.double_bonds
                 self.current_fa.double_bonds = {}
             self.current_fa.double_bonds[self.db_position] = self.db_cistrans
+            if self.db_cistrans not in {"E", "Z"}: self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
 
     def add_db_position_number(self, node):
@@ -168,7 +169,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
-                self.set_structural_subspecies_level(node)
+                self.set_lipid_level(LipidLevel.SN_POSITION)
             
         self.current_fa = None
         
@@ -179,7 +180,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
-                self.set_structural_subspecies_level(node)
+                self.set_lipid_level(LipidLevel.SN_POSITION)
             
         if self.level in {LipidLevel.SN_POSITION, LipidLevel.STRUCTURE_DEFINED, LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
             self.current_fa.position = len(self.fa_list) + 1

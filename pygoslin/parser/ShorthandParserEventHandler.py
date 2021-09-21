@@ -263,7 +263,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
             
         else:
             if self.current_fa[-1].double_bonds > 0:
-                self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
+                self.set_lipid_level(LipidLevel.SN_POSITION)
                 
         del self.tmp[fa_i]
         
