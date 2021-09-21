@@ -105,10 +105,10 @@ class FattyAcid(FunctionalGroup):
         num_carbon = self.num_carbon
         double_bonds = self.double_bonds
         
-        if num_carbon == 0 and double_bonds == 0 and level not in {LipidLevel.STRUCTURE_DEFINED, LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
+        if num_carbon == 0 and double_bonds == 0 and level not in {LipidLevel.STRUCTURE_DEFINED, LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE, LipidLevel.SN_POSITION}:
             return ""
         
-        if level == LipidLevel.MOLECULAR_SPECIES:
+        if level in {LipidLevel.MOLECULAR_SPECIES, LipidLevel.SN_POSITION}:
             num_carbon = self.get_elements()[Element.C]
             double_bonds = self.get_double_bonds() - (self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL)
             
