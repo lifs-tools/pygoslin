@@ -597,6 +597,9 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def reduction(self, node):
         self.fatty_acyl_stack[-1].num_carbon -= len(self.tmp["fg_pos"])
+        for fg, fg_list in self.fatty_acyl_stack[-1].functional_groups.items():
+            for func_group in fg_list:
+                func_group.shift_positions(-len(self.tmp["fg_pos"]))
         self.tmp["reduction"] = [p[0] for p in self.tmp["fg_pos"]]
         
         
@@ -623,6 +626,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.headgroup = "FA"
         
         pos = self.tmp["fg_pos"][1][0] if len(self.tmp["fg_pos"]) == 2 else self.fatty_acyl_stack[-1].num_carbon
+        if "reduction" in self.tmp: pos -= len(self.tmp["reduction"])
         self.fatty_acyl_stack[-1].num_carbon -= 1
         func_group = get_functional_group("COOH")
         func_group.position = pos - 1

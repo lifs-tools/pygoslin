@@ -112,6 +112,8 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["mod_num_pre_event"] = self.set_mod_num
         self.registered_events["single_mod_post_event"] = self.add_functional_group
         
+        self.registered_events["special_cer_prefix_pre_event"] = self.add_ACer
+        
         self.debug = ""
         
         
@@ -158,6 +160,36 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
                 self.current_fa.double_bonds[self.db_position] = self.db_cistrans
             if self.db_cistrans not in {"E", "Z"}: self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
+    
+    acer_heads = {"1-O-myristoyl": FattyAcid("FA", 14),
+                  "1-O-palmitoyl": FattyAcid("FA", 16),
+                  "1-O-stearoyl": FattyAcid("FA", 18),
+                  "1-O-eicosanoyl": FattyAcid("FA", 20),
+                  "1-O-behenoyl": FattyAcid("FA", 22),
+                  "1-O-lignoceroyl": FattyAcid("FA", 24),
+                  "1-O-cerotoyl": FattyAcid("FA", 26),
+                  "1-O-pentacosanoyl": FattyAcid("FA", 25),
+                  "1-O-tricosanoyl": FattyAcid("FA", 30),
+                  "1-O-lignoceroyl-omega-linoleoyloxy": FattyAcid("FA", 24),
+                  "1-O-stearoyl-omega-linoleoyloxy": FattyAcid("FA", 18)
+                  }
+                  
+        
+    def add_ACer(self, node):
+        head = node.get_text()
+        self.head_group = "ACer"
+        
+        if head not in LipidMapsParserEventHandler.acer_heads:
+            raise LipidException("ACer head group '%s' unknown" % head)
+        
+        hgd = HeadgroupDecorator("decorator_acyl", suffix = True)
+        hgd.functional_groups["decorator_acyl"] = [LipidMapsParserEventHandler.acer_heads[head]]
+        self.headgroup_decorators.append(hgd)
+        
+        if head in {"1-O-lignoceroyl-omega-linoleoyloxy", "1-O-stearoyl-omega-linoleoyloxy"}:
+            self.add_omega_linoleoyloxy_Cer
+        
+        
         
 
     def add_db_position_number(self, node):
@@ -175,7 +207,8 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_head_group_name(self, node):
-        self.head_group = node.get_text()
+        if len(self.head_group) == 0:
+            self.head_group = node.get_text()
         
         
         

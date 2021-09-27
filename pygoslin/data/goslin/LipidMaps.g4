@@ -125,7 +125,7 @@ special_cer : special_cer_prefix '-Cer';
 special_cer_hg : 'Cer';
 special_cer_prefix : '1-O-' special_cer_prefix_1_O | '(3\'-sulfo)Galbeta';
 special_glyco : glyco_cer '-' special_cer_hg;
-special_cer_prefix_1_O : 'myristoyl' | 'palmitoyl' | 'stearoyl' | 'eicosanoyl' | 'behenoyl' | 'lignoceroyl' | 'cerotoyl' | 'glyco_ceroyl' | 'tricosanoyl' | 'carboceroyl';
+special_cer_prefix_1_O : 'myristoyl' | 'palmitoyl' | 'stearoyl' | 'eicosanoyl' | 'behenoyl' | 'lignoceroyl' | 'cerotoyl' | 'pentacosanoyl' | 'tricosanoyl' | 'carboceroyl' | 'lignoceroyl-omega-linoleoyloxy' | 'stearoyl-omega-linoleoyloxy';
 glyco_cer : glyco_entity | glyco_entity '-' glyco_cer | number glyco_branch glyco_cer;
 glyco_branch : '(' glyco_cer '-' number ')' | '(' glyco_cer '-' number ')' glyco_branch;
 glyco_entity : glyco_struct | glyco_number glyco_struct | glyco_number glyco_struct greek | glyco_number glyco_struct greek number | glyco_number glyco_struct number | glyco_struct greek | glyco_struct greek number;
