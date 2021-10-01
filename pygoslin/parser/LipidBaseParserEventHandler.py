@@ -72,7 +72,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     def prepare_headgroup_and_checks(self):
         headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
-        if use_head_group: return headgroup
+        if self.use_head_group: return headgroup
     
         max_num_fa = all_lipids[headgroup.lipid_class]["max_fa"]
         if max_num_fa != len(self.fa_list): self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
