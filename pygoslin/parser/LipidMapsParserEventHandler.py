@@ -169,6 +169,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
                   "1-O-lignoceroyl": FattyAcid("FA", 24),
                   "1-O-cerotoyl": FattyAcid("FA", 26),
                   "1-O-pentacosanoyl": FattyAcid("FA", 25),
+                  "1-O-carboceroyl": FattyAcid("FA", 28),
                   "1-O-tricosanoyl": FattyAcid("FA", 30),
                   "1-O-lignoceroyl-omega-linoleoyloxy": FattyAcid("FA", 24),
                   "1-O-stearoyl-omega-linoleoyloxy": FattyAcid("FA", 18)
