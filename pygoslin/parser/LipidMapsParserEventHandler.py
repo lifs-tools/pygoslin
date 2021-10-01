@@ -188,7 +188,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.headgroup_decorators.append(hgd)
         
         if head in {"1-O-lignoceroyl-omega-linoleoyloxy", "1-O-stearoyl-omega-linoleoyloxy"}:
-            self.add_omega_linoleoyloxy_Cer
+            self.add_omega_linoleoyloxy_Cer = True
         
         
         
