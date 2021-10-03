@@ -44,19 +44,7 @@ class LipidSpecies:
         self.info.level = LipidLevel.SPECIES
         
         # add fatty acids
-        for fas in fa: self.info.add(fas)
-        
-        
-        #if self.headgroup.sp_exception:
-        #    if "OH" not in self.info.functional_groups: self.info.functional_groups["OH"] = []
-        #    self.info.functional_groups["OH"].append(get_functional_group("OH").copy())
-        
-        
-        for decorator in self.headgroup.decorators:
-            if decorator.name in {"decorator_alkyl", "decorator_acyl"}:
-                self.info.num_carbon += decorator.get_elements()[Element.C]
-                self.info.double_bonds += decorator.get_double_bonds()
-        
+        for fas in fa: self.info.add(fas)    
         
         
         
@@ -82,7 +70,13 @@ class LipidSpecies:
             
             if self.info != None and (self.info.elements[Element.C] > 0 or self.info.num_carbon > 0):
                 lipid_string += " " if all_lipids[self.headgroup.lipid_class]["category"] != LipidCategory.ST else "/"
-                lipid_string += self.info.to_string()
+                a = self.info.copy()
+                for decorator in self.headgroup.decorators:
+                    if decorator.name in {"decorator_alkyl", "decorator_acyl"}:
+                        a.num_carbon += decorator.get_elements()[Element.C]
+                        a.double_bonds += decorator.get_double_bonds()
+                
+                lipid_string += a.to_string()
                 
             return "".join(lipid_string)
         
@@ -93,7 +87,7 @@ class LipidSpecies:
         
         
     def get_elements(self):
-        if self.info.level not in {LipidLevel.STRUCTURE_DEFINED, LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.SPECIES, LipidLevel.MOLECULAR_SPECIES, LipidLevel.SN_POSITION}:
+        if self.info.level not in {LipidLevel.STRUCTURE_DEFINED, LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.SPECIES, LipidLevel.MOLECULAR_SPECIES, LipidLevel.SN_POSITION} or self.headgroup.use_headgroup:
             raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
         dummy = FunctionalGroup("dummy", elements = self.headgroup.get_elements())

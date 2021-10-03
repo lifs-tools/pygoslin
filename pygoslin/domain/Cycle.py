@@ -49,7 +49,7 @@ class Cycle(FunctionalGroup):
                 
         
     def copy(self):
-        cy = Cycle(cycle = self.cycle, start = self.start, end = self.end)
+        cy = Cycle(cycle = self.cycle, start = self.start, end = self.end, bridge_chain = list(self.bridge_chain))
         cy.double_bonds = {k: v for k, v in self.double_bonds.items()} if type(self.double_bonds) == dict else self.double_bonds
         for fg, fg_list in self.functional_groups.items():
             cy.functional_groups[fg] = [func_group.copy() for func_group in fg_list]

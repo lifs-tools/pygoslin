@@ -149,11 +149,17 @@ class HeadgroupDecorator(FunctionalGroup):
     
         decorator_string = ""
         if self.lowest_visible_level == None or self.lowest_visible_level.value <= level.value:
-            if "decorator_alkyl" in self.functional_groups and len(self.functional_groups["decorator_alkyl"]) > 0:
-                decorator_string = self.functional_groups["decorator_alkyl"][0].to_string(level) if level.value > LipidLevel.SPECIES.value else "Alk"
+            if "decorator_alkyl" in self.functional_groups:
+                if len(self.functional_groups["decorator_alkyl"]) > 0:
+                    decorator_string = self.functional_groups["decorator_alkyl"][0].to_string(level) if level.value > LipidLevel.SPECIES.value else "Alk"
+                else:
+                    decorator_string = "Alk"
                 
-            elif "decorator_acyl" in self.functional_groups and len(self.functional_groups["decorator_acyl"]) > 0:
-                decorator_string = "FA %s" % self.functional_groups["decorator_acyl"][0].to_string(level) if level.value > LipidLevel.SPECIES.value else "FA"
+            elif "decorator_acyl" in self.functional_groups:
+                if len(self.functional_groups["decorator_acyl"]) > 0:
+                    decorator_string = "FA %s" % self.functional_groups["decorator_acyl"][0].to_string(level) if level.value > LipidLevel.SPECIES.value else "FA"
+                else:
+                    decorator_string = "FA"
                 
             else:
                 decorator_string = self.name

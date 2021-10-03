@@ -41,6 +41,28 @@ class LipidSpeciesInfo(FattyAcid):
         self.num_specified_fa = 0
         self.total_fa = all_lipids[lipid_class]["max_fa"]
         self.extended_class = LipidFaBondType.ESTER
+        self.lipid_class = lipid_class
+        
+        
+        
+    def copy(self):
+        lsi = LipidSpeciesInfo(self.lipid_class)
+        lsi.level = self.level
+        lsi.num_ethers = self.num_ethers
+        lsi.num_specified_fa = self.num_specified_fa
+        lsi.position = self.position
+        lsi.total_fa = self.total_fa
+        lsi.extended_class = self.extended_class
+        lsi.num_carbon = self.num_carbon
+        lsi.double_bonds = {key: value for key, value in self.double_bonds.items()} if type(self.double_bonds) != int else self.double_bonds
+        lsi.lipid_FA_bond_type = self.lipid_FA_bond_type
+        
+        for fg, fg_list in self.functional_groups.items():
+            lsi.functional_groups[fg] = []
+            for func_group in fg_list:
+                lsi.functional_groups[fg].append(func_group.copy())
+        
+        return lsi
         
         
     def add(self, fa):
@@ -60,7 +82,7 @@ class LipidSpeciesInfo(FattyAcid):
         for fg, fg_list in fa.functional_groups.items():
             if fg not in self.functional_groups: self.functional_groups[fg] = []
             for func_group in fg_list:
-                self.functional_groups[fg].append(func_group)
+                self.functional_groups[fg].append(func_group.copy())
          
         self.num_carbon += fa.get_elements()[Element.C]
         self.double_bonds += fa.get_double_bonds()

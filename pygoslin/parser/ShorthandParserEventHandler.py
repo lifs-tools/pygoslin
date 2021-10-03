@@ -96,6 +96,8 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_pip_pure_d_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_pip_pure_t_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_PE_PS_pre_event"] = self.set_headgroup_name
+        self.registered_events["acer_hg_post_event"] = self.set_acer
+        self.registered_events["acer_species_post_event"] = self.set_acer_species
 
         ## set head group headgroup_decorators
         self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
@@ -171,6 +173,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa = []
         self.headgroup_decorators = []
         self.tmp = {}
+        self.acer_species = False
         
         
         
@@ -182,6 +185,22 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(element_positions[element])
         
         
+    def set_acer(self, node):
+        self.head_group = "ACer"
+        hgd = HeadgroupDecorator("decorator_acyl", suffix = True)
+        hgd.functional_groups["decorator_acyl"] = [self.fa_list.pop()]
+        self.headgroup_decorators.append(hgd)
+        
+        
+    def set_acer_species(self, node):
+        self.head_group = "ACer"
+        self.set_lipid_level(LipidLevel.SPECIES)
+        hgd = HeadgroupDecorator("decorator_acyl", suffix = True)
+        hgd.functional_groups["decorator_acyl"] = [FattyAcid("FA", 2)]
+        self.headgroup_decorators.append(hgd)
+        self.acer_species = True
+        
+    
         
     def set_headgroup_name(self, node):
         if len(self.head_group) == 0: self.head_group = node.get_text()
@@ -578,7 +597,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
     def build_lipid(self, node):
-        
+        if self.acer_species: self.fa_list[0].num_carbon -= 2
         headgroup = self.prepare_headgroup_and_checks()
         
         
