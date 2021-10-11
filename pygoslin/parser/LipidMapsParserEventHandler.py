@@ -36,6 +36,7 @@ from pygoslin.domain.LipidStructureDefined import LipidStructureDefined
 from pygoslin.domain.LipidSnPosition import LipidSnPosition
 from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
 from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.Cycle import Cycle
 from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 
 from pygoslin.domain.LipidAdduct import LipidAdduct
@@ -259,10 +260,14 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def add_functional_group(self, node):
-        functional_group = get_functional_group(self.mod_text).copy()
-        functional_group.position = self.mod_pos
-        functional_group.count = self.mod_num
-        self.current_fa.add_functional_group(functional_group)
+        if self.mod_text != "Cp":
+            functional_group = get_functional_group(self.mod_text).copy()
+            functional_group.position = self.mod_pos
+            functional_group.count = self.mod_num
+            self.current_fa.add_functional_group(functional_group)
+        else:
+            self.current_fa.num_carbon += 1
+            self.current_fa.add_functional_group(Cycle(3, start = self.mod_pos, end = self.mod_pos + 2))
           
           
     def new_fa(self, node):

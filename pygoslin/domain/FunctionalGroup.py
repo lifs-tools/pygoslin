@@ -118,13 +118,11 @@ class FunctionalGroup:
     
     
     def __iadd__(self, fgroup):
-        
         for e in Element:
             if e not in self.elements: self.elements[e] = 0
         
         for k, v in fgroup.get_elements().items():
             self.elements[k] += v * fgroup.count
-                 
         
         return self
 

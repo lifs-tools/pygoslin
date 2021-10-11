@@ -153,6 +153,7 @@ class FattyAcid(FunctionalGroup):
         
         else:
             elements = self.get_functional_group_elements()
+            print(elements)
             additional_elements = ";".join(("%s%i" % (element_shortcut[e], elements[e]) if elements[e] > 1 else "%s" % element_shortcut[e]) for e in element_order[2:] if e in elements and elements[e] > 0)
             
             if len(additional_elements) > 0:

@@ -105,8 +105,8 @@ class LipidSpeciesInfo(FattyAcid):
         info_string.append("%i:%i" % (self.num_carbon, self.double_bonds))
         
 
-        elements = self.get_functional_group_elements()
-        additional_elements = ";".join("%s%s" % (element_shortcut[e], str(elements[e]) if elements[e] > 1 else "") for e in element_order[2:] if e in elements and elements[e] > 0)
+        fg_elements = self.get_functional_group_elements()
+        additional_elements = ";".join("%s%s" % (element_shortcut[e], str(fg_elements[e]) if fg_elements[e] > 1 else "") for e in element_order[2:] if e in fg_elements and fg_elements[e] > 0)
         
         if len(additional_elements) > 0:
             info_string.append(";")
