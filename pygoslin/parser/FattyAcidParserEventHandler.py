@@ -402,7 +402,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         
     def set_fatty_acid(self, node):
-        print(len(self.fatty_acyl_stack))
         def switch_position(func_group, switch):
             func_group.position = switch - func_group.position
             for fg_name, fg_list in func_group.functional_groups.items():

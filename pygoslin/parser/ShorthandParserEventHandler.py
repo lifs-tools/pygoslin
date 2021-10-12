@@ -554,8 +554,6 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         functional_group.stereochemistry = fg_stereo
         functional_group.ring_stereo = fg_ring_stereo
         
-        print(fg_cnt)
-        
         del self.tmp[fa_i]["fg_pos"]
         del self.tmp[fa_i]["fg_name"]
         del self.tmp[fa_i]["fg_cnt"]
