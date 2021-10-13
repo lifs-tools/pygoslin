@@ -84,7 +84,7 @@ class Adduct:
                 elements[k] = v
             
         else:
-            raise ConstraintViolationException("Adduct '%s' is unknown.")
+            raise ConstraintViolationException("Adduct '%s' is unknown." % self.adduct_string)
         
         return elements
     
