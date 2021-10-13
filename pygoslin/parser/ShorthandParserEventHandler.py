@@ -166,7 +166,6 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
 
     def reset_lipid(self, node):
         self.level = LipidLevel.FULL_STRUCTURE
-        self.lipid = None
         self.head_group = ""
         self.adduct = None
         self.fa_list = []

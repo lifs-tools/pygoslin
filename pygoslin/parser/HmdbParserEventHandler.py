@@ -107,7 +107,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         
     def reset_lipid(self, node):
         self.level = LipidLevel.FULL_STRUCTURE
-        self.lipid = None
+        self.adduct = None
         self.head_group = ""
         self.lcb = None
         self.fa_list = []
