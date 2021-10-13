@@ -309,7 +309,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         
     def new_adduct(self, node):
-        self.adduct = Adduct("", "", 0, 0)
+        self.adduct = Adduct("", "")
         
         
     def add_adduct(self, node):
@@ -317,6 +317,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         
     def add_charge(self, node):
+        
         self.adduct.charge = int (node.get_text())
         
         
