@@ -56,6 +56,12 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["gl_molecular_hg_pre_event"] = self.set_head_group_name
         self.registered_events["mediator_pre_event"] = self.mediator_event
         
+        ## set adduct events
+        self.registered_events["adduct_info_pre_event"] = self.new_adduct
+        self.registered_events["adduct_pre_event"] = self.add_adduct
+        self.registered_events["charge_pre_event"] = self.add_charge
+        self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
+        
         self.registered_events["pl_hg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_three_hg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_four_hg_pre_event"] = self.set_head_group_name
@@ -198,6 +204,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         
         lipid = LipidAdduct()
         lipid.lipid = self.assemble_lipid(headgroup)
+        lipid.adduct = self.adduct
         
         self.content = lipid
         
@@ -301,3 +308,21 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
     def lipid_suffix(self, node):
         pass
         #raise UnsupportedLipidException("Lipids with suffix '%s' are currently not supported" % node.get_text())
+        
+        
+    def new_adduct(self, node):
+        self.adduct = Adduct("", "")
+        
+        
+    def add_adduct(self, node):
+        self.adduct.adduct_string = node.get_text()
+        
+        
+    def add_charge(self, node):
+        self.adduct.charge = int (node.get_text())
+        
+        
+    def add_charge_sign(self, node):
+        sign = node.get_text()
+        if sign == "+": self.adduct.set_charge_sign(1)
+        if sign == "-": self.adduct.set_charge_sign(-1)

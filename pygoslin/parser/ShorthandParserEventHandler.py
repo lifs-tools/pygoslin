@@ -616,7 +616,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
     def new_adduct(self, node):
-        self.adduct = Adduct("", "", 0, 0)
+        self.adduct = Adduct("", "")
         
         
     def add_adduct(self, node):

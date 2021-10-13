@@ -29,6 +29,7 @@ from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
+from pygoslin.domain.Adduct import Adduct
 
 from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
 from pygoslin.domain.LipidFullStructure import LipidFullStructure
@@ -53,6 +54,12 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         self.registered_events["lipid_pre_event"] = self.reset_lipid
         self.registered_events["lipid_post_event"] = self.build_lipid
+        
+        ## set adduct events
+        self.registered_events["adduct_info_pre_event"] = self.new_adduct
+        self.registered_events["adduct_pre_event"] = self.add_adduct
+        self.registered_events["charge_pre_event"] = self.add_charge
+        self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
         
         self.registered_events["mediator_pre_event"] = self.mediator_event
         self.registered_events["fa_no_hg_pre_event"] = self.pure_fa
@@ -374,7 +381,26 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
 
         lipid = LipidAdduct()
         lipid.lipid = self.assemble_lipid(headgroup)
+        lipid.adduct = self.adduct
         
         self.content = lipid
+        
+        
+    def new_adduct(self, node):
+        self.adduct = Adduct("", "")
+        
+        
+    def add_adduct(self, node):
+        self.adduct.adduct_string = node.get_text()
+        
+        
+    def add_charge(self, node):
+        self.adduct.charge = int (node.get_text())
+        
+        
+    def add_charge_sign(self, node):
+        sign = node.get_text()
+        if sign == "+": self.adduct.set_charge_sign(1)
+        if sign == "-": self.adduct.set_charge_sign(-1)
         
         

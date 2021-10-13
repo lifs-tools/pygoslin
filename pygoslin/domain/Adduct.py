@@ -25,22 +25,44 @@ SOFTWARE.
 
 from pygoslin.domain.Element import Element
 from pygoslin.parser.ParserCommon import SumFormulaParser
-adduct_sum_formula_parser = SumFormulaParser()
+from pygoslin.domain.LipidExceptions import *
+
 
 class Adduct:
-    def __init__(self, sum_formula, adduct_string, charge, sign):
+    adduct_sum_formula_parser = SumFormulaParser()
+
+    adducts = {"+H": {Element.H: 1},
+               "+2H": {Element.H: 2},
+               "+3H": {Element.H: 3},
+               "+4H": {Element.H: 4},
+               "-H": {Element.H: -1},
+               "-2H": {Element.H: -2},
+               "-3H": {Element.H: -3},
+               "-4H": {Element.H: -4},
+               "+H-H2O": {Element.H: -1, Element.O: -1},
+               "+NH4": {Element.N: 1, Element.H: 4},
+               "+Cl": {Element.Cl: 1},
+               "+HCOO": {Element.H: 1, Element.C: 1, Element.O: 2},
+               "+CH3COO": {Element.H: 3, Element.C: 2, Element.O: 2}
+               }
+    
+    adduct_charges = {"+H": 1, "+2H": 2, "+3H": 3, "+4H": 4, "-H": -1,
+                      "-2H": -2, "-3H": -3, "-4H": -4, "+H-H2O": 1,
+                      "+NH4": 1, "+Cl": -1, "+HCOO": -1, "+CH3COO": -1
+                      }
+    
+    def __init__(self, sum_formula, adduct_string, charge = 1, sign = 1):
         self.sum_formula = sum_formula
         self.adduct_string = adduct_string
         self.charge = charge
         self.set_charge_sign(sign)
-
     
     
     def set_charge_sign(self, sign):
-        if sign != -1 or sign != 0 or sign != 1:
+        if sign in {-1, 1}:
             self.charge_sign = sign
             
-        else: raise IllegalArgumentException("Sign can only be -1, 0, or 1")
+        else: raise ConstraintViolationException("Sign can only be - or +")
             
     
     
@@ -53,14 +75,16 @@ class Adduct:
     
     def get_elements(self):
         elements = {e: 0 for e in Element}
-        try:
-            elements = adduct_sum_formula_parser.parse(self.adduct_string[1:])
-        except Exception as e:
-            return elements
         
-        if len(self.adduct_string) > 0 and self.adduct_string[0] == "-":
-            for e in Element:
-                elements[e] *= -1
+        if self.adduct_string in Adduct.adducts:
+            if Adduct.adduct_charges[self.adduct_string] != self.get_charge():
+                raise ConstraintViolationException("Provided charge '%i' in contradiction to adduct '%s' charge '%i'." % (self.get_charge(), self.adduct_string, Adduct.adduct_charges[self.adduct_string]))
+                
+            for k, v in Adduct.adducts[self.adduct_string].items():
+                elements[k] = v
+            
+        else:
+            raise ConstraintViolationException("Adduct '%s' is unknown.")
         
         return elements
     
