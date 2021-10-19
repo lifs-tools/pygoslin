@@ -42,11 +42,13 @@ class LipidSpecies:
         
         self.info = LipidSpeciesInfo(self.headgroup.lipid_class)
         self.info.level = LipidLevel.SPECIES
+        self.fa_list = []
         
         # add fatty acids
-        for fas in fa: self.info.add(fas)    
-        
-        
+        for fatty_acid in fa:
+            self.info.add(fatty_acid)
+            self.fa_list.append(fatty_acid)
+            
         
     def get_extended_class(self):
         special_case = self.headgroup.lipid_category == LipidCategory.GP if self.info != None and self.info.num_carbon > 0 else False

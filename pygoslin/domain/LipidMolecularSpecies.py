@@ -35,28 +35,25 @@ class LipidMolecularSpecies(LipidSpecies):
 
 
     def __init__(self, head_group, fa = []):
-        super().__init__(head_group)
+        super().__init__(head_group, fa)
         self.fa = {}
-        self.fa_list = []
         
         self.info.level = LipidLevel.MOLECULAR_SPECIES
         
-        for fas in fa:
-            if fas.name in self.fa:
-                raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fas.name)
+        for fatty_acid in fa:
+            if fatty_acid.name in self.fa:
+                raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fatty_acid.name)
             
             else:
-                self.fa[fas.name] = fas
-                self.fa_list.append(fas)
-                self.info.add(fas)
+                self.fa[fatty_acid.name] = fatty_acid
                 
                 
         # add 0:0 dummys
         for i in range(len(fa), self.info.total_fa):
-            fas = FattyAcid("FA%i" % (i + len(fa) + 1))
-            self.info.add(fas)
-            self.fa[fas.name] = fas
-            self.fa_list.append(fas)
+            fatty_acid = FattyAcid("FA%i" % (i + len(fa) + 1))
+            self.info.add(fatty_acid)
+            self.fa[fatty_acid.name] = fatty_acid
+            self.fa_list.append(fatty_acid)
     
 
     def get_extended_class(self):
