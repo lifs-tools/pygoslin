@@ -56,7 +56,7 @@ class LipidSpecies:
             return all_lipids[self.headgroup.lipid_class]["name"] + "-O"
         
         if special_case and self.info.extended_class == LipidFaBondType.ETHER_PLASMENYL:
-            return all_lipids[self.headgroup.lipid_class]["name"] + "-p"
+            return all_lipids[self.headgroup.lipid_class]["name"] + "-P"
         
         return all_lipids[self.headgroup.lipid_class]["name"]
             

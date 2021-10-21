@@ -123,6 +123,7 @@ class Parser:
         self.OTtoNT = {}
         self.right_pair = []
         self.left_pair = []
+        self.error_message = ""
         
         if grammar_filename == None: return
         
@@ -570,6 +571,7 @@ class Parser:
     
     
     def parse(self, text_to_parse, raise_error = True):
+        self.error_message = ""
         text_to_parse = text_to_parse.strip(" ")
         old_lipid = text_to_parse
         if self.used_eof: text_to_parse += Parser.EOF_SIGN
@@ -603,7 +605,19 @@ class Parser:
                 break
             if self.used_eof: break
             
-            
+        # search for longest parsed prefix
+        if not self.word_in_grammar:
+            for i in range(len(text_to_parse) - 1, 0, -1):
+                if len(dp_table[i][0]) > 0:
+                    first_rule = list(dp_table[i][0].keys())[0]
+                    parse_tree = TreeNode(first_rule, first_rule in self.NTtoRule)
+                    self.fill_tree(parse_tree, dp_table[i][0][first_rule])
+                    self.error_message = parse_tree.get_text()
+                    break
+                
+                
+    def get_error_message(self):
+        return self.error_message
             
             
             
