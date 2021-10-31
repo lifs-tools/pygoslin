@@ -58,8 +58,6 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_mlcl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_pl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lpl_pre_event"] = self.set_lpl_head_group_name
-        self.registered_events["hg_lpl_o_pre_event"] = self.set_head_group_name
-        self.registered_events["hg_pl_o_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
         self.registered_events["mediator_pre_event"] = self.set_head_group_name
@@ -107,8 +105,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["adduct_pre_event"] = self.add_adduct
         self.registered_events["charge_pre_event"] = self.add_charge
         self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
-        self.registered_events["hg_lpl_oc_pre_event"] = self.set_unspecified_ether
-        self.registered_events["hg_pl_oc_pre_event"] = self.set_unspecified_ether
+        self.registered_events["plasmalogen_pre_event"] = self.add_plasmalogen
     
         self.debug = ""
 
@@ -126,7 +123,14 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.unspecified_ether = False
         self.db_numbers = -1
         self.headgroup_decorators = []
+        self.plasmalogen = ""
         
+        
+        
+    def add_plasmalogen(self, node):
+        plasmalogen = node.get_text().upper()
+        if plasmalogen in {"O", "P"}:
+            self.plasmalogen = plasmalogen
         
         
     def set_lpl_head_group_name(self, node):
@@ -252,6 +256,9 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         if self.lcb != None:
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
+            
+        if self.plasmalogen != "" and self.lcb == None and len(self.fa_list) > 0:
+            self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL if self.plasmalogen == "O" else LipidFaBondType.ETHER_PLASMENYL
         
         headgroup = self.prepare_headgroup_and_checks()
 
