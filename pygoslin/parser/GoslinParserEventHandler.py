@@ -277,6 +277,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
             if type(self.current_fa.double_bonds) == int:
                 self.current_fa.double_bonds = max(0, self.current_fa.double_bonds - 1)
+        self.plasmalogen = ""
         
         
     def add_old_hydroxyl(self, node):

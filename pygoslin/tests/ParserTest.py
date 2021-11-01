@@ -148,17 +148,17 @@ class ParserTest(unittest.TestCase):
         lipid_name = "LPE O-16:2p"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_extended_class() == "LPE-p", "wrong: %s" % lipid.get_extended_class()
+        assert lipid.get_extended_class() == "LPE-P", "wrong: %s" % lipid.get_extended_class()
         
         lipid_name = "PC O-16:1p/12:0"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_extended_class() == "PC-p"
+        assert lipid.get_extended_class() == "PC-P"
         
         lipid_name = "PC O-16:1p"
         lipid = lipid_parser.parse(lipid_name)
         assert lipid != None
-        assert lipid.get_extended_class() == "PC-p"
+        assert lipid.get_extended_class() == "PC-P"
         
         lipid_name = "LPC O-16:1a"
         lipid = lipid_parser.parse(lipid_name)
