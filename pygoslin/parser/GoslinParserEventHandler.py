@@ -34,6 +34,7 @@ from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
 from pygoslin.domain.HeadGroup import HeadGroup
 from pygoslin.domain.FunctionalGroup import *
+from pygoslin.domain.Cycle import Cycle
 
 from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
 from pygoslin.domain.LipidFullStructure import LipidFullStructure
@@ -112,6 +113,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["mediator_pre_event"] = self.set_mediator
         self.registered_events["mediator_post_event"] = self.add_mediator
         self.registered_events["unstructured_mediator_pre_event"] = self.set_unstructured_mediator
+        self.registered_events["trivial_mediator_pre_event"] = self.set_trivial_mediator
         self.registered_events["mediator_carbon_pre_event"] = self.set_mediator_carbon
         self.registered_events["mediator_db_pre_event"] = self.set_mediator_db
         self.registered_events["mediator_mono_functions_pre_event"] = self.set_mediator_function
@@ -119,6 +121,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["mediator_position_pre_event"] = self.set_mediator_function_position
         self.registered_events["mediator_functional_group_post_event"] = self.add_mediator_function
         self.registered_events["mediator_suffix_pre_event"] = self.add_mediator_suffix
+        self.registered_events["mediator_tetranor_pre_event"] = self.set_mediator_tetranor
                 
         self.debug = ""
 
@@ -136,9 +139,149 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.use_head_group = True
         self.fa_list = []
         
+        
+    def set_trivial_mediator(self, node):
+        self.head_group = "FA"
+        mediator_name = node.get_text()
+        
+        if mediator_name == "Palmitic acid": # FA 16:0
+            self.current_fa = FattyAcid("FA", 16)
+            
+        elif mediator_name == "Linoleic acid":
+            self.current_fa = FattyAcid("FA", 18, 2)
+            
+        elif mediator_name == "AA":
+            self.current_fa = FattyAcid("FA", 20, 4)
+            
+        elif mediator_name == "ALA":
+            self.current_fa = FattyAcid("FA", 18, 3)
+            
+        elif  mediator_name == "EPA":
+            self.current_fa = FattyAcid("FA", 20, 5)
+            
+        elif  mediator_name == "DHA":
+            self.current_fa = FattyAcid("FA", 22, 6)
+            
+        elif mediator_name == "LTB4":
+            f1, f2 = get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 5
+            f2.position = 12
+            fg = {"OH": [f1, f2]}
+            self.current_fa = FattyAcid("FA", 20, {6: "Z", 8: "E", 10: "E", 14: "Z"}, functional_groups = fg)
+            
+        elif mediator_name == "Resolvin D3":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 4
+            f2.position = 11
+            f3.position = 17
+            fg = {"OH": [f1, f2, f3]}
+            self.current_fa = FattyAcid("FA", 22, 6, functional_groups = fg)
+            
+        elif mediator_name == "Maresin 1":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 7
+            f2.position = 14
+            fg = {"OH": [f1, f2]}
+            self.current_fa = FattyAcid("FA", 22, 6, functional_groups = fg)
+            
+        elif mediator_name == "Resolvin D2":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 4
+            f2.position = 16
+            f3.position = 17
+            fg = {"OH": [f1, f2, f3]}
+            self.current_fa = FattyAcid("FA", 22, 6, functional_groups = fg)
+            
+        elif mediator_name == "Resolvin D5":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 7
+            f2.position = 17
+            fg = {"OH": [f1, f2]}
+            self.current_fa = FattyAcid("FA", 22, 6, functional_groups = fg)
+            
+        elif mediator_name == "Resolvin D1":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 7
+            f2.position = 8
+            f3.position = 17
+            fg = {"OH": [f1, f2, f3]}
+            self.current_fa = FattyAcid("FA", 22, 6, functional_groups = fg)
+            
+        elif mediator_name == "TXB1":
+            f1, f2, f3, f4 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH"), get_functional_group("oxy")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            f4.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3], "oxy": [f4]})]}
+            self.current_fa = FattyAcid("FA", 20, 1, functional_groups = fg)
+            
+        elif mediator_name == "TXB2":
+            f1, f2, f3, f4 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH"), get_functional_group("oxy")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            f4.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3], "oxy": [f4]})]}
+            self.current_fa = FattyAcid("FA", 20, 2, functional_groups = fg)
+            
+        elif mediator_name == "TXB3":
+            f1, f2, f3, f4 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH"), get_functional_group("oxy")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            f4.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3], "oxy": [f4]})]}
+            self.current_fa = FattyAcid("FA", 20, 3, functional_groups = fg)
+            
+        elif mediator_name == "PGF2alpha":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3]})]}
+            self.current_fa = FattyAcid("FA", 20, 2, functional_groups = fg)
+            
+        elif mediator_name == "PGD2":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("oxo")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2], "oxo": [f3]})]}
+            self.current_fa = FattyAcid("FA", 20, 2, functional_groups = fg)
+            
+        elif mediator_name == "PGE2":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f3], "oxo": [f2]})]}
+            self.current_fa = FattyAcid("FA", 20, 2, functional_groups = fg)
+            
+        elif mediator_name == "PGB2":
+            f1, f2 = get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 1, functional_groups = {"OH": [f2]})]}
+            self.current_fa = FattyAcid("FA", 20, 2, functional_groups = fg)
+            
+        elif mediator_name == "15d-PGJ2":
+            f1, f2 = get_functional_group("OH"), get_functional_group("oxo")
+            f1.position = 15
+            f2.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 1, functional_groups = {"oxo": [f2]})]}
+            self.current_fa = FattyAcid("FA", 20, 3, functional_groups = fg)
+            
+        
+        self.fa_list = [self.current_fa]
+        self.mediator_suffix = True
+        
+        
+    def set_mediator_tetranor(self, node):
+        self.current_fa.num_carbon -= 4
     
     def set_mediator_carbon(self, node):
-        self.current_fa.num_carbon = GoslinParserEventHandler.mediator_FA[node.get_text()]
+        self.current_fa.num_carbon += GoslinParserEventHandler.mediator_FA[node.get_text()]
         
 
     def set_mediator_db(self, node):
@@ -185,7 +328,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
     def add_mediator(self, node):
         if not self.mediator_suffix:
-            self.current_fa.double_bonds -= 1
+            if type(self.current_fa.double_bonds) == int: self.current_fa.double_bonds -= 1
             
 
     def reset_lipid(self, node):
@@ -334,6 +477,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         
     def build_lipid(self, node):
+    
         if self.lcb != None:
             for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list

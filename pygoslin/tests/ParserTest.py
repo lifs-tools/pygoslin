@@ -369,16 +369,6 @@ class ParserTest(unittest.TestCase):
         
         
         
-    def test_mediators(self):
-        global goslin_parser
-        
-        for lipid_name in ["AA","alpha-LA","DHA","EPA","Linoleic acid","LTB4","LTC4","LTD4","Maresin 1","Palmitic acid","PGB2","PGD2","PGE2","PGF2alpha","PGI2","Resolvin D1","Resolvin D2","Resolvin D3","Resolvin D5","tetranor-12-HETE","TXB1","TXB2","TXB3"]:
-            
-            lipid = goslin_parser.parse(lipid_name)
-            assert lipid != None
-            n = lipid.lipid.get_lipid_string()
-            assert lipid.get_lipid_string() == lipid_name
-        
         
         
     def test_lipid_names(self):
