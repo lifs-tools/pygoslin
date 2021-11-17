@@ -133,7 +133,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
     def set_unstructured_mediator(self, node):
         self.head_group = node.get_text()
-        self.use_head_group = true
+        self.use_head_group = True
         self.fa_list = []
         
     
@@ -204,6 +204,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.mediator_function = ""
         self.mediator_function_positions = []
         self.mediator_suffix = False
+        self.use_head_group = False
         
         
         
