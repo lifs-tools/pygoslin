@@ -47,6 +47,9 @@ from pygoslin.domain.LipidExceptions import *
 
 class GoslinParserEventHandler(LipidBaseParserEventHandler):
     
+    mediator_FA = {'H': 17, 'O': 18, 'E': 20, 'Do': 22}
+    mediator_DB = {'M': 1, 'D': 2, 'Tr': 3, 'T': 4, 'P': 5, 'H': 6}
+    
     def __init__(self):
         super().__init__()
         self.reset_lipid(None)
@@ -60,7 +63,6 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_lpl_pre_event"] = self.set_lpl_head_group_name
         self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
-        self.registered_events["mediator_pre_event"] = self.set_head_group_name
         self.registered_events["hg_mgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_sgl_pre_event"] = self.set_head_group_name
@@ -106,10 +108,85 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["charge_pre_event"] = self.add_charge
         self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
         self.registered_events["plasmalogen_pre_event"] = self.add_plasmalogen
-    
+        
+        self.registered_events["mediator_pre_event"] = self.set_mediator
+        self.registered_events["mediator_post_event"] = self.add_mediator
+        self.registered_events["unstructured_mediator_pre_event"] = self.set_unstructured_mediator
+        self.registered_events["mediator_carbon_pre_event"] = self.set_mediator_carbon
+        self.registered_events["mediator_db_pre_event"] = self.set_mediator_db
+        self.registered_events["mediator_mono_functions_pre_event"] = self.set_mediator_function
+        self.registered_events["mediator_di_functions_pre_event"] = self.set_mediator_function
+        self.registered_events["mediator_position_pre_event"] = self.set_mediator_function_position
+        self.registered_events["mediator_functional_group_post_event"] = self.add_mediator_function
+        self.registered_events["mediator_suffix_pre_event"] = self.add_mediator_suffix
+                
         self.debug = ""
 
+        
+        
+    def set_mediator(self, node):
+        self.head_group = "FA"
+        self.current_fa = FattyAcid("FA")
+        self.fa_list.append(self.current_fa)
+        self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
+        
+        
+    def set_unstructured_mediator(self, node):
+        self.head_group = node.get_text()
+        self.use_head_group = true
+        self.fa_list = []
+        
+    
+    def set_mediator_carbon(self, node):
+        self.current_fa.num_carbon = GoslinParserEventHandler.mediator_FA[node.get_text()]
+        
 
+    def set_mediator_db(self, node):
+        self.current_fa.double_bonds = GoslinParserEventHandler.mediator_DB[node.get_text()]
+        
+        
+    def set_mediator_function(self, node):
+        self.mediator_function = node.get_text()
+        
+        
+    def set_mediator_function_position(self, node):
+        self.mediator_function_positions.append(int(node.get_text()))
+        
+        
+    def add_mediator_function(self, node):
+        functional_group, fg = None, ""
+        if self.mediator_function == "H":
+            functional_group, fg = get_functional_group("OH"), "OH"
+            if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
+            
+        elif self.mediator_function == "Oxo":
+            functional_group, fg = get_functional_group("oxo"), "oxo"
+            if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
+            
+        elif self.mediator_function in {"E", "Ep"}:
+            functional_group, fg = get_functional_group("Ep"), "Ep"
+            if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
+            
+        elif self.mediator_function in {"DH", "DiH"}:
+            functional_group, fg = get_functional_group("OH"), "OH"
+            if len(self.mediator_function_positions) > 0:
+                functional_group.position = self.mediator_function_positions[0]
+                functional_group2 = get_functional_group("OH")
+                functional_group2.position = self.mediator_function_positions[1]
+                self.current_fa.functional_groups["OH"] = [functional_group2]
+            
+        if fg not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg] = []
+        self.current_fa.functional_groups[fg].append(functional_group)
+        
+        
+    def add_mediator_suffix(self, node):
+        self.mediator_suffix = True
+        
+        
+    def add_mediator(self, node):
+        if not self.mediator_suffix:
+            self.current_fa.double_bonds -= 1
+            
 
     def reset_lipid(self, node):
         self.level = LipidLevel.FULL_STRUCTURE
@@ -124,6 +201,9 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.db_numbers = -1
         self.headgroup_decorators = []
         self.plasmalogen = ""
+        self.mediator_function = ""
+        self.mediator_function_positions = []
+        self.mediator_suffix = False
         
         
         
