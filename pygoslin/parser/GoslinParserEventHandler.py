@@ -178,7 +178,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             self.current_fa = FattyAcid("FA", 22, 6, functional_groups = fg)
             
         elif mediator_name == "Maresin 1":
-            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH")
+            f1, f2 = get_functional_group("OH"), get_functional_group("OH")
             f1.position = 7
             f2.position = 14
             fg = {"OH": [f1, f2]}
@@ -193,7 +193,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             self.current_fa = FattyAcid("FA", 22, 6, functional_groups = fg)
             
         elif mediator_name == "Resolvin D5":
-            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH")
+            f1, f2 = get_functional_group("OH"), get_functional_group("OH")
             f1.position = 7
             f2.position = 17
             fg = {"OH": [f1, f2]}
