@@ -161,7 +161,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_pip_t_pre_event"] = self.suffix_decorator_molecular
         self.registered_events["hg_PE_PS_type_pre_event"] = self.suffix_decorator_species
         
-
+        self.registered_events["sterol_definition_post_event"] = self.set_sterol_definition
 
 
     def reset_lipid(self, node):
@@ -174,7 +174,11 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp = {}
         self.acer_species = False
         
-        
+    
+    def set_sterol_definition(self, node):
+        self.head_group += " " + node.get_text()
+        self.fa_list = self.fa_list[1:]
+    
         
     def add_cycle_element(self, node):
         element = node.get_text()
