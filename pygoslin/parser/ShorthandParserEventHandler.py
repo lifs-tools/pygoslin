@@ -115,6 +115,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["db_single_position_post_event"] = self.add_double_bond_information
         self.registered_events["cistrans_pre_event"] = self.set_cistrans
         self.registered_events["ether_type_pre_event"] = self.set_ether_type
+        self.registered_events["stereo_type_fa_pre_event"] = self.set_fatty_acyl_stereo
         
         ## set functional group events
         self.registered_events["func_group_data_pre_event"] = self.set_functional_group
@@ -122,7 +123,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["func_group_pos_number_pre_event"] = self.set_functional_group_position
         self.registered_events["func_group_name_pre_event"] = self.set_functional_group_name
         self.registered_events["func_group_count_pre_event"] = self.set_functional_group_count
-        self.registered_events["stereo_type_pre_event"] = self.set_functional_group_stereo
+        self.registered_events["stereo_type_fg_pre_event"] = self.set_functional_group_stereo
         self.registered_events["molecular_func_group_name_pre_event"] = self.set_sn_position_func_group
         
         ## set cycle events
@@ -173,6 +174,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.headgroup_decorators = []
         self.tmp = {}
         self.acer_species = False
+        self.contains_stereo_information = False
         
     
     def set_sterol_definition(self, node):
@@ -329,6 +331,11 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
     def set_cistrans(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["db_cistrans"] = node.get_text()
+        
+    
+    def set_fatty_acyl_stereo(self, node):
+        self.current_fa[-1].stereochemistry = node.get_text()
+        self.contains_stereo_information = True
         
         
         
@@ -526,6 +533,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     def set_functional_group_stereo(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_stereo"] = node.get_text()
+        self.contains_stereo_information = True
         
         
     def set_sn_position_func_group(self, node):
@@ -548,7 +556,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
             self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         try:
-            functional_group = get_functional_group(fg_name).copy()
+            functional_group = get_functional_group(fg_name)
         except Exception:
             raise LipidParsingException(" '%s' unknown" % fg_name)
         
@@ -604,6 +612,9 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         headgroup = self.prepare_headgroup_and_checks()
         
         
+        if self.level == LipidLevel.FULL_STRUCTURE and self.contains_stereo_information:
+            self.level = LipidLevel.COMPLETE_STRUCTURE
+            
         # add count numbers for fatty acyl chains
         fa_it = len(self.fa_list) > 0 and self.fa_list[0].lipid_FA_bond_type in {LipidFaBondType.LCB_EXCEPTION, LipidFaBondType.LCB_REGULAR}
         for it in range(fa_it, len(self.fa_list)):

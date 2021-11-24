@@ -117,7 +117,7 @@ class FattyAcid(FunctionalGroup):
         
         if type(double_bonds) != int:
             fa_string.append(":%i" % len(double_bonds))
-            if level == LipidLevel.FULL_STRUCTURE:
+            if level in {LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
                 db_positions = ["%i%s" % (k, double_bonds[k]) for k in sorted(double_bonds.keys())]
                 db_pos = "(%s)" % ",".join(db_positions) if len (double_bonds) > 0 else ""
                 fa_string.append(db_pos)
@@ -128,6 +128,11 @@ class FattyAcid(FunctionalGroup):
             
         else:
             fa_string.append(":%i" % double_bonds)
+            
+            
+        if level == LipidLevel.COMPLETE_STRUCTURE and self.stereochemistry not in {None, ""}:
+            fa_string.append("[%s]" % self.stereochemistry)
+            
         
         if level in {LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
             for fg in sorted(self.functional_groups.keys(), key = lambda x: x.lower()):

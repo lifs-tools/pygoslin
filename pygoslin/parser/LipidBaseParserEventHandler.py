@@ -57,7 +57,6 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         self.adduct = None
         self.headgroup_decorators = []
         self.use_head_group = False
-        
     
     
     def set_lipid_level(self, level):
@@ -113,9 +112,10 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     
     def assemble_lipid(self, headgroup):
+        
         lipid_level_class = None
         if self.level == LipidLevel.COMPLETE_STRUCTURE: lipid_level_class = LipidCompleteStructure
-        if self.level == LipidLevel.FULL_STRUCTURE: lipid_level_class = LipidFullStructure
+        elif self.level == LipidLevel.FULL_STRUCTURE: lipid_level_class = LipidFullStructure
         elif self.level == LipidLevel.STRUCTURE_DEFINED: lipid_level_class = LipidStructureDefined
         elif self.level == LipidLevel.SN_POSITION: lipid_level_class = LipidSnPosition
         elif self.level == LipidLevel.MOLECULAR_SPECIES: lipid_level_class = LipidMolecularSpecies
