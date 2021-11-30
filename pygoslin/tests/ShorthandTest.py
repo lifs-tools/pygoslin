@@ -160,6 +160,13 @@ class ShorthandTest(unittest.TestCase):
         self.assertEqual(l.get_lipid_string(), "EPC 34:2;O2")
         self.assertEqual(l.get_sum_formula(), "C36H71N2O6P")
 
+        try:
+            l = parser.parse("SM 21:0;2O/21:1(3E)")
+            self.assertTrue(False)
+        except AssertionError:
+            self.assertTrue(False, "SM 21:0;2O/21:1(3E) was excepted")
+        except Exception:
+            pass
         
         
     def test_nomenclature(self):
