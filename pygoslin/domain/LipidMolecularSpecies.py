@@ -50,7 +50,7 @@ class LipidMolecularSpecies(LipidSpecies):
                 
         # add 0:0 dummys
         for i in range(len(fa), self.info.total_fa):
-            fatty_acid = FattyAcid("FA%i" % (i + len(fa) + 1))
+            fatty_acid = FattyAcid("FA%i" % (i + 1))
             self.info.add(fatty_acid)
             self.fa[fatty_acid.name] = fatty_acid
             self.fa_list.append(fatty_acid)
