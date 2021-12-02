@@ -182,6 +182,27 @@ class ParserTest(unittest.TestCase):
         
         
         
+    def test_oh_count(self):
+        lipid_parser = LipidParser()
+        lipid = lipid_parser.parse("Cer 36:1;2");
+        ohCount = lipid.lipid.info.get_total_functional_group_count("OH")
+        assert 2 == ohCount
+        asdCount = lipid.lipid.info.get_total_functional_group_count("ASD")
+        assert 0 == asdCount
+        lipid = lipid_parser.parse("Cer d36:1");
+        ohCount = lipid.lipid.info.get_total_functional_group_count("OH")
+        assert 2 == ohCount
+        lipid = lipid_parser.parse("Cer 18:1;2/18:0");
+        ohCount = lipid.lipid.info.get_total_functional_group_count("OH")
+        assert 2 == ohCount
+        lipid = lipid_parser.parse("Cer d18:1/18:0");
+        ohCount = lipid.lipid.info.get_total_functional_group_count("OH")
+        assert 2 == ohCount
+        lipid = lipid_parser.parse("Cer 18:1;(OH)2/18:0");
+        ohCount = lipid.lipid.info.get_total_functional_group_count("OH")
+        assert 2 == ohCount
+        
+        
     def test_lipid_maps(self):
         lipid_maps_parser = LipidMapsParser()
         

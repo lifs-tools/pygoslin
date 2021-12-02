@@ -108,6 +108,12 @@ class FunctionalGroup:
         return fg_string
     
     
+    
+    def get_total_functional_group_count(self, fg_name):
+        return sum([fg_item.count for fg_item in self.functional_groups[fg_name]]) if fg_name in self.functional_groups else 0
+    
+    
+    
     def get_double_bonds(self):
         db = self.count * (self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds))
         for fg, fg_list in self.functional_groups.items():
