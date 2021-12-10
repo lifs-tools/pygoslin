@@ -101,3 +101,14 @@ class LipidAdduct:
     
     def get_sum_formula(self):
         return compute_sum_formula(self.get_elements())
+    
+    
+    
+    def get_lipid_report(self):
+        lipid_report = {}
+        lipid_report["Normalized Name"] = self.get_lipid_string()
+        lipid_report["Original Name"] = ""
+        lipid_report["Lipid Level"] = ""
+        
+        return data
+    

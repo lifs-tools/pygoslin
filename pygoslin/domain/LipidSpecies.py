@@ -44,8 +44,11 @@ class LipidSpecies:
         self.info.level = LipidLevel.SPECIES
         self.fa_list = []
         
-        # add fatty acids
-        for fatty_acid in fa:
+        # add fatty acids and count numbers for fatty acyl chains
+        fa_it = len(fa) > 0 and fa[0].lipid_FA_bond_type in {LipidFaBondType.LCB_EXCEPTION, LipidFaBondType.LCB_REGULAR}
+        for i, fatty_acid in enumerate(fa):
+            if i > 0 or not fa_it: fatty_acid.name += "%i" % (i + 1 - fa_it)
+            fatty_acid.position = -1
             self.info.add(fatty_acid)
             self.fa_list.append(fatty_acid)
             

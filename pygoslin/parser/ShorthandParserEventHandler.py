@@ -614,11 +614,6 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         if self.level == LipidLevel.FULL_STRUCTURE and self.contains_stereo_information:
             self.level = LipidLevel.COMPLETE_STRUCTURE
-            
-        # add count numbers for fatty acyl chains
-        fa_it = len(self.fa_list) > 0 and self.fa_list[0].lipid_FA_bond_type in {LipidFaBondType.LCB_EXCEPTION, LipidFaBondType.LCB_REGULAR}
-        for it in range(fa_it, len(self.fa_list)):
-            self.fa_list[it].name += "%i" % (it + 1)
         
         lipid = LipidAdduct()
         lipid.adduct = self.adduct

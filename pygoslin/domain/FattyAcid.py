@@ -48,9 +48,6 @@ class FattyAcid(FunctionalGroup):
         if num_double_bonds < 0:
             raise ConstraintViolationException("FattyAcid must have at least 0 double bonds!")
         
-        if position < 0:
-            raise ConstraintViolationException("FattyAcid must be at least 0 at position 0!")
-        
         
         
     def copy(self):

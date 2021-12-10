@@ -33,6 +33,9 @@ class LipidSnPosition(LipidMolecularSpecies):
 
     def __init__(self, head_group, fa = []):
         super().__init__(head_group, fa)
+        
+        for i, fatty_acid in enumerate(self.fa_list):
+            fatty_acid.position = i + 1
                 
         self.info.level = LipidLevel.SN_POSITION
         

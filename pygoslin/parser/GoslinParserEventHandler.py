@@ -432,7 +432,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             self.unspecified_ether = False
         else:
             lipid_FA_bond_type = LipidFaBondType.ESTER
-        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1), lipid_FA_bond_type = lipid_FA_bond_type)
+        self.current_fa = FattyAcid("FA", lipid_FA_bond_type = lipid_FA_bond_type)
 
         
             
@@ -477,9 +477,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         
     def build_lipid(self, node):
-    
         if self.lcb != None:
-            for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
             
         if self.plasmalogen != "" and self.lcb == None and len(self.fa_list) > 0:

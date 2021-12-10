@@ -32,15 +32,13 @@ from pygoslin.domain.LipidClass import *
 from pygoslin.domain.FattyAcid import FattyAcid
 
 class LipidMolecularSpecies(LipidSpecies):
-
-
     def __init__(self, head_group, fa = []):
         super().__init__(head_group, fa)
         self.fa = {}
         
         self.info.level = LipidLevel.MOLECULAR_SPECIES
         
-        for fatty_acid in fa:
+        for fatty_acid in self.fa_list:
             if fatty_acid.name in self.fa:
                 raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fatty_acid.name)
             
@@ -50,7 +48,7 @@ class LipidMolecularSpecies(LipidSpecies):
                 
         # add 0:0 dummys
         for i in range(len(fa), self.info.total_fa):
-            fatty_acid = FattyAcid("FA%i" % (i + 1))
+            fatty_acid = FattyAcid("FA%i" % (i + 1), position = -1)
             self.info.add(fatty_acid)
             self.fa[fatty_acid.name] = fatty_acid
             self.fa_list.append(fatty_acid)

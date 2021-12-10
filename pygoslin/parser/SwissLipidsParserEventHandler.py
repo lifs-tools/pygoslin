@@ -175,7 +175,7 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         
     def new_fa(self, node):
         self.db_numbers = -1
-        self.current_fa = FattyAcid("FA%i" % (len(self.fa_list) + 1))
+        self.current_fa = FattyAcid("FA")
         
         
     def new_lcb(self, node):
@@ -216,11 +216,9 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         
     def build_lipid(self, node):
         if self.lcb != None:
-            for fa in self.fa_list: fa.position += 1
             self.fa_list = [self.lcb] + self.fa_list
-        
+            
         headgroup = self.prepare_headgroup_and_checks()
-        
         lipid = LipidAdduct()
         lipid.lipid = self.assemble_lipid(headgroup)
         lipid.adduct = self.adduct

@@ -79,6 +79,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         true_fa = sum(1 for fa in self.fa_list if fa.num_carbon > 0 or (fa.double_bonds > 0 if type(fa.double_bonds) == int else len(fa.double_bonds)) > 0)
         
         poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"]
+        max_fa = all_lipids[headgroup.lipid_class]["max_fa"]
         
         # make lyso
         can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.head_group)]["specials"] if get_class("L" + self.head_group) < len(all_lipids) else False
@@ -98,7 +99,8 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
                 raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
             
         elif true_fa != poss_fa and self.level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION}:
-            raise ConstraintViolationException("Number of described fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
+            raise ConstraintViolationException("Number of specified fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
+        
         
         if "HC" in all_lipids[headgroup.lipid_class]["specials"] and len(self.fa_list) > 0:
             self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.AMINE
