@@ -38,12 +38,14 @@ class LipidMolecularSpecies(LipidSpecies):
         
         self.info.level = LipidLevel.MOLECULAR_SPECIES
         
-        for fatty_acid in self.fa_list:
+        for fatty_acid in fa:
             if fatty_acid.name in self.fa:
                 raise ConstraintViolationException("FA names must be unique! FA with name %s was already added!" % fatty_acid.name)
             
             else:
                 self.fa[fatty_acid.name] = fatty_acid
+                
+            self.fa_list.append(fatty_acid)
                 
                 
         # add 0:0 dummys

@@ -50,7 +50,6 @@ class LipidSpecies:
             if i > 0 or not fa_it: fatty_acid.name += "%i" % (i + 1 - fa_it)
             fatty_acid.position = -1
             self.info.add(fatty_acid)
-            self.fa_list.append(fatty_acid)
             
         
     def get_extended_class(self):
