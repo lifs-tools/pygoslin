@@ -106,5 +106,9 @@ class LipidSpecies:
         dummy.elements[Element.O] -= -additional_fa + self.info.num_ethers + self.headgroup.sp_exception + hydrochain
         dummy.elements[Element.H] += -additional_fa + remaining_H + 2 * self.info.num_ethers + 2 * hydrochain
         
+        if "Amide" in all_lipids[self.headgroup.lipid_class]["specials"]:
+            dummy.elements[Element.O] -= all_lipids[self.headgroup.lipid_class]["max_fa"]
+            dummy.elements[Element.H] += all_lipids[self.headgroup.lipid_class]["max_fa"]
+        
         return dummy.elements
         

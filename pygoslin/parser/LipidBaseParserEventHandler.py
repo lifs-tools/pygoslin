@@ -103,7 +103,10 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         
         
         if "HC" in all_lipids[headgroup.lipid_class]["specials"] and len(self.fa_list) > 0:
-            self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.AMINE
+            self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.ETHER
+            
+        if "Amide" in all_lipids[headgroup.lipid_class]["specials"] and len(self.fa_list) > 0:
+            for fatty in self.fa_list: fatty.lipid_FA_bond_type = LipidFaBondType.AMIDE
         
         # make LBC exception
         if len(self.fa_list) > 0 and headgroup.sp_exception:

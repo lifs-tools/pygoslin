@@ -196,11 +196,11 @@ class FattyAcid(FunctionalGroup):
             elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL:
                 self.elements[Element.H] = (2 * self.num_carbon - 1 - 2 * num_double_bonds + 2) # hydrogen
             
-            elif self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMANYL:
+            elif self.lipid_FA_bond_type in {LipidFaBondType.ETHER_PLASMANYL, LipidFaBondType.ETHER}:
                 self.elements[Element.H] = ((self.num_carbon + 1) * 2 - 1 - 2 * num_double_bonds) # hydrogen
             
-            elif self.lipid_FA_bond_type == LipidFaBondType.AMINE:
-                self.elements[Element.H] = (2 * self.num_carbon + 1 - 2 * num_double_bonds) # hydrogen
+            elif self.lipid_FA_bond_type == LipidFaBondType.AMIDE:
+                self.elements[Element.H] = (2 * self.num_carbon + 1 - 2 * num_double_bonds) - 1 # hydrogen
                 
             else:
                 raise LipidException("Mass cannot be computed for fatty acyl chain with bond type: %s" % self.lipid_FA_bond_type)

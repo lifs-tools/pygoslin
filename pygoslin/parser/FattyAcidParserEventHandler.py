@@ -314,10 +314,8 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def add_amine(self, node):
         fa = self.fatty_acyl_stack.pop()
-        
-        fa.name += "1"
-        self.fatty_acyl_stack[-1].name += "2"
-        fa.lipid_FA_bond_type = LipidFaBondType.AMINE
+        fa.lipid_FA_bond_type = LipidFaBondType.AMIDE
+        self.fatty_acyl_stack[-1].lipid_FA_bond_type = LipidFaBondType.AMIDE
         self.fatty_acyl_stack.insert(0, fa)
         
         
@@ -388,10 +386,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def add_wax_ester(self, node):
         fa = self.fatty_acyl_stack.pop()
-        
-        fa.name += "1"
-        fa.lipid_FA_bond_type = LipidFaBondType.AMINE
-        self.fatty_acyl_stack[-1].name += "2"
+        fa.lipid_FA_bond_type = LipidFaBondType.ETHER
         self.fatty_acyl_stack.insert(0, fa)
         
         
@@ -649,7 +644,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         elif t in {"acetate", "noate", "nate"}: self.headgroup = "WE"
         elif t == "ne":
             self.headgroup = "HC"
-            self.fatty_acyl_stack[-1].lipid_FA_bond_type = LipidFaBondType.AMINE
+            self.fatty_acyl_stack[-1].lipid_FA_bond_type = LipidFaBondType.ETHER
             
         else: self.headgroup = t
         

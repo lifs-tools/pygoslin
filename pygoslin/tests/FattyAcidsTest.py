@@ -56,27 +56,27 @@ class LipidMapsTest(unittest.TestCase):
             lipid = parser.parse(lipid_name)
             
             
-            self.assertEqual(expected_lipid_name, lipid.get_lipid_string(), "%s: %s != %s (computed)" % (lmid, expected_lipid_name, lipid.get_lipid_string()))
+            self.assertEqual(expected_lipid_name, lipid.get_lipid_string(), "%s: %s != %s (computed, fa)" % (lmid, expected_lipid_name, lipid.get_lipid_string()))
             
             lipid_formula = lipid.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "formula %s: %s != %s (computed)" % (lmid, formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "formula %s: %s != %s (computed, fa)" % (lmid, formula, lipid_formula))
                 
             if lipid_name.lower().find("cyano") >= 0: continue
             
             lipid2 = shorthand_parser.parse(lipid.get_lipid_string())
             lipid_formula = lipid2.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "lipid %s: %s != %s (computed)" % (lmid, formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "lipid %s: %s != %s (computed, shorthand)" % (lmid, formula, lipid_formula))
                 
             lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.MOLECULAR_SPECIES))
             lipid_formula = lipid2.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "molecular lipid '%s': %s != %s (computed)" % (lmid, formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "molecular lipid '%s': %s != %s (computed, shorthand)" % (lmid, formula, lipid_formula))
                 
             
             lipid2 = shorthand_parser.parse(lipid.get_lipid_string(LipidLevel.SPECIES))
             lipid_formula = lipid2.get_sum_formula()
             
-            self.assertEqual(formula, lipid_formula, "species lipid '%s': %s != %s (computed)" % (lmid, formula, lipid_formula))
+            self.assertEqual(formula, lipid_formula, "species lipid '%s': %s != %s (computed, shorthand)" % (lmid, formula, lipid_formula))
                     
