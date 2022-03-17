@@ -373,6 +373,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
                 raise LipidException("omega-linoleoyloxy-Cer with a different combination to one long chain base and one fatty acyl chain unknown")
             if "acyl" not in self.fa_list[-1].functional_groups: self.fa_list[-1].functional_groups["acyl"] = []
             self.fa_list[-1].functional_groups["acyl"].append(AcylAlkylGroup(FattyAcid("FA", 18, {9: "Z", 12: "Z"})))
+            self.head_group = "Cer"
         
         headgroup = self.prepare_headgroup_and_checks()
 

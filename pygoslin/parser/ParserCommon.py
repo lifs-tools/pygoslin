@@ -576,9 +576,12 @@ class Parser:
         old_lipid = text_to_parse
         if self.used_eof: text_to_parse += Parser.EOF_SIGN
         
-        self.parse_regular(text_to_parse)
-        if raise_error and not self.word_in_grammar:
-            raise LipidParsingException("Lipid '%s' can not be parsed by grammar '%s'" % (old_lipid, self.grammar_name))
+        try:
+            self.parse_regular(text_to_parse)
+            if raise_error and not self.word_in_grammar:
+                raise LipidParsingException("Lipid '%s' can not be parsed by grammar '%s'" % (old_lipid, self.grammar_name))
+        except Exception as ex:
+            if raise_error: raise ex
         
         return self.parser_event_handler.content
         
