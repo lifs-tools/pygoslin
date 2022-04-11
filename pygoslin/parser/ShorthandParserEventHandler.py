@@ -554,6 +554,9 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         if fg_pos == -1:
             self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
+            
+        if fg_cnt <= 0:
+            return
         
         try:
             functional_group = get_functional_group(fg_name)
