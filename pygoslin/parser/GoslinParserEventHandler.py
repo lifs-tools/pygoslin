@@ -529,11 +529,11 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
     def add_hydroxyl(self, node):
         num_h = int(node.get_text())
+        if self.sp_regular_lcb(): num_h -= 1
+        if num_h <= 0: return
+        
         functional_group = get_functional_group("OH").copy()
         self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
-        
-        if self.sp_regular_lcb(): num_h -= 1
-            
         functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
         self.current_fa.functional_groups["OH"].append(functional_group)
