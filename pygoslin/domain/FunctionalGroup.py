@@ -266,7 +266,7 @@ with open(fg_file_name, "rt") as fg_infile:
             if len(key) == 0: continue
         
             if row[0] == "FG":
-                _known_functional_groups[key] = FunctionalGroup(row[1], elements = e, double_bonds = int(row[4]), is_atomic = row[5] == "1", num_atoms_and_bonds = row[3])
+                _known_functional_groups[key] = FunctionalGroup(row[1], elements = e, double_bonds = int(row[4]), is_atomic = row[5] == "1", num_atoms_and_bonds = int(row[3]) if len(row[3]) > 0 else 0)
                 
             elif row[0] == "HGD":
                 _known_functional_groups[key] = HeadgroupDecorator(row[1], elements = e)
