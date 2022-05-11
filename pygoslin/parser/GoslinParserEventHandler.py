@@ -63,6 +63,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_pl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_lpl_pre_event"] = self.set_lpl_head_group_name
         self.registered_events["hg_lsl_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_so_lsl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dsl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_mgl_pre_event"] = self.set_head_group_name
         self.registered_events["hg_dgl_pre_event"] = self.set_head_group_name
@@ -437,6 +438,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
             
     def append_fa(self, node):
+        
         if type(self.current_fa.double_bonds) != int:
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
@@ -453,6 +455,13 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.fa_list.append(self.current_fa)
         self.current_fa = None
         
+        if self.head_group in {'Sa', 'So'}:
+            fa = self.fa_list[0]
+            self.fa_list[0].lcb = True
+            functional_group = get_functional_group("OH").copy()
+            functional_group.count = 2
+            if "OH" not in fa.functional_groups: fa.functional_groups["OH"] = []
+            fa.functional_groups["OH"].append(functional_group)
         
         
         
