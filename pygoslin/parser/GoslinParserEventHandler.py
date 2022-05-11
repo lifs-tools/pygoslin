@@ -456,11 +456,15 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         oh_cnt = 1
         if self.head_group in {'Sa', 'So', 'S1P', 'Sa1P'}:
-            self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.LCB_EXCEPTION
             functional_group = get_functional_group("OH").copy()
-            functional_group.count = 2 if self.head_group in {'Sa', 'So'} else 1
-            if "OH" not in current_fa.functional_groups: current_fa.functional_groups["OH"] = []
-            current_fa.functional_groups["OH"].append(functional_group)
+            if self.head_group in {'Sa', 'So'}:
+                self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.LCB_EXCEPTION
+                functional_group.count = 2
+            else:
+                self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.LCB_REGULAR
+                functional_group.count = 1
+            if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+            self.current_fa.functional_groups["OH"].append(functional_group)
         
         self.current_fa = None
         
