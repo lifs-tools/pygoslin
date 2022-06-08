@@ -108,6 +108,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
         
         self.registered_events["ether_pre_event"] = self.add_ether
+        self.registered_events["lcb_pure_fa_pre_event"] = self.add_dihydroxyl
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
         self.registered_events["hydroxyl_lcb_pre_event"] = self.add_hydroxyl_lcb
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
@@ -330,6 +331,18 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
     def add_hydroxyl(self, node):
         num_h = int(node.get_text())
+        functional_group = get_functional_group("OH").copy()
+        
+        if self.sp_regular_lcb(): num_h -= 1
+        
+        functional_group.count = num_h
+        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+        self.current_fa.functional_groups["OH"].append(functional_group)
+        
+        
+        
+    def add_dihydroxyl(self, node):
+        num_h = 2
         functional_group = get_functional_group("OH").copy()
         
         if self.sp_regular_lcb(): num_h -= 1
