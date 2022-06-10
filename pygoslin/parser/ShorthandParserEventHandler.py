@@ -105,11 +105,13 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["carbohydrate_isomeric_pre_event"] = self.set_carbohydrate_isomeric
         
         # fatty acyl events
-        self.registered_events["lcb_post_event"] = self.set_lcb
+        self.registered_events["lcb_pre_event"] = self.new_lcb
+        self.registered_events["lcb_post_event"] = self.add_fatty_acyl_chain
         self.registered_events["fatty_acyl_chain_pre_event"] = self.new_fatty_acyl_chain
         self.registered_events["fatty_acyl_chain_post_event"] = self.add_fatty_acyl_chain
         self.registered_events["carbon_pre_event"] = self.set_carbon
         self.registered_events["db_count_pre_event"] = self.set_double_bond_count
+        self.registered_events["fa_db_only_post_event"] = self.add_dihydroxyl
         self.registered_events["db_position_number_pre_event"] = self.set_double_bond_position
         self.registered_events["db_single_position_pre_event"] = self.set_double_bond_information
         self.registered_events["db_single_position_post_event"] = self.add_double_bond_information
@@ -175,6 +177,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp = {}
         self.acer_species = False
         self.contains_stereo_information = False
+        
         
     
     def set_sterol_definition(self, node):
@@ -270,6 +273,11 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     def new_fatty_acyl_chain(self, node):
         self.current_fa.append(FattyAcid("FA"))
         self.tmp["fa%i" % len(self.current_fa)] = {}
+    
+    
+    def new_lcb(self, node):
+        self.current_fa.append(FattyAcid("FA", lipid_FA_bond_type = LipidFaBondType.LCB_REGULAR))
+        self.tmp["fa%i" % len(self.current_fa)] = {}
         
         
     def add_fatty_acyl_chain(self, node):
@@ -336,6 +344,19 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     def set_fatty_acyl_stereo(self, node):
         self.current_fa[-1].stereochemistry = node.get_text()
         self.contains_stereo_information = True
+        
+        
+
+    def add_dihydroxyl(self, node):
+        if self.current_fa[-1].lipid_FA_bond_type not in FattyAcid.LCB_STATES: return
+    
+        num_h = 1
+        functional_group = get_functional_group("OH").copy()
+        if self.head_group in self.SP_EXCEPTION_CLASSES and len(self.headgroup_decorators) == 0: num_h += 1
+        
+        functional_group.count = num_h
+        if "OH" not in self.current_fa[-1].functional_groups: self.current_fa[-1].functional_groups["OH"] = []
+        self.current_fa[-1].functional_groups["OH"].append(functional_group)
         
         
         
