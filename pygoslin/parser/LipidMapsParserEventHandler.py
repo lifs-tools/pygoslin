@@ -107,7 +107,8 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["db_position_number_pre_event"] = self.add_db_position_number
         self.registered_events["cistrans_pre_event"] = self.add_cistrans
         
-        self.registered_events["ether_pre_event"] = self.add_ether
+        self.registered_events["ether_prefix_pre_event"] = self.add_ether
+        self.registered_events["ether_suffix_pre_event"] = self.add_ether
         self.registered_events["lcb_pure_fa_pre_event"] = self.add_dihydroxyl
         self.registered_events["hydroxyl_pre_event"] = self.add_hydroxyl
         self.registered_events["hydroxyl_lcb_pre_event"] = self.add_hydroxyl_lcb
@@ -324,8 +325,9 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
     def add_ether(self, node):
         ether = node.get_text()
         
-        if ether == "O-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "P-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+        if ether in {"O-", "e"}: self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
+        elif ether in {"P-", "p"}: self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
+        
         
         
         

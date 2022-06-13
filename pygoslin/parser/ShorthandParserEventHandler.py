@@ -111,7 +111,6 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["fatty_acyl_chain_post_event"] = self.add_fatty_acyl_chain
         self.registered_events["carbon_pre_event"] = self.set_carbon
         self.registered_events["db_count_pre_event"] = self.set_double_bond_count
-        self.registered_events["fa_db_only_post_event"] = self.add_dihydroxyl
         self.registered_events["db_position_number_pre_event"] = self.set_double_bond_position
         self.registered_events["db_single_position_pre_event"] = self.set_double_bond_information
         self.registered_events["db_single_position_post_event"] = self.add_double_bond_information
@@ -127,6 +126,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["func_group_count_pre_event"] = self.set_functional_group_count
         self.registered_events["stereo_type_fg_pre_event"] = self.set_functional_group_stereo
         self.registered_events["molecular_func_group_name_pre_event"] = self.set_sn_position_func_group
+        self.registered_events["fa_db_only_post_event"] = self.add_dihydroxyl
         
         ## set cycle events
         self.registered_events["func_group_cycle_pre_event"] = self.set_cycle
@@ -276,8 +276,8 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     
     def new_lcb(self, node):
-        self.current_fa.append(FattyAcid("FA", lipid_FA_bond_type = LipidFaBondType.LCB_REGULAR))
-        self.tmp["fa%i" % len(self.current_fa)] = {}
+        new_fatty_acyl_chain(node)
+        self.fa_list[-1].set_type(LipidFaBondType.LCB_REGULAR)
         
         
     def add_fatty_acyl_chain(self, node):
