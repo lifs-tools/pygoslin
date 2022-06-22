@@ -111,9 +111,38 @@ class HmdbParser(Parser):
         
 class LipidParser:
     def __init__(self):
+        self.trivial_names = {}
         self.parser_list = [ShorthandParser(), GoslinParser(), FattyAcidParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
+        dir_name = path.dirname(pygoslin.__file__)
+        file_name = path.join(dir_name, "data", "goslin", "trivial-names.csv")
+        
+        with open(file_name, "rt") as trivial_infile:
+            trivial_infile.readline()
+            for line in trivial_infile:
+                line = line.strip()
+                if len(line) < 1: continue
+                row = Parser.split_string(line.strip(), ",", '"')
+                if len(row) < 2: continue
+            
+                value = row[0].strip('"')
+                for key in row[1:]:
+                    key = key.strip('"').lower()
+                    if len(key) < 1: continue
+                
+                    if key in self.trivial_names:
+                        print("Error: key %s in trivial names list occurs twice." % key)
+                        exit()
+                    self.trivial_names[key] = value
+                
+                
         
     def parse(self, lipid_name):
+        # check if lipid name has a trivial name and translate it via predefined table
+        lipid_name_lower = lipid_name.lower()
+        if lipid_name_lower in self.trivial_names:
+            lipid_name = self.trivial_names[lipid_name_lower]
+        
+        # go through all parsers
         for parser in self.parser_list:
             lipid = parser.parse(lipid_name, raise_error = False)
             if lipid != None:

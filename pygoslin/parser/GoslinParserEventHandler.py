@@ -311,7 +311,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             functional_group, fg = get_functional_group("Ep"), "Ep"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function in {"DH", "DiH"}:
+        elif self.mediator_function in {"DH", "DiH", 'diH'}:
             functional_group, fg = get_functional_group("OH"), "OH"
             if len(self.mediator_function_positions) > 0:
                 functional_group.position = self.mediator_function_positions[0]
