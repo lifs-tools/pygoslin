@@ -276,8 +276,8 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     
     def new_lcb(self, node):
-        new_fatty_acyl_chain(node)
-        self.fa_list[-1].set_type(LipidFaBondType.LCB_REGULAR)
+        self.new_fatty_acyl_chain(node)
+        self.current_fa[-1].set_type(LipidFaBondType.LCB_REGULAR)
         
         
     def add_fatty_acyl_chain(self, node):

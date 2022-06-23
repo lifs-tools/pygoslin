@@ -42,7 +42,7 @@ import os
 
 setup(
     name = 'pygoslin',
-    version = '2.0.1',
+    version = '2.0.2',
     url = 'https://github.com/lifs-tools/pygoslin',
     license = 'MIT',
     author = 'Dominik Kopczynski',
