@@ -90,7 +90,6 @@ class FattyAcid(FunctionalGroup):
         self.name = "FA" if self.lipid_FA_bond_type not in {LipidFaBondType.LCB_REGULAR, LipidFaBondType.LCB_EXCEPTION} else "LCB"
                 
                 
-                
     def get_double_bonds(self):
         return super().get_double_bonds() + (self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL)
         
@@ -152,6 +151,7 @@ class FattyAcid(FunctionalGroup):
                         fg_count = sum([func_group.count for func_group in fg_list])
                         if fg_count > 1: fa_string.append(";(%s)%i" % (fg, fg_count) if not fg_list[0].is_atomic else ";%s%i" % (fg, fg_count))
                         else: fa_string.append(";%s" % fg)
+        
         
         else:
             elements = self.get_functional_group_elements()

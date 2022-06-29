@@ -146,6 +146,8 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.add_omega_linoleoyloxy_Cer = False
         
         
+        
+        
     def set_molecular_subspecies_level(self, node):
         self.set_lipid_level(LipidLevel.MOLECULAR_SPECIES)
         
@@ -270,10 +272,14 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
     def add_functional_group(self, node):
         if self.mod_text != "Cp":
-            functional_group = get_functional_group(self.mod_text).copy()
-            functional_group.position = self.mod_pos
-            functional_group.count = self.mod_num
-            self.current_fa.add_functional_group(functional_group)
+            if self.current_fa.lipid_FA_bond_type in FattyAcid.LCB_STATES and self.mod_text == "OH":
+                if "OH" in self.current_fa.functional_groups and len(self.current_fa.functional_groups["OH"]) > 0:
+                    self.current_fa.functional_groups["OH"][-1].position = self.mod_pos
+            else:
+                functional_group = get_functional_group(self.mod_text).copy()
+                functional_group.position = self.mod_pos
+                functional_group.count = self.mod_num
+                self.current_fa.add_functional_group(functional_group)
         else:
             self.current_fa.num_carbon += 1
             self.current_fa.add_functional_group(Cycle(3, start = self.mod_pos, end = self.mod_pos + 2))
@@ -306,7 +312,6 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
     def new_lcb(self, node):
         self.lcb = FattyAcid("LCB")
-        self.set_structural_subspecies_level(node)
         self.lcb.set_type(LipidFaBondType.LCB_REGULAR)
         self.current_fa = self.lcb
         
@@ -318,6 +323,11 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
                 raise LipidException("Double bond count does not match with number of double bond positions")
         elif self.current_fa.double_bonds > 0:
             self.set_lipid_level(LipidLevel.SN_POSITION)
+        if "OH" in self.current_fa.functional_groups:
+            for fg in self.current_fa.functional_groups["OH"]:
+                if fg.position < 1:
+                    self.set_structural_subspecies_level(node)
+                    break
         self.current_fa = None
         
         
@@ -344,30 +354,52 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def add_dihydroxyl(self, node):
-        num_h = 2
-        functional_group = get_functional_group("OH").copy()
+        functional_group_p3 = get_functional_group("OH").copy()
+        functional_group_p3.position = 3
         
-        if self.sp_regular_lcb(): num_h -= 1
-        
-        functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
-        self.current_fa.functional_groups["OH"].append(functional_group)
+        self.current_fa.functional_groups["OH"].append(functional_group_p3)
+        
+        if not self.sp_regular_lcb():
+            functional_group_p1 = get_functional_group("OH").copy()
+            functional_group_p1.position = 1
+            self.current_fa.functional_groups["OH"].append(functional_group_p1)
         
         
         
     def add_hydroxyl_lcb(self, node):
         hydroxyl = node.get_text()
-        num_h = 0
-        if hydroxyl == "m": num_h = 1
-        elif hydroxyl == "d": num_h = 2
-        elif hydroxyl == "t": num_h = 3
-        
-        if self.sp_regular_lcb(): num_h -= 1
-        
-        functional_group = get_functional_group("OH").copy()
-        functional_group.count = num_h
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
-        self.current_fa.functional_groups["OH"].append(functional_group)
+        
+        
+        if hydroxyl == "m":
+            functional_group_p3 = get_functional_group("OH").copy()
+            functional_group_p3.position = 3
+            self.current_fa.functional_groups["OH"].append(functional_group_p3)
+            
+        elif hydroxyl == "d":
+            if not self.sp_regular_lcb():
+                functional_group_p1 = get_functional_group("OH").copy()
+                functional_group_p1.position = 1
+                self.current_fa.functional_groups["OH"].append(functional_group_p1)
+            
+            functional_group_p3 = get_functional_group("OH").copy()
+            functional_group_p3.position = 3
+            self.current_fa.functional_groups["OH"].append(functional_group_p3)
+            
+        elif hydroxyl == "t":
+            if not self.sp_regular_lcb():
+                functional_group_p1 = get_functional_group("OH").copy()
+                functional_group_p1.position = 1
+                self.current_fa.functional_groups["OH"].append(functional_group_p1)
+            
+            functional_group_p3 = get_functional_group("OH").copy()
+            functional_group_p3.position = 3
+            self.current_fa.functional_groups["OH"].append(functional_group_p3)
+            
+            functional_group_t = get_functional_group("OH").copy()
+            self.current_fa.functional_groups["OH"].append(functional_group_t)
+            
         
         
     def add_double_bonds(self, node):
@@ -397,6 +429,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         lipid.adduct = self.adduct
         
         self.content = lipid
+        
         
         
     def new_adduct(self, node):
