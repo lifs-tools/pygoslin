@@ -272,8 +272,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
     def add_functional_group(self, node):
         if self.mod_text != "Cp":
-            if self.current_fa.lipid_FA_bond_type in FattyAcid.LCB_STATES and self.mod_text == "OH":
-                if "OH" in self.current_fa.functional_groups and len(self.current_fa.functional_groups["OH"]) > 0:
+            if self.current_fa.lipid_FA_bond_type in FattyAcid.LCB_STATES and self.mod_text == "OH" and "OH" in self.current_fa.functional_groups and len(self.current_fa.functional_groups["OH"]) > 0:
                     self.current_fa.functional_groups["OH"][-1].position = self.mod_pos
             else:
                 functional_group = get_functional_group(self.mod_text).copy()
