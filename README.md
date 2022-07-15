@@ -1,5 +1,5 @@
 # Python3 implementation for Goslin
-[![Build Status](https://travis-ci.org/lifs-tools/pygoslin.svg?branch=master)](https://travis-ci.org/lifs-tools/pygoslin)
+[![Build Status](https://github.com/lifs-tools/pygoslin/actions/workflows/python-package.yml/badge.svg)](https://github.com/lifs-tools/pygoslin/actions/workflows/python-package.yml)
 
 This is the Goslin reference implementation for Python 3.
 
