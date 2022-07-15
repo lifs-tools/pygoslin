@@ -46,7 +46,7 @@ setup(
     url = 'https://github.com/lifs-tools/pygoslin',
     license = 'MIT',
     author = 'Dominik Kopczynski',
-    author_email = 'dominik.kopczynski@isas.de',
+    author_email = 'dominik.kopczynski@univie.ac.at',
     description = 'Python implementation for Goslin',
     long_description = open('README.md', encoding='utf-8').read(),
     long_description_content_type="text/markdown",
