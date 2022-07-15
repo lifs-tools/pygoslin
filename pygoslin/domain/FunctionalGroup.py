@@ -254,7 +254,7 @@ class CarbonChain(FunctionalGroup):
 _known_functional_groups, s = {}, SumFormulaParser()
 fg_dir_name = path.dirname(pygoslin.__file__)
 fg_file_name = path.join(fg_dir_name, "data", "goslin", "functional-groups.csv")
-with open(fg_file_name, "rt") as fg_infile:
+with open(fg_file_name, mode = "rt", encoding= "utf-8") as fg_infile:
     fg_infile.readline()
     for line in fg_infile:
         line = line.strip()

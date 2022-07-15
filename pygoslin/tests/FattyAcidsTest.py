@@ -40,7 +40,7 @@ class LipidMapsTest(unittest.TestCase):
     def test_parser(self):
         lipid_data = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "fatty-acids-test.csv")
-        with open(file_name, mode = "rt") as infile:
+        with open(file_name, mode = "rt", encoding= "utf-8") as infile:
             lipidreader = csv.reader(infile, delimiter=',', quotechar='"')
             for row in lipidreader:
                 lipid_data.append(row)

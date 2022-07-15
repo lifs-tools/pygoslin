@@ -539,7 +539,7 @@ class ParserTest(unittest.TestCase):
         global lipid_parser
         lipidnames = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "lipidnames.csv")
-        with open(file_name, mode = "rt") as infile:
+        with open(file_name, mode = "rt", encoding= "utf-8") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
                 if len(line) < 2: continue

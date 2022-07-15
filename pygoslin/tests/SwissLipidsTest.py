@@ -85,7 +85,7 @@ class SwissLipidsParserTest(unittest.TestCase):
     def teset_swiss_lipids_parser(self):
         lipidnames = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "swiss-lipids-test.csv")
-        with open(file_name, mode = "rt") as infile:
+        with open(file_name, mode = "rt", encoding= "utf-8") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
                 if len(line) > 0: lipidnames.append(line)

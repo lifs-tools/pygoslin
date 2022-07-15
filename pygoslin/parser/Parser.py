@@ -117,7 +117,7 @@ class LipidParser:
         dir_name = path.dirname(pygoslin.__file__)
         file_name = path.join(dir_name, "data", "goslin", "trivial-names.csv")
         
-        with open(file_name, "rt") as trivial_infile:
+        with open(file_name, "rt", encoding= "utf-8") as trivial_infile:
             trivial_infile.readline()
             for line in trivial_infile:
                 line = line.strip()

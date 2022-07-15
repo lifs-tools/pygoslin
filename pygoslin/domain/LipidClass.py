@@ -62,7 +62,7 @@ all_lipids = [{"name": "UNDEFINED",
 
 all_lipids_dir_name = path.dirname(pygoslin.__file__)
 file_name = path.join(all_lipids_dir_name, "data", "goslin", "lipid-list.csv")
-with open(file_name, mode = "rt") as infile:
+with open(file_name, mode = "rt", encoding= "utf-8") as infile:
     line = infile.readline() # skip title row
     lipid_reader = csv.reader(infile, delimiter=',', quotechar='"')
     sum_formula_parser = SumFormulaParser()
