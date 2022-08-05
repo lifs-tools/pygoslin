@@ -1,8 +1,8 @@
 """
 MIT License
 
-Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
-                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} univie.ac.at
+                   Nils Hoffmann  -  nils.hoffmann {at} cebitec.uni-bielefeld.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,15 +35,19 @@ except:
     print("Warning: cython module is not installed, parsing performance will be lower since pure python code will be applied.")
 
 import pygoslin
-from pygoslin.parser.Parser import SwissLipidsParser
+from pygoslin.parser.Parser import HmdbParser
+from pygoslin.parser.GoslinParserEventHandler import GoslinParserEventHandler
+from pygoslin.parser.LipidMapsParserEventHandler import LipidMapsParserEventHandler
 from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.LipidExceptions import LipidParsingException
+from random import randint
 
-class SwissLipidsParserTest(unittest.TestCase):
+class HMDBTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
     
     def test_sphingolipids(self):
-        parser = SwissLipidsParser()
+        parser = HmdbParser()
         
         l = parser.parse("Cer(d18:1(8Z)/24:0)")
         self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURE_DEFINED), "Cer 18:1(8);(OH)2/24:0")
@@ -58,6 +62,13 @@ class SwissLipidsParserTest(unittest.TestCase):
         self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "GalCer 18:1;O2/24:0")
         self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
         self.assertEqual(l.get_sum_formula(), "C48H93NO8")
+        
+        l = parser.parse("LysoSM(d17:1(4E))")
+        self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURE_DEFINED), "LSM 17:1(4);OH")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SN_POSITION), "LSM 17:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "LSM 17:1;O2")
+        self.assertEqual(l.get_sum_formula(), "C22H47N2O5P")
 
         l = parser.parse("PE-Cer(d14:1(4E)/20:1(11Z))")
         self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURE_DEFINED), "EPC 14:1(4);OH/20:1(11)")
@@ -82,24 +93,16 @@ class SwissLipidsParserTest(unittest.TestCase):
     
     
     
-    def teset_swiss_lipids_parser(self):
+    def test_parser(self):
         lipidnames = []
-        file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "swiss-lipids-test.csv")
-        with open(file_name, mode = "rt") as infile:
+        file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "hmdb-test.csv")
+        with open(file_name, mode = "rt", encoding= "utf-8") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
                 if len(line) > 0: lipidnames.append(line)
         
         
-        lipid_parser = SwissLipidsParser()
+        lipid_parser = HmdbParser()
         
         for i, lipid_name in enumerate(lipidnames):
-            try:
-                lipid = lipid_parser.parse(lipid_name)
-                lipid_class = lipid.get_lipid_string(LipidLevel.CLASS)
-                self.assertTrue(lipid_class not in {"Undefined lipid class", "Undefined", "UNDEFINED"}, "testing lipid '%s' at position %i" % (lipid_name[0], i))
-                
-            except Exception as e:
-                print("hier: '%s' -> %i" % (lipid_name, i))
-                print(e)
-                exit()
+            lipid = lipid_parser.parse(lipid_name)

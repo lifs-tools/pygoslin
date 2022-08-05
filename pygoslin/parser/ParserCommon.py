@@ -1,8 +1,8 @@
 """
 MIT License
 
-Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
-                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} univie.ac.at
+                   Nils Hoffmann  -  nils.hoffmann {at} cebitec.uni-bielefeld.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -293,7 +293,7 @@ class Parser:
     def extract_text_based_rules(grammar_filename, quote = DEFAULT_QUOTE):
         grammar, sb,current_position = "", [], 0
         
-        with open(grammar_filename, mode = "rt") as infile:
+        with open(grammar_filename, mode = "rt", encoding= "utf-8") as infile:
             grammar = infile.read() + "\n";
         grammar_length = len(grammar)
         
@@ -377,7 +377,7 @@ class Parser:
     
     
     def dump_child(self, class_name, parser_event_handler_name):
-        with open("%s.py" % class_name, mode = "wt") as dumpfile:
+        with open("%s.py" % class_name, mode = "wt", encoding= "utf-8") as dumpfile:
             dumpfile.write("from pygoslin.parser.Parser import Parser\n")
             dumpfile.write("from pygoslin.parser.%s import %s\n\n" % (parser_event_handler_name, parser_event_handler_name))
             dumpfile.write("class %s(Parser):\n" % class_name)

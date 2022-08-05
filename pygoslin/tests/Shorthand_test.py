@@ -172,7 +172,7 @@ class ShorthandTest(unittest.TestCase):
     def test_nomenclature(self):
         data = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "shorthand-test.csv")
-        with open(file_name, mode = "rt") as infile:
+        with open(file_name, mode = "rt", encoding= "utf-8") as infile:
             lipidreader = csv.reader(infile, delimiter=',', quotechar='"')
             for row in lipidreader:
                 row[-1] = row[-1].strip(" ")

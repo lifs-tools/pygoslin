@@ -1,8 +1,8 @@
 """
 MIT License
 
-Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
-                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} univie.ac.at
+                   Nils Hoffmann  -  nils.hoffmann {at} cebitec.uni-bielefeld.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,11 +42,11 @@ import os
 
 setup(
     name = 'pygoslin',
-    version = '2.0.2',
+    version = '2.0.3',
     url = 'https://github.com/lifs-tools/pygoslin',
     license = 'MIT',
     author = 'Dominik Kopczynski',
-    author_email = 'dominik.kopczynski@isas.de',
+    author_email = 'dominik.kopczynski@univie.ac.at',
     description = 'Python implementation for Goslin',
     long_description = open('README.md', encoding='utf-8').read(),
     long_description_content_type="text/markdown",
@@ -59,6 +59,7 @@ setup(
     #ext_modules= cythonize("pygoslin/parser/ParserCore.pyx", language_level = 3) if pyx_support else None,
     setup_requires = ["pytest-runner"],
     tests_require = ["pytest"],
+    test_suite= "tests",
     python_requires = '>=3.5',
     include_package_data = True,
     package_data = {

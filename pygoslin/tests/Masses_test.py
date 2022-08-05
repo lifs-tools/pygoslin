@@ -1,8 +1,8 @@
 """
 MIT License
 
-Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
-                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} univie.ac.at
+                   Nils Hoffmann  -  nils.hoffmann {at} cebitec.uni-bielefeld.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ class TestFormulas(unittest.TestCase):
     def test_masses(self):
         global parser
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", 'lipid-masses.csv')
-        with open(file_name, newline='') as csvfile:
+        with open(file_name, newline='', encoding= "utf-8") as csvfile:
             lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')
             for i, row in enumerate(lipidreader):
                 if i == 0: continue

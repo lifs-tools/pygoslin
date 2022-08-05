@@ -1,8 +1,8 @@
 """
 MIT License
 
-Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
-                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} univie.ac.at
+                   Nils Hoffmann  -  nils.hoffmann {at} cebitec.uni-bielefeld.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -539,7 +539,7 @@ class ParserTest(unittest.TestCase):
         global lipid_parser
         lipidnames = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "lipidnames.csv")
-        with open(file_name, mode = "rt") as infile:
+        with open(file_name, mode = "rt", encoding= "utf-8") as infile:
             for line in infile:
                 line = line.strip().strip(" ")
                 if len(line) < 2: continue

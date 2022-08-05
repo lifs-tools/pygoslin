@@ -1,8 +1,8 @@
 """
 MIT License
 
-Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} isas.de
-                   Nils Hoffmann  -  nils.hoffmann {at} isas.de
+Copyright (c) 2020 Dominik Kopczynski   -   dominik.kopczynski {at} univie.ac.at
+                   Nils Hoffmann  -  nils.hoffmann {at} cebitec.uni-bielefeld.de
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@ all_lipids = [{"name": "UNDEFINED",
 
 all_lipids_dir_name = path.dirname(pygoslin.__file__)
 file_name = path.join(all_lipids_dir_name, "data", "goslin", "lipid-list.csv")
-with open(file_name, mode = "rt") as infile:
+with open(file_name, mode = "rt", encoding= "utf-8") as infile:
     line = infile.readline() # skip title row
     lipid_reader = csv.reader(infile, delimiter=',', quotechar='"')
     sum_formula_parser = SumFormulaParser()
