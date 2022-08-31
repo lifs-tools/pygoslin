@@ -5,15 +5,15 @@ install:
 	python3 setup.py install
 	
 test:
-	python3 -m unittest pygoslin.tests.ParserTest
-	python3 -m unittest pygoslin.tests.TestFormulas
-	python3 -m unittest pygoslin.tests.MassesTest
-	python3 -m unittest pygoslin.tests.FattyAcidsTest
-	python3 -m unittest pygoslin.tests.SwissLipidsTest
-	python3 -m unittest pygoslin.tests.ShorthandTest
-	python3 -m unittest pygoslin.tests.GoslinTest
-	python3 -m unittest pygoslin.tests.LipidMapsTest
-	python3 -m unittest pygoslin.tests.HmdbTest
+	python3 -m unittest pygoslin.tests.Parser_test
+	python3 -m unittest pygoslin.tests.Formulas_test
+	python3 -m unittest pygoslin.tests.Masses_test
+	python3 -m unittest pygoslin.tests.FattyAcids_test
+	python3 -m unittest pygoslin.tests.SwissLipids_test
+	python3 -m unittest pygoslin.tests.Shorthand_test
+	python3 -m unittest pygoslin.tests.Goslin_test
+	python3 -m unittest pygoslin.tests.LipidMaps_test
+	python3 -m unittest pygoslin.tests.Hmdb_test
 
 distclean:
 	rm -rf build dist pygoslin.egg-info .eggs
