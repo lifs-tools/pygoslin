@@ -30,6 +30,7 @@ from pygoslin.domain.FunctionalGroup import FunctionalGroup
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidClass import *
 from pygoslin.domain.FattyAcid import FattyAcid
+from pygoslin.domain.LipidAdduct import LipidAdduct
 
 class LipidMolecularSpecies(LipidSpecies):
     def __init__(self, head_group, fa = []):
@@ -97,3 +98,6 @@ class LipidMolecularSpecies(LipidSpecies):
             raise Exception("LipidMolecularSpecies does not know how to create a lipid string for level %s" % level)
     
     
+    def sort_fatty_acyl_chains(self):
+        if self.info.level != LipidLevel.MOLECULAR_SPECIES and len(self.fa_list) < 2: return
+        self.fa_list.sort(key = lambda fa: (fa.num_carbon != 0, fa.lipid_FA_bond_type, fa.num_carbon, fa.get_double_bonds(), LipidAdduct.compute_mass(fa.get_elements())))

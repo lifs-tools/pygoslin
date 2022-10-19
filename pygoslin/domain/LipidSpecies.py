@@ -112,3 +112,7 @@ class LipidSpecies:
         
         return dummy.elements
         
+        
+        
+    def sort_fatty_acyl_chains(self):
+        pass

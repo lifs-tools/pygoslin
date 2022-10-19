@@ -98,6 +98,14 @@ class LipidAdduct:
     
     
     
+    def compute_mass(elements):
+        mass = sum([element_masses[e] * elements[e] for e in Element])
+        return mass
+    
+    
+    def sort_fatty_acyl_chains(self):
+        self.lipid.sort_fatty_acyl_chains()
+    
     
     def get_sum_formula(self):
         return compute_sum_formula(self.get_elements())
