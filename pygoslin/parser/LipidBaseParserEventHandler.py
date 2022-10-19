@@ -87,7 +87,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         
         if (true_fa + 1 == poss_fa or true_fa + 2 == poss_fa) and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
             if true_fa + 1 == poss_fa: self.head_group = "L" + self.head_group
-            else: self.head_group = "CL" + self.head_group
+            else: self.head_group = "DL" + self.head_group
             headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
             poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
             
