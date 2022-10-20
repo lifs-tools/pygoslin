@@ -30,12 +30,11 @@ from pygoslin.parser.ParserCommon import SumFormulaParser, Parser
 from os import path
 
 class FunctionalGroup:
-    def __init__(self, name, position = -1, count = 1, double_bonds = 0, stereochemistry = None, elements = None, functional_groups = None, is_atomic = False, num_atoms_and_bonds = 0):
+    def __init__(self, name, position = -1, count = 1, double_bonds = 0, stereochemistry = None, elements = None, functional_groups = None, is_atomic = False):
         self.name = name
         self.position = position
         self.count = count
         self.stereochemistry = stereochemistry
-        self.num_atoms_and_bonds = num_atoms_and_bonds
         self.ring_stereo = ""
         self.double_bonds = double_bonds
         self.is_atomic = is_atomic
@@ -44,7 +43,7 @@ class FunctionalGroup:
         
         
     def copy(self):
-        functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, double_bonds = self.double_bonds, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()}, is_atomic = self.is_atomic, num_atoms_and_bonds = self.num_atoms_and_bonds)
+        functional_group = FunctionalGroup(self.name, position = self.position, count = self.count, double_bonds = self.double_bonds, stereochemistry = self.stereochemistry, elements = {k: v for k, v in self.elements.items()}, is_atomic = self.is_atomic)
         for fg, fg_list in self.functional_groups.items():
             if fg not in functional_group.functional_groups: functional_group.functional_groups[fg] = []
             for func_group in fg_list:
@@ -261,12 +260,12 @@ with open(fg_file_name, mode = "rt", encoding= "utf-8") as fg_infile:
         row = Parser.split_string(line.strip(), ",", '"', True)
         e = s.parse(row[2]) if len(row[2]) > 0 else {e: 0 for e in Element}
         row.append(row[1])
-        for i in range(7, len(row)):
+        for i in range(6, len(row)):
             key = row[i]
             if len(key) == 0: continue
         
             if row[0] == "FG":
-                _known_functional_groups[key] = FunctionalGroup(row[1], elements = e, double_bonds = int(row[4]), is_atomic = row[5] == "1", num_atoms_and_bonds = int(row[3]) if len(row[3]) > 0 else 0)
+                _known_functional_groups[key] = FunctionalGroup(row[1], elements = e, double_bonds = int(row[3]), is_atomic = row[4] == "1")
                 
             elif row[0] == "HGD":
                 _known_functional_groups[key] = HeadgroupDecorator(row[1], elements = e)
