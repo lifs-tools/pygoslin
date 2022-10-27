@@ -49,6 +49,25 @@ from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
 
+glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
+               "ga2": ["GalNAc", "Gal", "Glc"],
+               "gb3": ["Gal", "Gal", "Glc"],
+               "gb4": ["GalNAc", "Gal", "Gal", "Glc"],
+               "gd1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gd1a": ["Hex", "Hex", "Hex", "HexNAc", "NeuAc", "NeuAc"],
+               "gd2": ["GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gd3": ["NeuAc", "NeuAc", "Gal", "Glc"],
+               "gm1": ["Gal", "GalNAc", "NeuAc", "Gal", "Glc"],
+               "gm2": ["GalNAc", "NeuAc", "Gal", "Glc"],
+               "gm3": ["NeuAc", "Gal", "Glc"],
+               "gm4": ["NeuAc", "Gal"],
+               "gp1": ["NeuAc", "NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gq1": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt2": ["GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt3": ["NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"]
+               }
+
 class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     def __init__(self):
@@ -96,9 +115,12 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_pip_pure_m_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_pip_pure_d_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_pip_pure_t_pre_event"] = self.set_headgroup_name
+        self.registered_events["sl_hg_glyco_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_PE_PS_pre_event"] = self.set_headgroup_name
         self.registered_events["acer_hg_post_event"] = self.set_acer
         self.registered_events["acer_species_post_event"] = self.set_acer_species
+        self.registered_events["glyco_sphingo_lipid_pre_event"] = self.set_glyco_sphingo_lipid
+        self.registered_events["carbohydrate_number_pre_event"] = self.set_carbohydrate_number
 
         ## set head group headgroup_decorators
         self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
@@ -215,10 +237,17 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         if len(self.head_group) == 0: self.head_group = node.get_text()
         
         
+        
+    def set_carbohydrate_number(self, node):
+        carbohydrate_num = int(node.get_text())
+        if len(self.headgroup_decorators) and carbohydrate_num > 0:
+            self.headgroup_decorators[-1].count += (carbohydrate_num - 1)
+        
+        
     def set_carbohydrate(self, node):
         carbohydrate = node.get_text()
         try:
-            functional_group = get_functional_group(carbohydrate).copy()
+            functional_group = get_functional_group(carbohydrate)
         except Exception:
             raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
         
@@ -229,6 +258,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
             if carbohydrate not in self.current_fa[-1].functional_groups:
                 self.current_fa[-1].functional_groups[carbohydrate] = []
             self.current_fa[-1].functional_groups[carbohydrate].append(functional_group)
+        
         
         
     def set_carbohydrate_structural(self, node):
@@ -352,7 +382,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         if self.current_fa[-1].lipid_FA_bond_type not in FattyAcid.LCB_STATES: return
     
         num_h = 1
-        functional_group = get_functional_group("OH").copy()
+        functional_group = get_functional_group("OH")
         if self.head_group in self.SP_EXCEPTION_CLASSES and len(self.headgroup_decorators) == 0: num_h += 1
         
         functional_group.count = num_h
@@ -412,6 +442,23 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.headgroup_decorators.append(self.current_fa.pop())
         del self.tmp["fa%i" % len(self.current_fa)]
         
+        
+        
+    def set_glyco_sphingo_lipid(self, node):
+        hg = self.head_group.lower()
+        if hg not in glyco_table:
+            raise LipidParsingException("Unknown glyco sphingolipid'%s'" % self.head_group) 
+        
+        for carbohydrate in glyco_table[hg]:
+            try:
+                
+                functional_group = get_functional_group(carbohydrate)
+                functional_group.elements[Element.O] -= 1
+                self.headgroup_decorators.append(functional_group)
+            except Exception:
+                raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
+        
+        self.head_group = "Cer"
         
         
         

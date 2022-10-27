@@ -54,7 +54,15 @@ class HeadGroup:
         headgoup_string = [all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup]
                 
         if level not in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED}:
-            prefix = sorted(hgd.to_string(level) for hgd in self.decorators if not hgd.suffix)
+            decorators_tmp = [hgd.copy() for hgd in self.decorators if not hgd.suffix]
+            for i in range(len(decorators_tmp) - 1, 0, - 1):
+                hge = decorators_tmp[i]
+                hge_before = decorators_tmp[i - 1]
+                if hge_before.name == hge.name:
+                    hge_before.count += 1
+                    decorators_tmp.pop(i)
+            prefix = [hgd.to_string(level) for hgd in decorators_tmp]
+            
         else:
             prefix = ["%s-" % hgd.to_string(level) for hgd in self.decorators if not hgd.suffix]
             

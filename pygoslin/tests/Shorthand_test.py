@@ -185,6 +185,7 @@ class ShorthandTest(unittest.TestCase):
         levels = [LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION, LipidLevel.MOLECULAR_SPECIES, LipidLevel.SPECIES]
         for row in data:
             lipid_name = row[0]
+            print(row)
             lipid = parser.parse(lipid_name)
             formula = row[len(levels)] if len(row) > len(levels) else lipid.get_sum_formula()
             
@@ -196,14 +197,14 @@ class ShorthandTest(unittest.TestCase):
             
             for l, lipid_level in enumerate(levels):
                 n = lipid.get_lipid_string(lipid_level)
-                self.assertEqual(row[l], n, "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
-                self.assertEqual(formula, lipid.get_sum_formula(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
+                self.assertEqual(row[l], n, "first test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
+                self.assertEqual(formula, lipid.get_sum_formula(), "first test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
 
 
                 lipid2 = parser.parse(n)
                 for ll in range(l, len(levels)):
-                    self.assertEqual(row[ll], lipid2.get_lipid_string(levels[ll]), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
-                    self.assertEqual(formula, lipid2.get_sum_formula(), "test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
+                    self.assertEqual(row[ll], lipid2.get_lipid_string(levels[ll]), "second test on lipid '%s' and level '%s'" % (lipid_name, lipid_level))
+                    self.assertEqual(formula, lipid2.get_sum_formula(), "second test on lipid '%s' and level '%s'" % (n, lipid_level))
         
         
         

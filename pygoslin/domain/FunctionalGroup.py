@@ -149,7 +149,7 @@ class HeadgroupDecorator(FunctionalGroup):
         
         
     def to_string(self, level):
-        if not self.suffix: return self.name
+        if not self.suffix: return self.name + ("%i" % self.count if self.count > 1 else "")
     
         decorator_string = ""
         if self.lowest_visible_level == None or self.lowest_visible_level.value <= level.value:
