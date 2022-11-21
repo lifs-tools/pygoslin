@@ -49,24 +49,6 @@ from pygoslin.domain.LipidSpeciesInfo import LipidSpeciesInfo
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
 
-glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
-               "ga2": ["GalNAc", "Gal", "Glc"],
-               "gb3": ["Gal", "Gal", "Glc"],
-               "gb4": ["GalNAc", "Gal", "Gal", "Glc"],
-               "gd1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gd1a": ["Hex", "Hex", "Hex", "HexNAc", "NeuAc", "NeuAc"],
-               "gd2": ["GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gd3": ["NeuAc", "NeuAc", "Gal", "Glc"],
-               "gm1": ["Gal", "GalNAc", "NeuAc", "Gal", "Glc"],
-               "gm2": ["GalNAc", "NeuAc", "Gal", "Glc"],
-               "gm3": ["NeuAc", "Gal", "Glc"],
-               "gm4": ["NeuAc", "Gal"],
-               "gp1": ["NeuAc", "NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gq1": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gt1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gt2": ["GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gt3": ["NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"]
-               }
 
 class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
@@ -445,20 +427,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
     def set_glyco_sphingo_lipid(self, node):
-        hg = self.head_group.lower()
-        if hg not in glyco_table:
-            raise LipidParsingException("Unknown glyco sphingolipid'%s'" % self.head_group) 
-        
-        for carbohydrate in glyco_table[hg]:
-            try:
-                
-                functional_group = get_functional_group(carbohydrate)
-                functional_group.elements[Element.O] -= 1
-                self.headgroup_decorators.append(functional_group)
-            except Exception:
-                raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
-        
-        self.head_group = "Cer"
+        pass
         
         
         

@@ -185,7 +185,6 @@ class ShorthandTest(unittest.TestCase):
         levels = [LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION, LipidLevel.MOLECULAR_SPECIES, LipidLevel.SPECIES]
         for row in data:
             lipid_name = row[0]
-            print(row)
             lipid = parser.parse(lipid_name)
             formula = row[len(levels)] if len(row) > len(levels) else lipid.get_sum_formula()
             
