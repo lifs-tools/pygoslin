@@ -160,6 +160,11 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     def assemble_lipid(self, headgroup):
         
+        for fa in self.fa_list:
+            if fa.stereo_information_missing():
+                self.set_lipid_level(LipidLevel.FULL_STRUCTURE)
+                break
+        
         lipid_level_class = None
         if self.level == LipidLevel.COMPLETE_STRUCTURE: lipid_level_class = LipidCompleteStructure
         elif self.level == LipidLevel.FULL_STRUCTURE: lipid_level_class = LipidFullStructure
