@@ -115,6 +115,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         self.db_position = 0
         self.db_cistrans = ""
         self.use_head_group = False
+        self.headgroup_decorators = []
         self.db_number = -1
         self.furan = {}
         
