@@ -55,6 +55,7 @@ class HeadGroup:
                 
         if level not in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED}:
             decorators_tmp = [hgd.copy() for hgd in self.decorators if not hgd.suffix]
+            decorators_tmp.sort(key = lambda x: x.name)
             for i in range(len(decorators_tmp) - 1, 0, - 1):
                 hge = decorators_tmp[i]
                 hge_before = decorators_tmp[i - 1]
