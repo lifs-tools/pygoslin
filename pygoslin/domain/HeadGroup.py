@@ -60,7 +60,7 @@ class HeadGroup:
                 hge = decorators_tmp[i]
                 hge_before = decorators_tmp[i - 1]
                 if hge_before.name == hge.name:
-                    hge_before.count += 1
+                    hge_before.count += hge.count
                     decorators_tmp.pop(i)
             prefix = [hgd.to_string(level) for hgd in decorators_tmp]
             
