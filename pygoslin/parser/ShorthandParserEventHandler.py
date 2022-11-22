@@ -173,7 +173,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
 
 
     def reset_lipid(self, node):
-        self.level = LipidLevel.FULL_STRUCTURE
+        self.level = LipidLevel.COMPLETE_STRUCTURE
         self.head_group = ""
         self.adduct = None
         self.fa_list = []
@@ -651,10 +651,6 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     def build_lipid(self, node):
         if self.acer_species: self.fa_list[0].num_carbon -= 2
         headgroup = self.prepare_headgroup_and_checks()
-        
-        
-        if self.level == LipidLevel.FULL_STRUCTURE and self.contains_stereo_information:
-            self.level = LipidLevel.COMPLETE_STRUCTURE
         
         lipid = LipidAdduct()
         lipid.adduct = self.adduct
