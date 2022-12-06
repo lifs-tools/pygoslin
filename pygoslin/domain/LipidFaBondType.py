@@ -28,10 +28,10 @@ from enum import Enum
 
 class LipidFaBondType(Enum):
     UNDEFINED = 0
-    ESTER = 1
-    ETHER_PLASMANYL = 2
-    ETHER_PLASMENYL = 3
-    ETHER = 4
+    ETHER_PLASMANYL = 1
+    ETHER_PLASMENYL = 2
+    ETHER = 3
+    ESTER = 4
     LCB_REGULAR = 5
     LCB_EXCEPTION = 6
     AMIDE = 7

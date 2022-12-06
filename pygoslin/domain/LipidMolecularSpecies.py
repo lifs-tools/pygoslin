@@ -100,4 +100,4 @@ class LipidMolecularSpecies(LipidSpecies):
     
     def sort_fatty_acyl_chains(self):
         if self.info.level != LipidLevel.MOLECULAR_SPECIES and len(self.fa_list) < 2: return
-        self.fa_list.sort(key = lambda fa: (fa.num_carbon != 0, fa.lipid_FA_bond_type, fa.num_carbon, fa.get_double_bonds(), LipidAdduct.compute_mass(fa.get_elements())))
+        self.fa_list.sort(key = lambda fa: (fa.num_carbon != 0, fa.lipid_FA_bond_type.value, fa.num_carbon, fa.get_double_bonds(), LipidAdduct.compute_mass(fa.get_elements())))
