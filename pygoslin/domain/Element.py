@@ -128,6 +128,37 @@ element_shortcut = {Element.C: "C",
                     Element.S34: "S''"
                     }
 
+heavy_shortcut = {Element.C: "C",
+                    Element.H: "H",
+                    Element.N: "N",
+                    Element.O: "O",
+                    Element.P: "P",
+                    Element.S: "S",
+                    Element.F: "F",
+                    Element.I: "I",
+                    Element.As: "As",
+                    Element.Br: "Br",
+                    Element.Cl: "Cl",
+                    Element.H2: "H2",
+                    Element.C13: "C13",
+                    Element.N15: "N15",
+                    Element.O17: "O17",
+                    Element.O18: "O18",
+                    Element.P32: "P32",
+                    Element.S33: "S33",
+                    Element.S34: "S34"
+                    }
+
+heavy_to_regular = {Element.H2: Element.H,
+                    Element.C13: Element.C,
+                    Element.N15: Element.N,
+                    Element.O17: Element.O,
+                    Element.O18: Element.O,
+                    Element.P32: Element.P,
+                    Element.S33: Element.S,
+                    Element.S34: Element.S
+                    }
+
 element_order = [Element.C, Element.H, Element.As, Element.Br, Element.Cl, Element.F, Element.I, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
 
 def compute_sum_formula(elements):

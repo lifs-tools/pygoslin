@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from pygoslin.domain.Element import Element
+from pygoslin.domain.Element import Element, element_order, heavy_shortcut, heavy_to_regular
 from pygoslin.parser.ParserCommon import SumFormulaParser
 from pygoslin.domain.LipidExceptions import *
 
@@ -51,40 +51,49 @@ class Adduct:
                       "+NH4": 1, "+Cl": -1, "+HCOO": -1, "+CH3COO": -1
                       }
     
-    def __init__(self, sum_formula, adduct_string, charge = 1, sign = 1):
+    def __init__(self, sum_formula, adduct_string, charge = 0, sign = 1):
         self.sum_formula = sum_formula
         self.adduct_string = adduct_string
         self.charge = charge
         self.set_charge_sign(sign)
+        self.heavy_elements = {e: 0 for e in Element}
     
     
     def set_charge_sign(self, sign):
         if sign in {-1, 1}:
             self.charge_sign = sign
-            
-        else: raise ConstraintViolationException("Sign can only be - or +")
+    
+    
+    def get_heavy_isotope_string(self):
+        return "".join(["%i%s" % (self.heavy_elements[e], heavy_shortcut[e]) for e in element_order if self.heavy_elements[e] > 0])
             
     
     
     def get_lipid_string(self):
-        if self.charge == 0: return "[M]"
+        if self.charge == 0: return "[M%s]" % self.get_heavy_isotope_string()
         
-        return "[M%s%s]%i%s" % (self.sum_formula, self.adduct_string, self.charge, "+" if self.charge_sign > 0 else "-")
+        return "[M%s%s%s]%i%s" % (self.sum_formula, self.get_heavy_isotope_string(), self.adduct_string, self.charge, "+" if self.charge_sign > 0 else "-")
     
     
     
     def get_elements(self):
         elements = {e: 0 for e in Element}
         
-        if self.adduct_string in Adduct.adducts:
-            if Adduct.adduct_charges[self.adduct_string] != self.get_charge():
-                raise ConstraintViolationException("Provided charge '%i' in contradiction to adduct '%s' charge '%i'." % (self.get_charge(), self.adduct_string, Adduct.adduct_charges[self.adduct_string]))
+        for e, num in self.heavy_elements.items():
+            if num > 0:
+                elements[heavy_to_regular[e]] -= num
+                elements[e] += num
+        
+        if len(self.adduct_string) > 0:
+            if self.adduct_string in Adduct.adducts:
+                if Adduct.adduct_charges[self.adduct_string] != self.get_charge():
+                    raise ConstraintViolationException("Provided charge '%i' in contradiction to adduct '%s' charge '%i'." % (self.get_charge(), self.adduct_string, Adduct.adduct_charges[self.adduct_string]))
+                    
+                for k, v in Adduct.adducts[self.adduct_string].items():
+                    elements[k] = v
                 
-            for k, v in Adduct.adducts[self.adduct_string].items():
-                elements[k] = v
-            
-        else:
-            raise ConstraintViolationException("Adduct '%s' is unknown." % self.adduct_string)
+            else:
+                raise ConstraintViolationException("Adduct '%s' is unknown." % self.adduct_string)
         
         return elements
     

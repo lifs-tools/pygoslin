@@ -121,8 +121,15 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["mod_pos_pre_event"] = self.set_mod_pos
         self.registered_events["mod_num_pre_event"] = self.set_mod_num
         self.registered_events["single_mod_post_event"] = self.add_functional_group
+        self.registered_events["additional_modifier_pre_event"] = self.add_additional_modifier
         
         self.registered_events["special_cer_prefix_pre_event"] = self.add_ACer
+        
+        self.registered_events["isotope_pair_pre_event"] = self.new_adduct
+        self.registered_events["isotope_element_pre_event"] = self.set_heavy_element
+        self.registered_events["isotope_number_pre_event"] = self.set_heavy_number
+        
+        
         
         self.debug = ""
         
@@ -144,6 +151,8 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.mod_num = 1
         self.headgroup_decorators = []
         self.add_omega_linoleoyloxy_Cer = False
+        self.heavy_number = 0
+        self.heavy_element = None
         
         
         
@@ -161,6 +170,13 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
     def set_isomeric_level(self, node):
         self.db_position = 0
         self.db_cistrans = ""
+        
+    def set_heavy_element(self, node):
+        self.adduct.heavy_elements[Element.H2] = 0
+        
+    def set_heavy_number(self, node):
+        self.adduct.heavy_elements[Element.H2] = int(node.get_text())
+        
         
 
     def add_db_position(self, node):
@@ -231,6 +247,15 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
         
+    def add_additional_modifier(self, node):
+        modifier = node.get_text()
+        if modifier == "h":
+            functional_group = get_functional_group("OH")
+            self.current_fa.add_functional_group(functional_group)
+            self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
+        
+        
+        
     def set_species_level(self, node):
         self.set_lipid_level(LipidLevel.SPECIES)
         
@@ -252,7 +277,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
     def add_glyco(self, node):
         glyco = node.get_text()
         try:
-            functional_group = get_functional_group(glyco).copy()
+            functional_group = get_functional_group(glyco)
         except Exception:
             raise LipidParsingException("Carbohydrate '%s' unknown" % glyco)
         
@@ -275,7 +300,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
             if self.current_fa.lipid_FA_bond_type in FattyAcid.LCB_STATES and self.mod_text == "OH" and "OH" in self.current_fa.functional_groups and len(self.current_fa.functional_groups["OH"]) > 0:
                     self.current_fa.functional_groups["OH"][-1].position = self.mod_pos
             else:
-                functional_group = get_functional_group(self.mod_text).copy()
+                functional_group = get_functional_group(self.mod_text)
                 functional_group.position = self.mod_pos
                 functional_group.count = self.mod_num
                 self.current_fa.add_functional_group(functional_group)
@@ -342,7 +367,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
     def add_hydroxyl(self, node):
         num_h = int(node.get_text())
-        functional_group = get_functional_group("OH").copy()
+        functional_group = get_functional_group("OH")
         
         if self.sp_regular_lcb(): num_h -= 1
         
@@ -353,14 +378,14 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def add_dihydroxyl(self, node):
-        functional_group_p3 = get_functional_group("OH").copy()
+        functional_group_p3 = get_functional_group("OH")
         functional_group_p3.position = 3
         
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
         self.current_fa.functional_groups["OH"].append(functional_group_p3)
         
         if not self.sp_regular_lcb():
-            functional_group_p1 = get_functional_group("OH").copy()
+            functional_group_p1 = get_functional_group("OH")
             functional_group_p1.position = 1
             self.current_fa.functional_groups["OH"].append(functional_group_p1)
         
@@ -372,31 +397,31 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
         if hydroxyl == "m":
-            functional_group_p3 = get_functional_group("OH").copy()
+            functional_group_p3 = get_functional_group("OH")
             functional_group_p3.position = 3
             self.current_fa.functional_groups["OH"].append(functional_group_p3)
             
         elif hydroxyl == "d":
             if not self.sp_regular_lcb():
-                functional_group_p1 = get_functional_group("OH").copy()
+                functional_group_p1 = get_functional_group("OH")
                 functional_group_p1.position = 1
                 self.current_fa.functional_groups["OH"].append(functional_group_p1)
             
-            functional_group_p3 = get_functional_group("OH").copy()
+            functional_group_p3 = get_functional_group("OH")
             functional_group_p3.position = 3
             self.current_fa.functional_groups["OH"].append(functional_group_p3)
             
         elif hydroxyl == "t":
             if not self.sp_regular_lcb():
-                functional_group_p1 = get_functional_group("OH").copy()
+                functional_group_p1 = get_functional_group("OH")
                 functional_group_p1.position = 1
                 self.current_fa.functional_groups["OH"].append(functional_group_p1)
             
-            functional_group_p3 = get_functional_group("OH").copy()
+            functional_group_p3 = get_functional_group("OH")
             functional_group_p3.position = 3
             self.current_fa.functional_groups["OH"].append(functional_group_p3)
             
-            functional_group_t = get_functional_group("OH").copy()
+            functional_group_t = get_functional_group("OH")
             self.current_fa.functional_groups["OH"].append(functional_group_t)
             
         
