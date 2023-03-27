@@ -165,7 +165,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.sphinga_pure = False
         self.lcb_carbon_pre_set = 18
         self.lcb_db_pre_set = 0
-        self.lcb_hydro_pre_set = 2
+        self.lcb_hydro_pre_set = []
         self.sphinga_prefix = ""
         self.sphinga_suffix = ""
         
@@ -203,19 +203,23 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
     def new_sphinga_pure(self, node):
         self.sphinga_pure = True
+        self.lcb_hydro_pre_set = [get_functional_group("OH"), get_functional_group("OH")]
+        self.lcb_hydro_pre_set[0].position = 1
+        self.lcb_hydro_pre_set[1].position = 3
         self.new_lcb(node)
         
         
         
     def set_hydro_pre_num(self, node):
-        self.lcb_hydro_pre_set += 1
+        self.lcb_hydro_pre_set.append(get_functional_group("OH"))
+        self.lcb_hydro_pre_set[-1].position = 4
         self.sphinga_prefix = node.get_text()
         
         
         
     def add_phosphate(self, node):
         self.head_group += "P"
-        self.lcb_hydro_pre_set -= 1
+        self.lcb_hydro_pre_set = self.lcb_hydro_pre_set[1:]
 
         
         
@@ -406,9 +410,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         if self.sphinga_pure:
             self.lcb.num_carbon = self.lcb_carbon_pre_set
             self.lcb.double_bonds = self.lcb_db_pre_set
-            functional_group = get_functional_group("OH")
-            functional_group.count = self.lcb_hydro_pre_set
-            self.lcb.functional_groups["OH"] = [functional_group]
+            self.lcb.functional_groups["OH"] = self.lcb_hydro_pre_set
         
         if self.sphinga_suffix != "":
             if (self.sphinga_suffix == "anine" and self.lcb.db_num() != 0) or (self.sphinga_suffix == "osine" and self.lcb.db_num() != 1) or (self.sphinga_suffix == "adienine" and self.lcb.db_num() != 2):
