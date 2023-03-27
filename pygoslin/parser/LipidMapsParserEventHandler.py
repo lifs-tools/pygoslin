@@ -130,7 +130,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["isotope_number_pre_event"] = self.set_heavy_number
         
         self.registered_events["sphinga_pre_event"] = self.new_sphinga
-        self.registered_events["sphinga_phosphate_pre_event"] = self.add_phosphate
+        self.registered_events["sphinga_phospho_pre_event"] = self.add_phospho
         self.registered_events["sphinga_suffix_pre_event"] = self.sphinga_db_set
         self.registered_events["sphinga_lcb_len_pre_event"] = self.add_carbon_pre_len
         self.registered_events["sphinga_prefix_pre_event"] = self.set_hydro_pre_num
@@ -217,8 +217,12 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
         
-    def add_phosphate(self, node):
-        self.head_group += "P"
+    def add_phospho(self, node):
+        phospho_suffix = node.get_text()
+        if phospho_suffix == "1-phosphate":
+            self.head_group += "P"
+        elif phospho_suffix == "1-phosphocholine":
+            self.head_group = "LSM"
         self.lcb_hydro_pre_set = self.lcb_hydro_pre_set[1:]
 
         
