@@ -414,7 +414,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
             if (self.sphinga_suffix == "anine" and self.lcb.db_num() != 0) or (self.sphinga_suffix == "osine" and self.lcb.db_num() != 1) or (self.sphinga_suffix == "adienine" and self.lcb.db_num() != 2):
                 raise LipidException("Double bond count does not match with head group description")
             
-        if self.sphinga_prefix == "Phyto":
+        if self.sphinga_prefix == "Phyto" and not self.sphinga_pure:
             pos_hydro = {fg.position for fg in self.lcb.functional_groups["OH"]}
             if len(self.lcb.functional_groups) == 0 or "OH" not in self.lcb.functional_groups or 4 not in pos_hydro:
                 raise LipidException("hydroxyl count does not match with head group description")
@@ -498,7 +498,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
             self.current_fa.functional_groups["OH"].append(functional_group_p3)
             
             functional_group_t = get_functional_group("OH")
-            functional_group_p3.position = 4
+            functional_group_t.position = 4
             self.current_fa.functional_groups["OH"].append(functional_group_t)
             
         
