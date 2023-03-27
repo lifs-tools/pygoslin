@@ -129,9 +129,18 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["isotope_element_pre_event"] = self.set_heavy_element
         self.registered_events["isotope_number_pre_event"] = self.set_heavy_number
         
+        self.registered_events["sphinga_pre_event"] = self.new_sphinga
+        self.registered_events["sphinga_phosphate_pre_event"] = self.add_phosphate
+        self.registered_events["sphinga_suffix_pre_event"] = self.sphinga_db_set
+        self.registered_events["sphinga_lcb_len_pre_event"] = self.add_carbon_pre_len
+        self.registered_events["sphinga_prefix_pre_event"] = self.set_hydro_pre_num
+        self.registered_events["sphinga_hg_pure_pre_event"] = self.new_sphinga_pure
+        self.registered_events["sphinga_hg_pure_post_event"] = self.clean_lcb
+        
         
         
         self.debug = ""
+        
         
         
     def reset_lipid(self, node):
@@ -153,12 +162,23 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.add_omega_linoleoyloxy_Cer = False
         self.heavy_number = 0
         self.heavy_element = None
-        
+        self.sphinga_pure = False
+        self.lcb_carbon_pre_set = 18
+        self.lcb_db_pre_set = 0
+        self.lcb_hydro_pre_set = 2
+        self.sphinga_prefix = ""
+        self.sphinga_suffix = ""
         
         
         
     def set_molecular_subspecies_level(self, node):
         self.set_lipid_level(LipidLevel.MOLECULAR_SPECIES)
+        
+        
+        
+    def add_carbon_pre_len(self, node):
+        self.lcb_carbon_pre_set = int(node.get_text())
+        
         
         
     def mediator_event(self, node):
@@ -167,18 +187,54 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
         
+    def sphinga_db_set(self, node):
+        self.sphinga_suffix = node.get_text()
+        if self.sphinga_suffix == 'anine': self.lcb_db_pre_set = 0
+        elif self.sphinga_suffix == 'osine': self.lcb_db_pre_set = 1
+        elif self.sphinga_suffix == 'adienine': self.lcb_db_pre_set = 2
+        
+        
+        
+        
+    def new_sphinga(self, node):
+        self.head_group = "SPB"
+        
+        
+        
+    def new_sphinga_pure(self, node):
+        self.sphinga_pure = True
+        self.new_lcb(node)
+        
+        
+        
+    def set_hydro_pre_num(self, node):
+        self.lcb_hydro_pre_set += 1
+        self.sphinga_prefix = node.get_text()
+        
+        
+        
+    def add_phosphate(self, node):
+        self.head_group += "P"
+        self.lcb_hydro_pre_set -= 1
+
+        
+        
     def set_isomeric_level(self, node):
         self.db_position = 0
         self.db_cistrans = ""
         
+        
+        
     def set_heavy_element(self, node):
         self.adduct.heavy_elements[Element.H2] = 0
+        
+        
         
     def set_heavy_number(self, node):
         self.adduct.heavy_elements[Element.H2] = int(node.get_text())
         
-        
-
+    
+    
     def add_db_position(self, node):
         if self.current_fa != None:
             if type(self.current_fa.double_bonds) == int:
@@ -204,6 +260,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
                   }
                   
         
+        
     def add_ACer(self, node):
         head = node.get_text()
         self.head_group = "ACer"
@@ -220,9 +277,9 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
         
-
     def add_db_position_number(self, node):
         self.db_position = int(node.get_text())
+        
         
 
     def add_cistrans(self, node):
@@ -260,8 +317,10 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.set_lipid_level(LipidLevel.SPECIES)
         
         
+        
     def set_structural_subspecies_level(self, node):
         self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
+
 
 
     def set_mod(self, node):
@@ -270,8 +329,10 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.mod_num = 1
 
 
+
     def set_mod_text(self, node):
         self.mod_text = node.get_text()
+        
         
         
     def add_glyco(self, node):
@@ -309,12 +370,13 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
             self.current_fa.add_functional_group(Cycle(3, start = self.mod_pos, end = self.mod_pos + 2))
           
           
+          
     def new_fa(self, node):
         self.db_numbers = -1
         self.current_fa = FattyAcid("FA")
 
         
-            
+
     def append_fa(self, node):
         if type(self.current_fa.double_bonds) != int:
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
@@ -333,15 +395,30 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
         
-        
     def new_lcb(self, node):
         self.lcb = FattyAcid("LCB")
-        self.lcb.set_type(LipidFaBondType.LCB_REGULAR)
         self.current_fa = self.lcb
+        self.lcb.set_type(LipidFaBondType.LCB_REGULAR)
         
             
             
     def clean_lcb(self, node):
+        if self.sphinga_pure:
+            self.lcb.num_carbon = self.lcb_carbon_pre_set
+            self.lcb.double_bonds = self.lcb_db_pre_set
+            functional_group = get_functional_group("OH")
+            functional_group.count = self.lcb_hydro_pre_set
+            self.lcb.functional_groups["OH"] = [functional_group]
+        
+        if self.sphinga_suffix != "":
+            if (self.sphinga_suffix == "anine" and self.lcb.db_num() != 0) or (self.sphinga_suffix == "osine" and self.lcb.db_num() != 1) or (self.sphinga_suffix == "adienine" and self.lcb.db_num() != 2):
+                raise LipidException("Double bond count does not match with head group description")
+            
+        if self.sphinga_prefix == "Phyto":
+            pos_hydro = {fg.position for fg in self.lcb.functional_groups["OH"]}
+            if len(self.lcb.functional_groups) == 0 or "OH" not in self.lcb.functional_groups or 4 not in pos_hydro:
+                raise LipidException("hydroxyl count does not match with head group description")
+            
         if type(self.current_fa.double_bonds) != int:
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
@@ -361,7 +438,6 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         if ether in {"O-", "e"}: self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
         elif ether in {"P-", "p"}: self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
-        
         
         
         
@@ -422,12 +498,14 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
             self.current_fa.functional_groups["OH"].append(functional_group_p3)
             
             functional_group_t = get_functional_group("OH")
+            functional_group_p3.position = 4
             self.current_fa.functional_groups["OH"].append(functional_group_t)
             
         
         
     def add_double_bonds(self, node):
         self.current_fa.double_bonds += int(node.get_text())
+        
         
         
     def add_carbon(self, node):
@@ -460,12 +538,15 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.adduct = Adduct("", "")
         
         
+        
     def add_adduct(self, node):
         self.adduct.adduct_string = node.get_text()
         
         
+        
     def add_charge(self, node):
         self.adduct.charge = int (node.get_text())
+        
         
         
     def add_charge_sign(self, node):

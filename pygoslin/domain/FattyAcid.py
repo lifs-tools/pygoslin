@@ -94,6 +94,8 @@ class FattyAcid(FunctionalGroup):
         return super().get_double_bonds() + (self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL)
         
                 
+    def db_num(self):
+        return self.double_bonds if type(self.double_bonds) == int else len(self.double_bonds)
                 
         
     def to_string(self, level):
