@@ -139,14 +139,14 @@ heavy_shortcut = {Element.C: "C",
                     Element.As: "As",
                     Element.Br: "Br",
                     Element.Cl: "Cl",
-                    Element.H2: "H2",
-                    Element.C13: "C13",
-                    Element.N15: "N15",
-                    Element.O17: "O17",
-                    Element.O18: "O18",
-                    Element.P32: "P32",
-                    Element.S33: "S33",
-                    Element.S34: "S34"
+                    Element.H2: "[2]H",
+                    Element.C13: "[13]C",
+                    Element.N15: "[15]N",
+                    Element.O17: "[17]O",
+                    Element.O18: "[18]O",
+                    Element.P32: "[32]P",
+                    Element.S33: "[33]S",
+                    Element.S34: "[34]S"
                     }
 
 heavy_to_regular = {Element.H2: Element.H,

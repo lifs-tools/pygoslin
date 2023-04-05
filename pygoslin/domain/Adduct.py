@@ -65,7 +65,7 @@ class Adduct:
     
     
     def get_heavy_isotope_string(self):
-        return "".join(["%i%s" % (self.heavy_elements[e], heavy_shortcut[e]) for e in element_order if self.heavy_elements[e] > 0])
+        return "".join(["%s%i" % (heavy_shortcut[e], self.heavy_elements[e]) for e in element_order if self.heavy_elements[e] > 0])
             
     
     
@@ -90,7 +90,7 @@ class Adduct:
                     raise ConstraintViolationException("Provided charge '%i' in contradiction to adduct '%s' charge '%i'." % (self.get_charge(), self.adduct_string, Adduct.adduct_charges[self.adduct_string]))
                     
                 for k, v in Adduct.adducts[self.adduct_string].items():
-                    elements[k] = v
+                    elements[k] += v
                 
             else:
                 raise ConstraintViolationException("Adduct '%s' is unknown." % self.adduct_string)

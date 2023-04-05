@@ -50,6 +50,9 @@ from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
 
 
+heavy_element_table = {"[2]H": Element.H2, "[13]C": Element.C13, "[15]N": Element.N15, "[17]O": Element.O17, "[18]O": Element.O18, "[32]P": Element.P32, "[33]S": Element.S33, "[34]S": Element.S34}
+
+
 class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     def __init__(self):
@@ -170,6 +173,9 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_PE_PS_type_pre_event"] = self.suffix_decorator_species
         
         self.registered_events["sterol_definition_post_event"] = self.set_sterol_definition
+        self.registered_events["adduct_heavy_element_pre_event"] = self.set_heavy_element
+        self.registered_events["adduct_heavy_number_pre_event"] = self.set_heavy_number
+        self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
 
 
     def reset_lipid(self, node):
@@ -182,7 +188,8 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp = {}
         self.acer_species = False
         self.contains_stereo_information = False
-        
+        self.heavy_element = None
+        self.heavy_element_number = 0
         
     
     def set_sterol_definition(self, node):
@@ -670,12 +677,23 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
     def add_charge(self, node):
-        self.adduct.charge = int (node.get_text())
+        self.adduct.charge = int(node.get_text())
         
         
     def add_charge_sign(self, node):
         sign = node.get_text()
         if sign == "+": self.adduct.set_charge_sign(1)
         if sign == "-": self.adduct.set_charge_sign(-1)
+        if self.adduct.charge == 0: self.adduct.charge = 1
         
+    def set_heavy_element(self, node):
+        self.heavy_element = heavy_element_table[node.get_text()]
+        
+        
+    def set_heavy_number(self, node):
+        self.heavy_element_number = int(node.get_text())
+        
+        
+    def add_heavy_component(self, node):
+        self.adduct.heavy_elements[self.heavy_element] = self.heavy_element_number
         

@@ -326,3 +326,4 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         sign = node.get_text()
         if sign == "+": self.adduct.set_charge_sign(1)
         if sign == "-": self.adduct.set_charge_sign(-1)
+        if self.adduct.charge == 0: self.adduct.charge = 1

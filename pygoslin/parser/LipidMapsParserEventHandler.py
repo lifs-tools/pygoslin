@@ -541,7 +541,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def new_adduct(self, node):
-        self.adduct = Adduct("", "")
+        if self.adduct == None: self.adduct = Adduct("", "")
         
         
         
@@ -559,5 +559,6 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         sign = node.get_text()
         if sign == "+": self.adduct.set_charge_sign(1)
         if sign == "-": self.adduct.set_charge_sign(-1)
+        if self.adduct.charge == 0: self.adduct.charge = 1
         
         
