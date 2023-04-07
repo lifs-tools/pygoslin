@@ -159,6 +159,9 @@ heavy_to_regular = {Element.H2: Element.H,
                     Element.S34: Element.S
                     }
 
+
+heavy_element_table = {"[2]H": Element.H2, "[13]C": Element.C13, "[15]N": Element.N15, "[17]O": Element.O17, "[18]O": Element.O18, "[32]P": Element.P32, "[33]S": Element.S33, "[34]S": Element.S34}
+
 element_order = [Element.C, Element.H, Element.As, Element.Br, Element.Cl, Element.F, Element.I, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
 
 def compute_sum_formula(elements):

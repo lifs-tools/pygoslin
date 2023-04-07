@@ -123,8 +123,39 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["mediator_functional_group_post_event"] = self.add_mediator_function
         self.registered_events["mediator_suffix_pre_event"] = self.add_mediator_suffix
         self.registered_events["mediator_tetranor_pre_event"] = self.set_mediator_tetranor
-                
+        
+        
+        self.registered_events["isotope_pair_pre_event"] = self.new_adduct
+        self.registered_events["isotope_element_pre_event"] = self.set_heavy_d_element
+        self.registered_events["isotope_number_pre_event"] = self.set_heavy_d_number
+        self.registered_events["heavy_pre_event"] = self.new_adduct
+        self.registered_events["adduct_heavy_element_pre_event"] = self.set_heavy_element
+        self.registered_events["adduct_heavy_number_pre_event"] = self.set_heavy_number
+        self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
+
         self.debug = ""
+            
+
+
+    def reset_lipid(self, node):
+        self.level = LipidLevel.FULL_STRUCTURE
+        self.head_group = ""
+        self.lcb = None
+        self.fa_list = []
+        self.current_fa = None
+        self.adduct = None
+        self.db_position = 0
+        self.db_cistrans = ""
+        self.unspecified_ether = False
+        self.db_numbers = -1
+        self.headgroup_decorators = []
+        self.plasmalogen = ""
+        self.mediator_function = ""
+        self.mediator_function_positions = []
+        self.mediator_suffix = False
+        self.use_head_group = False
+        self.heavy_element = None
+        self.heavy_element_number = 0
 
         
         
@@ -135,10 +166,12 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         
+        
     def set_unstructured_mediator(self, node):
         self.head_group = node.get_text()
         self.use_head_group = True
         self.fa_list = []
+        
         
         
     def set_trivial_mediator(self, node):
@@ -278,23 +311,30 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.mediator_suffix = True
         
         
+        
     def set_mediator_tetranor(self, node):
         self.current_fa.num_carbon -= 4
     
+    
+    
     def set_mediator_carbon(self, node):
         self.current_fa.num_carbon += GoslinParserEventHandler.mediator_FA[node.get_text()]
+        
         
 
     def set_mediator_db(self, node):
         self.current_fa.double_bonds = GoslinParserEventHandler.mediator_DB[node.get_text()]
         
         
+        
     def set_mediator_function(self, node):
         self.mediator_function = node.get_text()
         
         
+        
     def set_mediator_function_position(self, node):
         self.mediator_function_positions.append(int(node.get_text()))
+        
         
         
     def add_mediator_function(self, node):
@@ -327,32 +367,25 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa.functional_groups[fg].append(functional_group)
         
         
+        
     def add_mediator_suffix(self, node):
         self.mediator_suffix = True
+        
+        
+        
+    def set_heavy_d_element(self, node):
+        self.adduct.heavy_elements[Element.H2] = 1
+        
+        
+        
+    def set_heavy_d_number(self, node):
+        self.adduct.heavy_elements[Element.H2] = int(node.get_text())
+        
         
         
     def add_mediator(self, node):
         if not self.mediator_suffix:
             if type(self.current_fa.double_bonds) == int: self.current_fa.double_bonds -= 1
-            
-
-    def reset_lipid(self, node):
-        self.level = LipidLevel.FULL_STRUCTURE
-        self.head_group = ""
-        self.lcb = None
-        self.fa_list = []
-        self.current_fa = None
-        self.adduct = None
-        self.db_position = 0
-        self.db_cistrans = ""
-        self.unspecified_ether = False
-        self.db_numbers = -1
-        self.headgroup_decorators = []
-        self.plasmalogen = ""
-        self.mediator_function = ""
-        self.mediator_function_positions = []
-        self.mediator_suffix = False
-        self.use_head_group = False
         
         
         
@@ -473,6 +506,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa = None
         
         
+        
     def new_lcb(self, node):
         self.lcb = FattyAcid("LCB")
         self.current_fa = self.lcb
@@ -520,6 +554,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.plasmalogen = ""
         
         
+        
     def add_old_hydroxyl(self, node):
         old_hydroxyl = node.get_text()
         
@@ -540,8 +575,10 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa.double_bonds = int(node.get_text())
         
         
+        
     def add_carbon(self, node):
         self.current_fa.num_carbon = int(node.get_text())
+        
         
         
     def add_hydroxyl(self, node):
@@ -556,17 +593,20 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa.functional_groups["OH"].append(functional_group)
         
         
+        
     def new_adduct(self, node):
-        self.adduct = Adduct("", "")
+        if self.adduct == None: self.adduct = Adduct("", "")
+        
         
         
     def add_adduct(self, node):
         self.adduct.adduct_string = node.get_text()
         
         
-    def add_charge(self, node):
         
+    def add_charge(self, node):
         self.adduct.charge = int (node.get_text())
+        
         
         
     def add_charge_sign(self, node):
@@ -574,6 +614,22 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         if sign == "+": self.adduct.set_charge_sign(1)
         if sign == "-": self.adduct.set_charge_sign(-1)
         if self.adduct.charge == 0: self.adduct.charge = 1
+        
+        
+        
+    def set_heavy_element(self, node):
+        self.heavy_element = heavy_element_table[node.get_text()]
+        self.heavy_element_number = 1
+        
+        
+        
+    def set_heavy_number(self, node):
+        self.heavy_element_number = int(node.get_text())
+        
+        
+        
+    def add_heavy_component(self, node):
+        self.adduct.heavy_elements[self.heavy_element] += self.heavy_element_number
         
         
         

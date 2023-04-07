@@ -50,9 +50,6 @@ from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.LipidClass import *
 
 
-heavy_element_table = {"[2]H": Element.H2, "[13]C": Element.C13, "[15]N": Element.N15, "[17]O": Element.O17, "[18]O": Element.O18, "[32]P": Element.P32, "[33]S": Element.S33, "[34]S": Element.S34}
-
-
 class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     def __init__(self):
@@ -178,6 +175,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
 
 
+
     def reset_lipid(self, node):
         self.level = LipidLevel.COMPLETE_STRUCTURE
         self.head_group = ""
@@ -191,18 +189,20 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.heavy_element = None
         self.heavy_element_number = 0
         
+        
     
     def set_sterol_definition(self, node):
         self.head_group += " " + node.get_text()
         self.fa_list = self.fa_list[1:]
+    
     
         
     def add_cycle_element(self, node):
         element = node.get_text()
         if element not in element_positions:
             raise LipidParsingException("Element '%s' unknown" % element);
-            
         self.tmp["fa%i" % len(self.current_fa)]["cycle_elements"].append(element_positions[element])
+        
         
         
     def set_acer(self, node):
@@ -210,6 +210,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         hgd = HeadgroupDecorator("decorator_acyl", suffix = True)
         hgd.functional_groups["decorator_acyl"] = [self.fa_list.pop()]
         self.headgroup_decorators.append(hgd)
+        
         
         
     def set_acer_species(self, node):
@@ -231,6 +232,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         carbohydrate_num = int(node.get_text())
         if len(self.headgroup_decorators) and carbohydrate_num > 0:
             self.headgroup_decorators[-1].count += (carbohydrate_num - 1)
+        
         
         
     def set_carbohydrate(self, node):
@@ -255,12 +257,15 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp["func_group_head"] = True
         
         
+        
     def set_carbohydrate_isomeric(self, node):
         self.tmp["func_group_head"] = True
         
         
+        
     def suffix_decorator_molecular(self, node):
         self.headgroup_decorators.append(HeadgroupDecorator(node.get_text(), suffix = True, level = LipidLevel.MOLECULAR_SPECIES))
+        
         
         
     def suffix_decorator_species(self, node):
@@ -273,12 +278,15 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.set_headgroup_name(node)
         
         
+        
     def set_ring_stereo(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_ring_stereo"] = node.get_text()
         
         
+        
     def set_lcb(self, node):
         self.fa_list[-1].set_type(LipidFaBondType.LCB_REGULAR)
+        
         
         
     def add_pl_species_data(self, node):
@@ -295,9 +303,11 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp["fa%i" % len(self.current_fa)] = {}
     
     
+    
     def new_lcb(self, node):
         self.new_fatty_acyl_chain(node)
         self.current_fa[-1].set_type(LipidFaBondType.LCB_REGULAR)
+        
         
         
     def add_fatty_acyl_chain(self, node):
@@ -359,6 +369,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
     def set_cistrans(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["db_cistrans"] = node.get_text()
+        
         
     
     def set_fatty_acyl_stereo(self, node):
@@ -527,21 +538,24 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
         
-        
     def set_cycle_start(self, node):
         self.current_fa[-1].start = int(node.get_text())
+        
         
         
     def set_cycle_end(self, node):
         self.current_fa[-1].end = int(node.get_text())
         
         
+        
     def set_cycle_number(self, node):
         self.current_fa[-1].cycle = int(node.get_text())
         
         
+        
     def set_cycle_db_count(self, node):
         self.current_fa[-1].double_bonds = int(node.get_text())
+    
     
     
     def set_cycle_db_positions(self, node):
@@ -549,14 +563,18 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa[-1].double_bonds = {}
     
     
+    
     def check_cycle_db_positions(self, node):
         if len(self.current_fa[-1].double_bonds) != self.tmp["fa%i" % len(self.current_fa)]["cycle_db"]:
             raise LipidException("Double bond number in cycle does not correspond to number of double bond positions.")
+    
+    
     
     def set_cycle_db_position(self, node):
         pos = int(node.get_text())
         self.current_fa[-1].double_bonds[pos] = ""
         self.tmp["fa%i" % len(self.current_fa)]["last_db_pos"] = pos
+        
         
         
     def set_cycle_db_position_cistrans(self, node):
@@ -572,18 +590,22 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = node.get_text()
         
     
+    
     def set_functional_group_count(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_cnt"] = int(node.get_text())
         
+    
     
     def set_functional_group_stereo(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_stereo"] = node.get_text()
         self.contains_stereo_information = True
         
         
+        
     def set_sn_position_func_group(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["fg_name"] = node.get_text()
         self.set_lipid_level(LipidLevel.SN_POSITION)
+        
         
         
     def add_functional_group(self, node):
@@ -622,6 +644,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa[-1].functional_groups[fg_name].append(functional_group)
         
         
+        
     def set_ether_type(self, node):
         ether_type = node.get_text()
         if ether_type == "O-": self.current_fa[-1].lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
@@ -650,6 +673,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa[-1].num_carbon = int(node.get_text())
       
       
+      
     def set_double_bond_count(self, node):
         self.tmp["fa%i" % len(self.current_fa)]["db_count"] = self.current_fa[-1].double_bonds = int(node.get_text())
         
@@ -668,16 +692,20 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.content = lipid
         
         
+        
     def new_adduct(self, node):
         if self.adduct == None: self.adduct = Adduct("", "")
+        
         
         
     def add_adduct(self, node):
         self.adduct.adduct_string = node.get_text()
         
         
+        
     def add_charge(self, node):
         self.adduct.charge = int(node.get_text())
+        
         
         
     def add_charge_sign(self, node):
@@ -686,12 +714,17 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         if sign == "-": self.adduct.set_charge_sign(-1)
         if self.adduct.charge == 0: self.adduct.charge = 1
         
+        
+        
     def set_heavy_element(self, node):
         self.heavy_element = heavy_element_table[node.get_text()]
+        self.heavy_element_number = 1
+        
         
         
     def set_heavy_number(self, node):
         self.heavy_element_number = int(node.get_text())
+        
         
         
     def add_heavy_component(self, node):

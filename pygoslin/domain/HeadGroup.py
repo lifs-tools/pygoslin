@@ -76,7 +76,7 @@ class HeadGroup:
         
     def get_elements(self):
         if self.use_headgroup:
-            raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
+            raise LipidException("Element table cannot be computed for lipid '%s'" % self.headgroup)
         
         dummy = FunctionalGroup("dummy", elements = all_lipids[self.lipid_class]["elements"])
         for hgd in self.decorators: dummy += hgd

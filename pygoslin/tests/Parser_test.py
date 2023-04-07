@@ -547,5 +547,9 @@ class ParserTest(unittest.TestCase):
                 lipidnames.append(Parser.split_string(line, ",", "\"")[0].strip("\""))
         
         for lipid_name in lipidnames:
-            lipid = lipid_parser.parse(lipid_name)
+            try:
+                lipid = lipid_parser.parse(lipid_name)
+            except Exception as e:
+                print("Lipid could not be parsed: '%s'" % lipid_name)
+                raise e
             assert lipid != None
