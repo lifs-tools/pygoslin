@@ -65,7 +65,7 @@ class Adduct:
     
     
     def get_heavy_isotope_string(self):
-        return "".join(["%s%i" % (heavy_shortcut[e], self.heavy_elements[e]) for e in element_order if self.heavy_elements[e] > 0])
+        return "".join(["%s%i" % (heavy_shortcut[e], self.heavy_elements[e]) if self.heavy_elements[e] > 1 else heavy_shortcut[e] for e in element_order if self.heavy_elements[e] > 0])
             
     
     
