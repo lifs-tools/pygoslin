@@ -106,6 +106,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
 
         ## set head group headgroup_decorators
         self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
+        self.registered_events["carbohydrate_sulfo_pre_event"] = self.set_carbohydrate
         self.registered_events["carbohydrate_structural_pre_event"] = self.set_carbohydrate_structural
         self.registered_events["carbohydrate_isomeric_pre_event"] = self.set_carbohydrate_isomeric
         
