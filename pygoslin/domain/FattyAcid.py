@@ -174,8 +174,11 @@ class FattyAcid(FunctionalGroup):
         # subtract the invisible [X] functional group for regular LCBs
         if self.lipid_FA_bond_type == LipidFaBondType.LCB_REGULAR and "O" in self.functional_groups:
             elements[Element.O] -= 1 
-            
         return elements
+    
+    
+    def num_oxygens(self):
+        return self.get_functional_group_elements()[Element.O]
     
     
 
