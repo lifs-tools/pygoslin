@@ -48,8 +48,8 @@ class HeadGroup:
         if level == LipidLevel.CATEGORY:
             return self.lipid_category.name
         
-        elif level == LipidLevel.CLASS:
-            return all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup
+        #elif level == LipidLevel.CLASS:
+        #    return all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup
         
         headgoup_string = [all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup]
                 
