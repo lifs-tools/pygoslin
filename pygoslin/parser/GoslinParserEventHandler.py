@@ -178,7 +178,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.head_group = "FA"
         mediator_name = node.get_text()
             
-        self.current_fa = resolve_fa_synonym(mediator_name)
+        self.current_fa = self.resolve_fa_synonym(mediator_name)
         self.fa_list = [self.current_fa]
         self.mediator_suffix = True
         

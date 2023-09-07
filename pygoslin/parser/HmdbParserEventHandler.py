@@ -144,7 +144,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
             
     
     def register_fa_synonym(self, node):
-        self.current_fa = resolve_fa_synonym(node.get_text())
+        self.current_fa = self.resolve_fa_synonym(node.get_text())
         
             
 

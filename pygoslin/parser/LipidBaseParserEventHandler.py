@@ -43,6 +43,7 @@ from pygoslin.domain.LipidMolecularSpecies import LipidMolecularSpecies
 from pygoslin.domain.LipidSpecies import LipidSpecies
 
 from pygoslin.domain.LipidExceptions import *
+from pygoslin.domain.Cycle import *
 
 
 glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
@@ -179,7 +180,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     
     
-    def resolve_fa_synonym(mediator_name):
+    def resolve_fa_synonym(self, mediator_name):
         
         if mediator_name == "Palmitic acid": # FA 16:0
             return FattyAcid("FA", 16)
