@@ -105,9 +105,9 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["carbohydrate_number_pre_event"] = self.set_carbohydrate_number
 
         ## set head group headgroup_decorators
-        self.registered_events["carbohydrate_pre_event"] = self.set_carbohydrate
-        self.registered_events["carbohydrate_sulfo_pre_event"] = self.set_carbohydrate
-        self.registered_events["carbohydrate_structural_pre_event"] = self.set_carbohydrate_structural
+        self.registered_events["carbohydrate_sn_pre_event"] = self.set_carbohydrate
+        self.registered_events["carbohydrate_iso_pre_event"] = self.set_carbohydrate
+        self.registered_events["carbohydrate_sn_position_pre_event"] = self.set_carbohydrate_sn_position
         self.registered_events["carbohydrate_isomeric_pre_event"] = self.set_carbohydrate_isomeric
         
         # fatty acyl events
@@ -174,7 +174,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["adduct_heavy_element_pre_event"] = self.set_heavy_element
         self.registered_events["adduct_heavy_number_pre_event"] = self.set_heavy_number
         self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
-
+        self.debug = ""
 
 
     def reset_lipid(self, node):
@@ -253,8 +253,8 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
         
         
-    def set_carbohydrate_structural(self, node):
-        self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
+    def set_carbohydrate_sn_position(self, node):
+        self.set_lipid_level(LipidLevel.SN_POSITION)
         self.tmp["func_group_head"] = True
         
         

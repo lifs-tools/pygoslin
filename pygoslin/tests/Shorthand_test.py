@@ -55,31 +55,31 @@ class ShorthandTest(unittest.TestCase):
         l = parser.parse("Gal-Cer(1) 18:1(5Z);3OH/24:0")
         self.assertEqual(l.get_lipid_string(), "Gal-Cer(1) 18:1(5Z);3OH/24:0")
         self.assertEqual(l.get_lipid_string(LipidLevel.STRUCTURE_DEFINED), "Gal-Cer 18:1(5);OH/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.SN_POSITION), "GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SN_POSITION), "HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "HexCer 42:1;O2")
         self.assertEqual(l.get_sum_formula(), "C48H93NO8")
         
         l = parser.parse("Gal-Cer 18:1(5);OH/24:0")
         self.assertEqual(l.get_lipid_string(), "Gal-Cer 18:1(5);OH/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.SN_POSITION), "GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SN_POSITION), "HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "HexCer 42:1;O2")
         self.assertEqual(l.get_sum_formula(), "C48H93NO8")
         
         l = parser.parse("GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(), "GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        self.assertEqual(l.get_lipid_string(), "HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "HexCer 42:1;O2")
         self.assertEqual(l.get_sum_formula(), "C48H93NO8")
         
-        l = parser.parse("GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(), "GalCer 18:1;O2/24:0")
-        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "GalCer 42:1;O2")
+        l = parser.parse("HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(), "HexCer 18:1;O2/24:0")
+        self.assertEqual(l.get_lipid_string(LipidLevel.SPECIES), "HexCer 42:1;O2")
         self.assertEqual(l.get_sum_formula(), "C48H93NO8")
         
         l = parser.parse("GalCer 42:1;O2")
-        self.assertEqual(l.get_lipid_string(), "GalCer 42:1;O2")
+        self.assertEqual(l.get_lipid_string(), "HexCer 42:1;O2")
         self.assertEqual(l.get_sum_formula(), "C48H93NO8")
         
         
@@ -181,9 +181,9 @@ class ShorthandTest(unittest.TestCase):
         parser = ShorthandParser()
         
         
-        
         levels = [LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION, LipidLevel.MOLECULAR_SPECIES, LipidLevel.SPECIES]
         for row in data:
+            
             lipid_name = row[0]
             lipid = parser.parse(lipid_name)
             formula = row[len(levels)] if len(row) > len(levels) else lipid.get_sum_formula()
@@ -206,8 +206,8 @@ class ShorthandTest(unittest.TestCase):
                     self.assertEqual(formula, lipid2.get_sum_formula(), "second test on lipid '%s' and level '%s'" % (n, lipid_level))
         
         
-        
-    def teest_performance(self):
+    """
+    def test_performance(self):
         cycles, parser = 50, ShorthandParser()
         length = 0
         
@@ -233,3 +233,4 @@ class ShorthandTest(unittest.TestCase):
         print("time elapsed: %f" % elapsed)
         print("lipid / second: %f" % (len(data) * cycles * 4 / elapsed))
         print("Avg. lipid name length: %f" % (length / (len(data) * cycles * 4)))
+    """

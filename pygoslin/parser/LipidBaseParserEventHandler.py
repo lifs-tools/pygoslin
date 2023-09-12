@@ -32,7 +32,7 @@ from pygoslin.domain.Adduct import Adduct
 
 from pygoslin.domain.LipidFaBondType import LipidFaBondType
 from pygoslin.domain.FattyAcid import FattyAcid
-from pygoslin.domain.HeadGroup import HeadGroup
+from pygoslin.domain.HeadGroup import HeadGroup, glyco_table
 from pygoslin.domain.FunctionalGroup import *
 
 from pygoslin.domain.LipidCompleteStructure import LipidCompleteStructure
@@ -45,25 +45,6 @@ from pygoslin.domain.LipidSpecies import LipidSpecies
 from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.Cycle import *
 
-
-glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
-               "ga2": ["GalNAc", "Gal", "Glc"],
-               "gb3": ["Gal", "Gal", "Glc"],
-               "gb4": ["GalNAc", "Gal", "Gal", "Glc"],
-               "gd1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gd1a": ["Hex", "Hex", "Hex", "HexNAc", "NeuAc", "NeuAc"],
-               "gd2": ["GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gd3": ["NeuAc", "NeuAc", "Gal", "Glc"],
-               "gm1": ["Gal", "GalNAc", "NeuAc", "Gal", "Glc"],
-               "gm2": ["GalNAc", "NeuAc", "Gal", "Glc"],
-               "gm3": ["NeuAc", "Gal", "Glc"],
-               "gm4": ["NeuAc", "Gal"],
-               "gp1": ["NeuAc", "NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gq1": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gt1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gt2": ["GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gt3": ["NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"]
-               }
 
 class LipidBaseParserEventHandler(BaseParserEventHandler):
     SP_EXCEPTION_CLASSES = set(all_lipids[get_class("Cer")]["synonyms"]) | set(all_lipids[get_class("SPB")]["synonyms"]) | set(["Cer"]) | set(["SPB"])
@@ -92,6 +73,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     def prepare_headgroup_and_checks(self):
         # checking if head group is a glyco-sphingolipid
+        """
         hg = self.head_group.lower()
         if hg in glyco_table:
             for carbohydrate in glyco_table[hg]:
@@ -103,7 +85,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
                 except Exception:
                     raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
             self.head_group = "Cer"
-        
+        """
         
         headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
         if self.use_head_group: return headgroup

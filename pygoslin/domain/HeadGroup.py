@@ -34,13 +34,46 @@ from pygoslin.domain.FunctionalGroup import *
 from pygoslin.domain.LipidFaBondType import *
 from pygoslin.domain.Element import Element
 
+glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
+               "ga2": ["GalNAc", "Gal", "Glc"],
+               "gb3": ["Gal", "Gal", "Glc"],
+               "gb4": ["GalNAc", "Gal", "Gal", "Glc"],
+               "gd1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gd1a": ["Hex", "Hex", "Hex", "HexNAc", "NeuAc", "NeuAc"],
+               "gd2": ["GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gd3": ["NeuAc", "NeuAc", "Gal", "Glc"],
+               "gm1": ["Gal", "GalNAc", "NeuAc", "Gal", "Glc"],
+               "gm2": ["GalNAc", "NeuAc", "Gal", "Glc"],
+               "gm3": ["NeuAc", "Gal", "Glc"],
+               "gm4": ["NeuAc", "Gal"],
+               "gp1": ["NeuAc", "NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gq1": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt2": ["GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt3": ["NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"]
+               }
+
 class HeadGroup:
     def __init__(self, headgroup, decorators = None, use_headgroup = False):
+        self.decorators = [d for d in decorators] if decorators != None else []
+        
+        # checking if head group is a glyco-sphingolipid
+        hg = headgroup.strip(" ").lower()
+        if hg in glyco_table and not use_headgroup:
+            for carbohydrate in glyco_table[hg]:
+                try:
+                    
+                    functional_group = get_functional_group(carbohydrate)
+                    functional_group.elements[Element.O] -= 1
+                    self.decorators.append(functional_group)
+                except Exception:
+                    raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
+            headgroup = "Cer"
+        
         self.headgroup = headgroup.strip(" ")
         self.lipid_category = get_category(self.headgroup)
         self.lipid_class = get_class(self.headgroup)
         self.use_headgroup = use_headgroup
-        self.decorators = [d for d in decorators] if decorators != None else []
         self.sp_exception = self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] in {"Cer", "SPB"} and len(self.decorators) == 0
         
         
@@ -48,24 +81,36 @@ class HeadGroup:
         if level == LipidLevel.CATEGORY:
             return self.lipid_category.name
         
-        #elif level == LipidLevel.CLASS:
-        #    return all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup
-        
         headgoup_string = [all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup]
+        prefix = []
                 
-        if level not in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED}:
-            decorators_tmp = [hgd.copy() for hgd in self.decorators if not hgd.suffix]
-            decorators_tmp.sort(key = lambda x: x.name)
-            for i in range(len(decorators_tmp) - 1, 0, - 1):
-                hge = decorators_tmp[i]
-                hge_before = decorators_tmp[i - 1]
-                if hge_before.name == hge.name:
-                    hge_before.count += hge.count
-                    decorators_tmp.pop(i)
-            prefix = [hgd.to_string(level) for hgd in decorators_tmp]
-            
-        else:
-            prefix = ["%s-" % hgd.to_string(level) for hgd in self.decorators if not hgd.suffix]
+        if len(self.decorators) > 0:
+            if level not in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED}:
+                decorators_sorted = []
+                for hgd in self.decorators:
+                    if hgd.suffix: continue
+                    
+                    hgd_copy = hgd.copy()
+                    if hgd_copy.name.find("Gal") > -1 or hgd_copy.name.find("Glc") > -1 or hgd_copy.name.find("S(3')") > -1:
+                        hgd_copy.name = hgd_copy.name.replace("Gal", "Hex").replace("Glc", "Hex").replace("S(3')", "S")
+                    decorators_sorted.append(hgd_copy)
+                
+                if len(decorators_sorted) > 0:
+                    decorators_sorted.sort(key = lambda x: x.name)
+                    name, rep = "", 0
+                    
+                    for hgd in decorators_sorted:
+                        if name != hgd.name:
+                            if rep > 1: prefix.append("%i" % rep)
+                            name, rep = hgd.name, hgd.count
+                            prefix.append(name)
+                        else:
+                            rep += hgd.count
+                        
+                    if rep > 1: prefix.append("%i" % rep)
+                
+            else:
+                prefix = ["%s-" % hgd.to_string(level) for hgd in self.decorators if not hgd.suffix]
             
         suffix = [hgd.to_string(level) for hgd in self.decorators if hgd.suffix]
         if level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE} and self.lipid_category == LipidCategory.SP and not self.sp_exception: suffix.append("(1)")
