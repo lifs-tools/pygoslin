@@ -59,6 +59,21 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         self.adduct = None
         self.headgroup_decorators = []
         self.use_head_group = False
+        
+        
+        
+    def check_full_structure(obj):
+        full = True
+        if type(obj) == FattyAcid and obj.num_carbon == 0: return True
+        if type(obj) == FattyAcid and type(obj.double_bonds) == int and obj.double_bonds > 0: return False
+        if type(obj) == FattyAcid and type(obj.double_bonds) == dict:
+            full &= len(obj.double_bonds) == sum(1 if (v in {"E", "Z"} or (v == '' and k == obj.num_carbon - 1)) else 0 for k, v in obj.double_bonds.items())
+        for fg_name in obj.functional_groups:
+            for fg in obj.functional_groups[fg_name]:
+                if fg.name == "X": continue
+                if fg.position < 0: return False
+                if obj.functional_groups != None: full &= LipidBaseParserEventHandler.check_full_structure(fg)
+        return full
     
     
     def set_lipid_level(self, level):
@@ -86,6 +101,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
                     raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
             self.head_group = "Cer"
         """
+        
         
         headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
         if self.use_head_group: return headgroup
@@ -115,6 +131,13 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
 
 
+        # check if all functional groups have a position to be full structure
+        if self.level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE}:
+            for fa in self.fa_list:
+                if not LipidBaseParserEventHandler.check_full_structure(fa):
+                    self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
+                    break
+                    
 
         if self.level == LipidLevel.SPECIES:
             if true_fa == 0 and poss_fa != 0:
@@ -167,10 +190,10 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         if mediator_name == "Palmitic acid": # FA 16:0
             return FattyAcid("FA", 16)
             
-        elif mediator_name == "Linoleic acid":
+        elif mediator_name in {"Linoleic acid", "LA"}:
             return FattyAcid("FA", 18, 2)
             
-        elif mediator_name == "AA":
+        elif mediator_name in {"Arachidonic acid", "AA"}:
             return FattyAcid("FA", 20, 4)
             
         elif mediator_name == "ALA":
@@ -189,7 +212,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             fg = {"OH": [f1, f2]}
             return FattyAcid("FA", 20, {6: "Z", 8: "E", 10: "E", 14: "Z"}, functional_groups = fg)
             
-        elif mediator_name == "Resolvin D3":
+        elif mediator_name in {"Resolvin D3", "RvD3"}:
             f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
             f1.position = 4
             f2.position = 11
@@ -197,7 +220,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             fg = {"OH": [f1, f2, f3]}
             return FattyAcid("FA", 22, 6, functional_groups = fg)
             
-        elif mediator_name == "Maresin 1":
+        elif mediator_name in {"Maresin 1", "Mar1"}:
             f1, f2 = get_functional_group("OH"), get_functional_group("OH")
             f1.position = 7
             f2.position = 14
@@ -298,6 +321,37 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             f2.position = 11
             fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 1, functional_groups = {"OH": [f2]})]}
             return FattyAcid("FA", 20, 2, functional_groups = fg)
+            
+        elif mediator_name == "PGF1alpha":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3]})]}
+            return FattyAcid("FA", 20, 1, functional_groups = fg)
+            
+        elif mediator_name == "PDX":
+            f1, f2 = get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 0
+            f2.position = 17
+            fg = {"OH": [f1, f2]}
+            return FattyAcid("FA", 22, 6, functional_groups = fg)
+            
+        elif mediator_name in {"Oleic acid", "OA"}:
+            return FattyAcid("FA", 18, 1)
+        
+        elif mediator_name == "DGLA":
+            return FattyAcid("FA", 20, 3)
+        
+        elif mediator_name == "iPF2alpha-VI":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 5
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3]})]}
+            return FattyAcid("FA", 20, 2, functional_groups = fg)
+        
+
             
         
         return None

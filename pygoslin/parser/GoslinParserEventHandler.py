@@ -178,7 +178,14 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.head_group = "FA"
         mediator_name = node.get_text()
             
+        self.tmp_fa = self.current_fa
         self.current_fa = self.resolve_fa_synonym(mediator_name)
+        if len(self.tmp_fa.functional_groups) > 0:
+            for fg_name, fg_list in self.tmp_fa.functional_groups.items():
+                for fg in fg_list:
+                    if fg_name not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg_name] = []
+                    self.current_fa.functional_groups[fg_name].append(fg)
+        
         self.fa_list = [self.current_fa]
         self.mediator_suffix = True
         
@@ -215,12 +222,16 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             functional_group, fg = get_functional_group("OH"), "OH"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function == "Oxo":
+        elif self.mediator_function.lower() == "oxo":
             functional_group, fg = get_functional_group("oxo"), "oxo"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
         elif self.mediator_function == "Hp":
             functional_group, fg = get_functional_group("OOH"), "OOH"
+            if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
+            
+        elif self.mediator_function == "NO2":
+            functional_group, fg = get_functional_group("NO2"), "NO2"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
         elif self.mediator_function in {"E", "Ep"}:
@@ -365,6 +376,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         oh_cnt = 1
         if self.head_group in {'Sa', 'So', 'S1P', 'Sa1P'}:
+            #self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
             functional_group = get_functional_group("OH").copy()
             if self.head_group in {'Sa', 'So'}:
                 self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.LCB_EXCEPTION

@@ -123,6 +123,7 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         self.furan = {}
         self.func_type = ""
         self.func_position = 0
+        self.update_functional_groups = []
         
         
     def register_suffix_type(self, node):
@@ -211,6 +212,12 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         
             
     def append_fa(self, node):
+        
+        if len(self.update_functional_groups) > 0:
+            for fg in self.update_functional_groups:
+                fg.position += self.current_fa.num_carbon
+            self.update_functional_groups = []
+        
         if type(self.current_fa.double_bonds) != int:
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
@@ -245,7 +252,8 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
     
     def add_methyl(self, node):
         functional_group = get_functional_group("Me").copy()
-        functional_group.position = self.current_fa.num_carbon - (1 if node.get_text() == "i-" else 2)
+        functional_group.position = -(1 if node.get_text() == "i-" else 2)
+        self.update_functional_groups.append(functional_group)
         self.current_fa.num_carbon -= 1
         if "Me" not in self.current_fa.functional_groups: self.current_fa.functional_groups["Me"] = []
         self.current_fa.functional_groups["Me"].append(functional_group)

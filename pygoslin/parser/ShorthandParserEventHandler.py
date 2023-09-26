@@ -541,6 +541,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
     def set_cycle_start(self, node):
         self.current_fa[-1].start = int(node.get_text())
+        self.current_fa[-1].position = int(node.get_text())
         
         
         

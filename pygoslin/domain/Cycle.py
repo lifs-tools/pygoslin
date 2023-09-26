@@ -35,7 +35,7 @@ class Cycle(FunctionalGroup):
         super().__init__("cy", functional_groups = functional_groups)
         self.count = 1
         self.cycle = cycle
-        self.position = start
+        self.position = start if type(start) == int else -1
         self.start = start
         self.end = end
         self.double_bonds = double_bonds if double_bonds != None else 0
@@ -81,7 +81,7 @@ class Cycle(FunctionalGroup):
         ## take back what's mine
         # check double bonds
         if type(parent.double_bonds) == dict and len(parent.double_bonds) > 0:
-            self.double_bonds = {db_pos: val for db_pos, val in parent.double_bonds.items() if self.start <= db_pos <= self.end}
+            self.double_bonds = {db_pos: val for db_pos, val in parent.double_bonds.items() if type(self.start) == int and type(self.end) == int and self.start <= db_pos <= self.end}
             
             for pos in self.double_bonds:
                 del parent.double_bonds[pos]
@@ -92,7 +92,7 @@ class Cycle(FunctionalGroup):
             remove_item = []
             
             for i, func_group in enumerate(fg_list):
-                if self.start <= func_group.position <= self.end and func_group != self:
+                if type(self.start) == int and type(self.end) == int and self.start <= func_group.position <= self.end and func_group != self:
                     if fg not in self.functional_groups: self.functional_groups[fg] = []
                     self.functional_groups[fg].append(func_group)
                     remove_item.append(i)
@@ -106,8 +106,8 @@ class Cycle(FunctionalGroup):
     
     def shift_positions(self, shift):
         super().shift_positions(shift)
-        self.start += shift
-        self.end += shift
+        if type(self.start) == int: self.start += shift
+        if type(self.end) == int: self.end += shift
         if type(self.double_bonds) == dict:
             self.double_bonds = {k + shift: v for k, v in self.double_bonds.items()}
         
