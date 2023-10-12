@@ -95,7 +95,6 @@ class LipidSpecies:
             raise LipidException("Element table cannot be computed for lipid level '%s'" % self.info.level)
         
         dummy = FunctionalGroup("dummy", elements = self.headgroup.get_elements())
-        
         dummy += self.info
         
         # since only one FA info is provided, we have to treat this single information as
