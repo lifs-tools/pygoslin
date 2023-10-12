@@ -82,6 +82,21 @@ class ShorthandTest(unittest.TestCase):
         self.assertEqual(l.get_lipid_string(), "HexCer 42:1;O2")
         self.assertEqual(l.get_sum_formula(), "C48H93NO8")
         
+        l = parser.parse("LSM 18:1;O2")
+        self.assertEqual(l.get_lipid_string(), "LSM 18:1;O2")
+        
+        l = parser.parse("LSM(1) 18:1(5Z);3OH")
+        self.assertEqual(l.get_lipid_string(), "LSM(1) 18:1(5Z);3OH")
+        
+        l = parser.parse("LHexCer 18:1;O2")
+        self.assertEqual(l.get_lipid_string(), "LHexCer 18:1;O2")
+        
+        l = parser.parse("LHexCer 18:1;O2/0:0")
+        self.assertEqual(l.get_lipid_string(), "LHexCer 18:1;O2")
+        
+        l = parser.parse("LHexCer(1) 18:1(5E);3OH/0:0")
+        self.assertEqual(l.get_lipid_string(), "LHexCer(1) 18:1(5E);3OH")
+        
         
         
         l = parser.parse("SPB 18:1(4Z);1OH,3OH")
