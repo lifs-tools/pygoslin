@@ -39,6 +39,7 @@ class LipidSpeciesInfo(FattyAcid):
         self.level = None
         self.num_ethers = 0
         self.num_specified_fa = 0
+        self.poss_fa = all_lipids[lipid_class]["poss_fa"]
         self.total_fa = all_lipids[lipid_class]["max_fa"]
         self.extended_class = LipidFaBondType.ESTER
         self.lipid_class = lipid_class

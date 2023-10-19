@@ -683,7 +683,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         
     def build_lipid(self, node):
         if self.acer_species: self.fa_list[0].num_carbon -= 2
-        headgroup = self.prepare_headgroup_and_checks()
+        headgroup = self.prepare_headgroup_and_checks(False)
         
         lipid = LipidAdduct()
         lipid.adduct = self.adduct

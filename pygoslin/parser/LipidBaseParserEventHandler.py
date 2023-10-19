@@ -86,7 +86,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     
     
-    def prepare_headgroup_and_checks(self):
+    def prepare_headgroup_and_checks(self, allow_class_shift = True):
         # checking if head group is a glyco-sphingolipid
         """
         hg = self.head_group.lower()
@@ -118,17 +118,19 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         # make lyso
         can_be_lyso = "Lyso" in all_lipids[get_class("L" + self.head_group)]["specials"] if get_class("L" + self.head_group) < len(all_lipids) else False
         
-        if (true_fa + 1 == poss_fa or true_fa + 2 == poss_fa) and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
-            if true_fa + 1 == poss_fa: self.head_group = "L" + self.head_group
-            else: self.head_group = "DL" + self.head_group
-            headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
-            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
-            
-        elif (true_fa + 1 == poss_fa or true_fa + 2 == poss_fa) and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GL and self.head_group == "TG":
-            if true_fa + 1 == poss_fa: self.head_group = "DG"
-            else: self.head_group = "MG"
-            headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
-            poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+        if allow_class_shift:
+            if (true_fa + 1 == poss_fa or true_fa + 2 == poss_fa) and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GP and can_be_lyso:
+                if true_fa + 1 == poss_fa: self.head_group = "L" + self.head_group
+                else: self.head_group = "DL" + self.head_group
+                headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
+                poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
+                 
+            elif (true_fa + 1 == poss_fa or true_fa + 2 == poss_fa) and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GL and self.head_group == "TG":
+                if true_fa + 1 == poss_fa: self.head_group = "DG"
+                else: self.head_group = "MG"
+                print(self.head_group)
+                headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
+                poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
 
 
         # check if all functional groups have a position to be full structure
@@ -143,7 +145,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             if true_fa == 0 and poss_fa != 0:
                 raise ConstraintViolationException("No fatty acyl information lipid class '%s' provided." % headgroup.headgroup)
             
-        elif true_fa != poss_fa and self.level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION, LipidLevel.MOLECULAR_SPECIES}:
+        elif true_fa > poss_fa and self.level in {LipidLevel.COMPLETE_STRUCTURE, LipidLevel.FULL_STRUCTURE, LipidLevel.STRUCTURE_DEFINED, LipidLevel.SN_POSITION, LipidLevel.MOLECULAR_SPECIES}:
             raise ConstraintViolationException("Number of specified fatty acyl chains (%i) not allowed for lipid class '%s' (having %i fatty aycl chains)." % (true_fa, headgroup.headgroup, poss_fa))
         
         elif "Lyso" in all_lipids[get_class(self.head_group)]["specials"] and true_fa > poss_fa:

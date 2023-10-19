@@ -38,6 +38,7 @@ class FattyAcid(FunctionalGroup):
         super().__init__(name, double_bonds = double_bonds, position = position, functional_groups = functional_groups)
         self.num_carbon = num_carbon
         self.lipid_FA_bond_type = lipid_FA_bond_type
+        self.unresolved_hidden_fa = False
         
         if lipid_FA_bond_type == LipidFaBondType.LCB_REGULAR: self.functional_groups["[X]"] = [get_functional_group("X")]
         
@@ -184,6 +185,11 @@ class FattyAcid(FunctionalGroup):
 
     def compute_elements(self):
         self.elements = {e: 0 for e in Element}
+        if self.unresolved_hidden_fa:
+            self.elements[Element.O] = 1
+            self.elements[Element.H] = -1
+            return self.elements
+        
         num_double_bonds = len(self.double_bonds) if type(self.double_bonds) != int else self.double_bonds
         if self.lipid_FA_bond_type == LipidFaBondType.ETHER_PLASMENYL: num_double_bonds += 1
         
