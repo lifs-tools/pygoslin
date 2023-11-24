@@ -87,6 +87,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["gl_hg_glycosyl_double_pre_event"] = self.set_headgroup_name
         self.registered_events["gl_hg_triple_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_single_pre_event"] = self.set_headgroup_name
+        self.registered_events["pl_cpa_head_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_double_pre_event"] = self.set_headgroup_name
         self.registered_events["pl_hg_quadro_pre_event"] = self.set_headgroup_name
         self.registered_events["sl_hg_single_pre_event"] = self.set_headgroup_name

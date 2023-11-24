@@ -51,6 +51,10 @@ class ShorthandTest(unittest.TestCase):
         self.assertEqual(l.get_sum_formula(), "C42H83NO3")
         
         
+        l = parser.parse("cLPA 18:0")
+        self.assertEqual(l.get_lipid_string(), "CPA 18:0")
+        self.assertEqual(l.get_sum_formula(), "C21H41O6P")
+        
         
         l = parser.parse("Gal-Cer(1) 18:1(5Z);3OH/24:0")
         self.assertEqual(l.get_lipid_string(), "Gal-Cer(1) 18:1(5Z);3OH/24:0")

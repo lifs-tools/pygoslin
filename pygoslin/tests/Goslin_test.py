@@ -95,6 +95,12 @@ class GoslinTest(unittest.TestCase):
         self.assertEqual(l.get_sum_formula(), "C40H77N2O7P")
     
     
+        l = parser.parse("13-oxoODE")
+        self.assertEqual(l.get_lipid_string(LipidLevel.MOLECULAR_SPECIES), "FA 18:3;O")
+        self.assertEqual(l.get_sum_formula(), "C18H30O3")
+        
+        
+    
     
     def test_parser(self):
         lipidnames = []
