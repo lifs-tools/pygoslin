@@ -156,7 +156,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.use_head_group = False
         self.heavy_element = None
         self.heavy_element_number = 0
-
+        self.trivial_mediator = False
         
         
     def set_mediator(self, node):
@@ -197,6 +197,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
     
     
     def set_mediator_carbon(self, node):
+        self.trivial_mediator = True
         self.current_fa.num_carbon += GoslinParserEventHandler.mediator_FA[node.get_text()]
         
         
@@ -226,7 +227,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             functional_group, fg = get_functional_group("oxo"), "oxo"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function == "Hp":
+        elif self.mediator_function.lower() == "hp":
             functional_group, fg = get_functional_group("OOH"), "OOH"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
@@ -234,7 +235,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             functional_group, fg = get_functional_group("NO2"), "NO2"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function in {"E", "Ep"}:
+        elif self.mediator_function in {"E", "Ep", "EP"}:
             functional_group, fg = get_functional_group("Ep"), "Ep"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
@@ -246,8 +247,9 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
                 functional_group2.position = self.mediator_function_positions[1]
                 self.current_fa.functional_groups["OH"] = [functional_group2]
             
-        if fg not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg] = []
-        self.current_fa.functional_groups[fg].append(functional_group)
+        if functional_group != None:
+            if fg not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg] = []
+            self.current_fa.functional_groups[fg].append(functional_group)
         
         
         
