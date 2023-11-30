@@ -87,21 +87,6 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     
     def prepare_headgroup_and_checks(self, allow_class_shift = True):
-        # checking if head group is a glyco-sphingolipid
-        """
-        hg = self.head_group.lower()
-        if hg in glyco_table:
-            for carbohydrate in glyco_table[hg]:
-                try:
-                    
-                    functional_group = get_functional_group(carbohydrate)
-                    functional_group.elements[Element.O] -= 1
-                    self.headgroup_decorators.append(functional_group)
-                except Exception:
-                    raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
-            self.head_group = "Cer"
-        """
-        
         
         headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
         if self.use_head_group: return headgroup

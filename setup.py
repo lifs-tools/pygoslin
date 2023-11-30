@@ -63,6 +63,6 @@ setup(
     python_requires = '>=3.5',
     include_package_data = True,
     package_data = {
-        '': ['data/goslin/*.g4', 'data/goslin/*.G4', 'data/goslin/lipid-list.csv', 'data/goslin/functional-groups.csv'],
+        '': ['data/goslin/*.g4', 'data/goslin/*.G4', 'data/goslin/lipid-list.csv', 'data/goslin/functional-groups.csv', 'data/goslin/trivial_mediators.csv'],
     }
 )

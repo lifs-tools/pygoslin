@@ -420,8 +420,13 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         if self.plasmalogen != "" and self.lcb == None and len(self.fa_list) > 0:
             self.fa_list[0].lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL if self.plasmalogen == "O" else LipidFaBondType.ETHER_PLASMENYL
         
+        
         headgroup = self.prepare_headgroup_and_checks()
-
+        
+        if self.trivial_mediator and node.get_text() in trivial_mediators:
+            self.fa_list[0].double_bonds = {p: "" for p in trivial_mediators[node.get_text()]}
+            self.level = LipidLevel.FULL_STRUCTURE
+            
         lipid = LipidAdduct()
         lipid.adduct = self.adduct
         lipid.lipid = self.assemble_lipid(headgroup)
@@ -518,4 +523,11 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.adduct.heavy_elements[self.heavy_element] += self.heavy_element_number
         
         
-        
+trivial_mediators = {}
+tm_dir_name = path.dirname(pygoslin.__file__)
+tm_file_name = path.join(tm_dir_name, "data", "goslin", "trivial_mediators.csv")
+with open(tm_file_name, mode = "rt", encoding= "utf-8") as tm_infile:
+    for line in tm_infile:
+        tokens = line.strip().split("\t")
+        if len(tokens) != 2: continue
+        trivial_mediators[tokens[0]] = [int(p) for p in tokens[1].split(",")]

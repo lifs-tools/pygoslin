@@ -180,7 +180,7 @@ mediator_functional_group_clear: mediator_full_function | mediator_function_unkn
 mediator_function_unknown_pos : mediator_functions;
 mediator_functions : mediator_mono_functions | mediator_di_functions;
 mediator_mono_functions: 'H' | 'Oxo' | 'oxo' | 'OXO' | 'Hp' | 'HP' | 'NO2';
-mediator_di_functions: 'E' | 'Ep' | 'DH' | 'DiH' | 'diH';
+mediator_di_functions: 'E' | 'Ep' | 'EP' | 'DH' | 'DiH' | 'diH';
 mediator_full_function : mediator_position_group '-' mediator_mono_functions | mediator_di_pos '-' mediator_di_functions;
 mediator_di_pos: mediator_position_group ',' mediator_position_group | mediator_position_group '_' mediator_position_group | mediator_position_group '(' mediator_position_group ')';
 mediator_position_group : mediator_position | mediator_position mediator_position_isotope | mediator_position '(' mediator_position_isotope ')';
