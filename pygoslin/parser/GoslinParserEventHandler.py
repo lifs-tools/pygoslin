@@ -48,8 +48,8 @@ from pygoslin.domain.LipidExceptions import *
 
 class GoslinParserEventHandler(LipidBaseParserEventHandler):
     
-    mediator_FA = {'H': 17, 'O': 18, 'E': 20, 'Do': 22}
-    mediator_DB = {'M': 1, 'D': 2, 'Tr': 3, 'T': 4, 'P': 5, 'H': 6}
+    mediator_FA = {'H': 17, 'O': 18, 'E': 20, 'Do': 22, 'D': 22}
+    mediator_DB = {'M': 1, 'D': 2, 'Tr': 3, 'tr': 3, 'T': 4, 'P': 5, 'H': 6}
     
     def __init__(self):
         super().__init__()
@@ -119,6 +119,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["mediator_db_pre_event"] = self.set_mediator_db
         self.registered_events["mediator_mono_functions_pre_event"] = self.set_mediator_function
         self.registered_events["mediator_di_functions_pre_event"] = self.set_mediator_function
+        self.registered_events["mediator_tri_functions_pre_event"] = self.set_mediator_function
         self.registered_events["mediator_position_pre_event"] = self.set_mediator_function_position
         self.registered_events["mediator_functional_group_post_event"] = self.add_mediator_function
         self.registered_events["mediator_suffix_pre_event"] = self.add_mediator_suffix
@@ -219,11 +220,11 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
     def add_mediator_function(self, node):
         functional_group, fg = None, ""
-        if self.mediator_function == "H":
+        if self.mediator_function in {"H", "hydroxy"}:
             functional_group, fg = get_functional_group("OH"), "OH"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function.lower() == "oxo":
+        elif self.mediator_function.lower() == "oxo" or self.mediator_function.lower() == "k":
             functional_group, fg = get_functional_group("oxo"), "oxo"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
@@ -241,11 +242,22 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             
         elif self.mediator_function in {"DH", "DiH", 'diH'}:
             functional_group, fg = get_functional_group("OH"), "OH"
-            if len(self.mediator_function_positions) > 0:
+            if len(self.mediator_function_positions) >= 2:
                 functional_group.position = self.mediator_function_positions[0]
                 functional_group2 = get_functional_group("OH")
                 functional_group2.position = self.mediator_function_positions[1]
                 self.current_fa.functional_groups["OH"] = [functional_group2]
+            
+        elif self.mediator_function in {'triH', 'trihydroxy'}:
+            functional_group, fg = get_functional_group("OH"), "OH"
+            if len(self.mediator_function_positions) >= 3:
+                functional_group.position = self.mediator_function_positions[0]
+                functional_group2 = get_functional_group("OH")
+                functional_group2.position = self.mediator_function_positions[1]
+                self.current_fa.functional_groups["OH"] = [functional_group2]
+                functional_group3 = get_functional_group("OH")
+                functional_group3.position = self.mediator_function_positions[2]
+                self.current_fa.functional_groups["OH"] = [functional_group2, functional_group3]
             
         if functional_group != None:
             if fg not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg] = []
