@@ -134,6 +134,10 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["adduct_heavy_number_pre_event"] = self.set_heavy_number
         self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
 
+        self.registered_events["prostaglandin_post_event"] = self.add_prostaglandin
+        self.registered_events["prostaglandin_type_pre_event"] = self.set_prostaglandin_type
+        self.registered_events["prostaglandin_number_pre_event"] = self.set_prostaglandin_number
+
         self.debug = ""
             
 
@@ -158,13 +162,82 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.heavy_element = None
         self.heavy_element_number = 0
         self.trivial_mediator = False
+        self.prostaglandin = {"type": "", "number": ""}
+        
+        
+        
+    def add_prostaglandin(self, node):
+        if self.prostaglandin["type"] not in {"B", "D", "E", "F", "J"} or self.prostaglandin["number"] not in {"1", "2", "3"}: return
+    
+        db = {}
+        tmp_fa = self.current_fa
+        if self.prostaglandin["number"] == "1": db = {13: "E"}
+        elif self.prostaglandin["number"] == "2": db = {5: "Z", 13: "E"}
+        elif self.prostaglandin["number"] == "3": db = {5: "Z", 13: "E", 17: "Z"}
+            
+        if self.prostaglandin["type"] == "B":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo")
+            f1.position = 15
+            f2.position = 9
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"oxo": [f2]})]}
+            self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
+            
+        elif self.prostaglandin["type"] == "D":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("oxo")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2], "oxo": [f3]})]}
+            self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
+        
+        elif self.prostaglandin["type"] == "E":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f3], "oxo": [f2]})]}
+            self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
+            
+        elif self.prostaglandin["type"] == "F":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3]})]}
+            self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
+        
+        
+        elif self.prostaglandin["type"] == "J":
+            f1, f2 = get_functional_group("OH"), get_functional_group("oxo")
+            f1.position = 15
+            f2.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 1, functional_groups = {"OH": [f2]})]}
+            self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
+            
+        else:
+            return
+        
+        self.clean_mediator(tmp_fa)
+        self.fa_list = [self.current_fa]
+        self.mediator_suffix = True
+        self.prostaglandin = {"type": "", "number": ""}
+        
+        
+        
+    def set_prostaglandin_type(self, node):
+        self.prostaglandin["type"] = node.get_text()
+        
+        
+        
+    def set_prostaglandin_number(self, node):
+        self.prostaglandin["number"] = node.get_text()
+        
         
         
     def set_mediator(self, node):
         self.head_group = "FA"
         self.current_fa = FattyAcid("FA")
         self.fa_list.append(self.current_fa)
-        self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         
         
@@ -174,21 +247,53 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.fa_list = []
         
         
+    def remove_deoxy(self, functional_groups):
+        if "d" in functional_groups: del functional_groups["d"]
+        for fg_name, fg_list in functional_groups.items():
+            for fg in fg_list:
+                self.remove_deoxy(fg.functional_groups)
+        
+        
+    def clean_mediator(self, tmp_fa):
+        if len(tmp_fa.functional_groups) > 0:
+            for fg_name, fg_list in tmp_fa.functional_groups.items():
+                for fg in fg_list:
+                    if fg.position >= -1:
+                        # erase prevously added functional group, if findable
+                        def recursive_deletion(fg_name, fg, functional_groups):
+                            for fg_name_curr, fg_list_curr in functional_groups.items():
+                                del_fg = [i for i, fg_curr in enumerate(fg_list_curr) if fg_curr.position == fg.position]
+                                if len(del_fg) > 0:
+                                    for i in del_fg[::-1]: fg_list_curr.pop(i)
+                                    if fg_name not in functional_groups: functional_groups[fg_name] = []
+                                    functional_groups[fg_name].append(fg)
+                                    return True
+                                
+                                for fg_curr in fg_list_curr:
+                                    if recursive_deletion(fg_name, fg, fg_curr.functional_groups): break
+                        if not recursive_deletion(fg_name, fg, self.current_fa.functional_groups):
+                            if fg_name not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg_name] = []
+                            self.current_fa.functional_groups[fg_name].append(fg)
+                                    
+                    else:
+                        if fg_name not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg_name] = []
+                        self.current_fa.functional_groups[fg_name].append(fg)
+        
+        self.remove_deoxy(self.current_fa.functional_groups)
+        
         
     def set_trivial_mediator(self, node):
         self.head_group = "FA"
         mediator_name = node.get_text()
             
-        self.tmp_fa = self.current_fa
+        tmp_fa = self.current_fa
         self.current_fa = self.resolve_fa_synonym(mediator_name)
-        if len(self.tmp_fa.functional_groups) > 0:
-            for fg_name, fg_list in self.tmp_fa.functional_groups.items():
-                for fg in fg_list:
-                    if fg_name not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg_name] = []
-                    self.current_fa.functional_groups[fg_name].append(fg)
-        
+        self.clean_mediator(tmp_fa)
         self.fa_list = [self.current_fa]
         self.mediator_suffix = True
+        
+        
+            
         
         
         
@@ -224,7 +329,12 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             functional_group, fg = get_functional_group("OH"), "OH"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function.lower() == "oxo" or self.mediator_function.lower() == "k":
+        elif self.mediator_function.lower() in {"d", "deoxy"}:
+            functional_group, fg = get_functional_group("d"), "d"
+            if len(self.mediator_function_positions) == 0: functional = None
+            else: functional_group.position = self.mediator_function_positions[0]
+            
+        elif self.mediator_function.lower() in {"oxo", "k", "keto"}:
             functional_group, fg = get_functional_group("oxo"), "oxo"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
@@ -240,7 +350,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             functional_group, fg = get_functional_group("Ep"), "Ep"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function in {"DH", "DiH", 'diH'}:
+        elif self.mediator_function.lower() in {"dh", "dih", "dihydro"}:
             functional_group, fg = get_functional_group("OH"), "OH"
             if len(self.mediator_function_positions) >= 2:
                 functional_group.position = self.mediator_function_positions[0]
@@ -258,12 +368,12 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
                 functional_group3 = get_functional_group("OH")
                 functional_group3.position = self.mediator_function_positions[2]
                 self.current_fa.functional_groups["OH"] = [functional_group2, functional_group3]
-            
         if functional_group != None:
             if fg not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg] = []
             self.current_fa.functional_groups[fg].append(functional_group)
         
-        
+        self.mediator_function_positions = []
+        self.mediator_function = ""
         
     def add_mediator_suffix(self, node):
         self.mediator_suffix = True
@@ -384,8 +494,8 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         if self.level in {LipidLevel.SN_POSITION, LipidLevel.STRUCTURE_DEFINED, LipidLevel.FULL_STRUCTURE, LipidLevel.COMPLETE_STRUCTURE}:
             self.current_fa.position = len(self.fa_list) + 1
-            
-            
+        
+        self.remove_deoxy(self.current_fa.functional_groups)    
         self.fa_list.append(self.current_fa)
         
         oh_cnt = 1

@@ -113,7 +113,6 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             elif (true_fa + 1 == poss_fa or true_fa + 2 == poss_fa) and self.level != LipidLevel.SPECIES and headgroup.lipid_category == LipidCategory.GL and self.head_group == "TG":
                 if true_fa + 1 == poss_fa: self.head_group = "DG"
                 else: self.head_group = "MG"
-                print(self.head_group)
                 headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
                 poss_fa = all_lipids[headgroup.lipid_class]["poss_fa"] if headgroup.lipid_class < len(all_lipids) else 0
 
@@ -264,7 +263,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3], "oxy": [f4]})]}
             return FattyAcid("FA", 20, {5: "Z", 13: "E", 17: "Z"}, functional_groups = fg)
             
-        elif mediator_name == "PGF2alpha":
+        elif mediator_name in {"PGF2alpha", "PGF2-alpha", "PGF2 alpha"}:
             f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
             f1.position = 15
             f2.position = 9
@@ -309,7 +308,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
             fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 1, functional_groups = {"OH": [f2]})]}
             return FattyAcid("FA", 20, {5: "Z", 13: "E"}, functional_groups = fg)
             
-        elif mediator_name == "PGF1alpha":
+        elif mediator_name in {"PGF1alpha", "PGF1-alpha", "PGF1 alpha"}:
             f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
             f1.position = 15
             f2.position = 9
@@ -330,13 +329,29 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         elif mediator_name == "DGLA":
             return FattyAcid("FA", 20, {8: "Z", 11: "Z", 14: "Z"})
         
-        elif mediator_name == "iPF2alpha-VI":
-            f1, f2, f3 = get_functional_group("OH"), get_functional_group("OH"), get_functional_group("OH")
+        elif mediator_name in {"iPF2alpha-VI", "iPF2-alpha-VI", "iPF2 alpha-VI"}:
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo"), get_functional_group("OH")
             f1.position = 5
             f2.position = 9
             f3.position = 11
-            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f2, f3]})]}
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"oxo": [f2], "OH": [f3]})]}
             return FattyAcid("FA", 20, {6: "E", 14: "Z"}, functional_groups = fg)
+            
+        elif mediator_name == "PGE1":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f3], "oxo": [f2]})]}
+            return FattyAcid("FA", 20, {13: "E"}, functional_groups = fg)
+            
+        elif mediator_name == "PGE3":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo"), get_functional_group("OH")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"OH": [f3], "oxo": [f2]})]}
+            return FattyAcid("FA", 20, {5: "Z", 13: "E", 17: "Z"}, functional_groups = fg)
         
 
             
