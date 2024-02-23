@@ -179,7 +179,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         elif mediator_name in {"Linoleic acid", "LA"}:
             return FattyAcid("FA", 18, {9: "Z", 12: "Z"})
             
-        elif mediator_name in {"Arachidonic acid", "AA"}:
+        elif mediator_name in {"Arachidonic acid", "AA", "ARA"}:
             return FattyAcid("FA", 20, {5: "Z", 8: "Z", 11: "Z", 14: "Z"})
             
         elif mediator_name == "ALA":

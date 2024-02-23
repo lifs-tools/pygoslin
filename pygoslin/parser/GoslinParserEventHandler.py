@@ -270,7 +270,9 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
                                     return True
                                 
                                 for fg_curr in fg_list_curr:
-                                    if recursive_deletion(fg_name, fg, fg_curr.functional_groups): break
+                                    if recursive_deletion(fg_name, fg, fg_curr.functional_groups): return True
+                            return False
+                                
                         if not recursive_deletion(fg_name, fg, self.current_fa.functional_groups):
                             if fg_name not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg_name] = []
                             self.current_fa.functional_groups[fg_name].append(fg)
@@ -482,7 +484,6 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
             
     def append_fa(self, node):
-        
         if type(self.current_fa.double_bonds) != int:
             if self.db_numbers > -1 and self.db_numbers != len(self.current_fa.double_bonds):
                 raise LipidException("Double bond count does not match with number of double bond positions")
