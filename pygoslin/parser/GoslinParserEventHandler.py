@@ -167,7 +167,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         
     def add_prostaglandin(self, node):
-        if self.prostaglandin["type"] not in {"B", "D", "E", "F", "J"} or self.prostaglandin["number"] not in {"1", "2", "3"}: return
+        if self.prostaglandin["type"] not in {"B", "D", "E", "F", "J", "K"} or self.prostaglandin["number"] not in {"1", "2", "3"}: return
     
         db = {}
         tmp_fa = self.current_fa
@@ -212,6 +212,14 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             f1.position = 15
             f2.position = 11
             fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 1, functional_groups = {"OH": [f2]})]}
+            self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
+            
+        elif self.prostaglandin["type"] == "K":
+            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo"), get_functional_group("oxo")
+            f1.position = 15
+            f2.position = 9
+            f3.position = 11
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"oxo": [f2, f3]})]}
             self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
             
         else:
@@ -352,24 +360,31 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
             functional_group, fg = get_functional_group("Ep"), "Ep"
             if len(self.mediator_function_positions) > 0: functional_group.position = self.mediator_function_positions[0]
             
-        elif self.mediator_function.lower() in {"dh", "dih", "dihydro"}:
+        elif self.mediator_function.lower() in {"dh", "dih", "dihydro", 'dh'}:
             functional_group, fg = get_functional_group("OH"), "OH"
             if len(self.mediator_function_positions) >= 2:
                 functional_group.position = self.mediator_function_positions[0]
                 functional_group2 = get_functional_group("OH")
                 functional_group2.position = self.mediator_function_positions[1]
-                self.current_fa.functional_groups["OH"] = [functional_group2]
+                if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+                self.current_fa.functional_groups["OH"].append(functional_group2)
+            else:
+                functional_group.count = 2
             
-        elif self.mediator_function in {'triH', 'trihydroxy'}:
+        elif self.mediator_function.lower() in {'trih', 'trihydroxy'}:
             functional_group, fg = get_functional_group("OH"), "OH"
             if len(self.mediator_function_positions) >= 3:
                 functional_group.position = self.mediator_function_positions[0]
                 functional_group2 = get_functional_group("OH")
                 functional_group2.position = self.mediator_function_positions[1]
-                self.current_fa.functional_groups["OH"] = [functional_group2]
                 functional_group3 = get_functional_group("OH")
                 functional_group3.position = self.mediator_function_positions[2]
-                self.current_fa.functional_groups["OH"] = [functional_group2, functional_group3]
+                if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+                self.current_fa.functional_groups["OH"].append(functional_group2)
+                self.current_fa.functional_groups["OH"].append(functional_group3)
+            else:
+                functional_group.count = 3
+                
         if functional_group != None:
             if fg not in self.current_fa.functional_groups: self.current_fa.functional_groups[fg] = []
             self.current_fa.functional_groups[fg].append(functional_group)
