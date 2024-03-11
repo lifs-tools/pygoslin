@@ -101,6 +101,8 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["lcb_post_event"] = self.clean_lcb
         self.registered_events["fa_pre_event"] = self.new_fa
         self.registered_events["fa_post_event"] = self.append_fa
+        self.registered_events["c_type_pre_event"] = self.c_type
+        self.registered_events["c_type_post_event"] = self.append_fa
         
         self.registered_events["db_single_position_pre_event"] = self.set_isomeric_level
         self.registered_events["db_single_position_post_event"] = self.add_db_position
@@ -130,6 +132,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["isotope_number_pre_event"] = self.set_heavy_number
         
         self.registered_events["sphinga_pre_event"] = self.new_sphinga
+        self.registered_events["hg_lsl_pure_pre_event"] = self.new_sph
         self.registered_events["sphinga_phospho_pre_event"] = self.add_phospho
         self.registered_events["sphinga_suffix_pre_event"] = self.sphinga_db_set
         self.registered_events["sphinga_lcb_len_pre_event"] = self.add_carbon_pre_len
@@ -194,11 +197,31 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         elif self.sphinga_suffix == 'adienine': self.lcb_db_pre_set = 2
         
         
+    def c_type(self, node):
+        if self.head_group.lower == "sph":
+            self.new_sphinga_pure(node)
+        else:
+            self.sphinga_pure = True
+            self.lcb_hydro_pre_set = [get_functional_group("OH")]
+            self.lcb_hydro_pre_set[0].position = 3
+            self.new_lcb(node)
+        self.clean_lcb(node)
+        self.new_fa(node)
         
         
     def new_sphinga(self, node):
         self.head_group = "SPB"
         
+        
+    def new_sph(self, node):
+        if self.head_group.lower == "sph":
+            self.new_sphinga_pure(node)
+        else:
+            self.sphinga_pure = True
+            self.lcb_hydro_pre_set = [get_functional_group("OH")]
+            self.lcb_hydro_pre_set[0].position = 3
+            self.new_lcb(node)
+        self.clean_lcb(node)
         
         
     def new_sphinga_pure(self, node):
