@@ -198,7 +198,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def c_type(self, node):
-        if self.head_group.lower == "sph":
+        if self.head_group == "Cer":
             self.new_sphinga_pure(node)
         else:
             self.sphinga_pure = True
@@ -214,7 +214,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def new_sph(self, node):
-        if self.head_group.lower == "sph":
+        if self.head_group.lower() == "sph":
             self.new_sphinga_pure(node)
         else:
             self.sphinga_pure = True
