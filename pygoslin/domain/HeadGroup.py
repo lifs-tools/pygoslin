@@ -56,6 +56,11 @@ glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
 class HeadGroup:
     def __init__(self, headgroup, decorators = None, use_headgroup = False):
         self.decorators = [d for d in decorators] if decorators != None else []
+        self.parsed_headgroup = get_class(headgroup)
+        if self.parsed_headgroup == UNDEFINED_LIPID_CLASS:
+            self.parsed_headgroup = headgroup
+        else:
+            self.parsed_headgroup = all_lipids[self.parsed_headgroup]["name"]
         
         # checking if head group is a glyco-sphingolipid
         hg = headgroup.strip(" ").lower()

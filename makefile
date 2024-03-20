@@ -22,10 +22,10 @@ build:
 	python3 -m build --sdist
 	
 uploadtest:
-	python3 -m twine upload --repository testpypi dist/*
+	python3 -m twine upload --repository testpypi dist/* -u __token__ -p PERSONAL_TOKEN
 	
 upload:
-	python3 -m twine upload dist/*
+	python3 -m twine upload dist/* -u __token__ -p PERSONAL_TOKEN
 
 # upload to pypi:
 # distclean
