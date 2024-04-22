@@ -166,7 +166,8 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         
 
     def set_head_group_name(self, node):
-        self.head_group = node.get_text()
+        hg = node.get_text()
+        self.head_group = hg if hg != "CER" else "Cer"
         
         
         
