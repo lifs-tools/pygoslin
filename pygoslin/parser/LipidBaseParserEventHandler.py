@@ -123,6 +123,12 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
                 if not LipidBaseParserEventHandler.check_full_structure(fa):
                     self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
                     break
+                
+                
+        if self.level == LipidLevel.MOLECULAR_SPECIES and headgroup.lipid_category == LipidCategory.GP and len(self.fa_list) == 2 and sum(fa.lipid_FA_bond_type == LipidFaBondType.ESTER for fa in self.fa_list) < 2:
+            self.level = LipidLevel.SN_POSITION
+            if self.fa_list[0].lipid_FA_bond_type == LipidFaBondType.ESTER:
+                self.fa_list[0], self.fa_list[1] = self.fa_list[1], self.fa_list[0]
                     
 
         if self.level == LipidLevel.SPECIES:
@@ -151,7 +157,6 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     
     def assemble_lipid(self, headgroup):
-        
         for fa in self.fa_list:
             if fa.stereo_information_missing():
                 self.set_lipid_level(LipidLevel.FULL_STRUCTURE)

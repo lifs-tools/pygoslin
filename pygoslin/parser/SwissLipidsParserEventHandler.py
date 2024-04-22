@@ -64,6 +64,7 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["charge_sign_pre_event"] = self.add_charge_sign
         
         self.registered_events["pl_hg_pre_event"] = self.set_head_group_name
+        self.registered_events["gl_hg_tg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_three_hg_pre_event"] = self.set_head_group_name
         self.registered_events["pl_four_hg_pre_event"] = self.set_head_group_name
         self.registered_events["sl_hg_pre_event"] = self.set_head_group_name
@@ -77,6 +78,7 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["fa2_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa3_unsorted_pre_event"] = self.set_molecular_level
         self.registered_events["fa4_unsorted_pre_event"] = self.set_molecular_level
+        self.registered_events["lcb_18_1_fa_pre_event"] = self.set_lcb_18_1
         
         self.registered_events["st_species_fa_post_event"] = self.set_species_fa
         self.registered_events["pl_three_post_event"] = self.set_nape
@@ -97,6 +99,7 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["db_count_pre_event"] = self.add_double_bonds
         self.registered_events["carbon_pre_event"] = self.add_carbon
         self.registered_events["fa_lcb_suffix_number_pre_event"] = self.add_suffix_number
+        self.registered_events["gl_half_sub_fa_pre_event"] = self.gl_half_sub_fa
         
         self.debug = ""
         
@@ -114,6 +117,7 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         self.db_numbers = -1
         self.headgroup_decorators = []
         self.suffix_number = -1
+        self.fa_suffix_molecular = False
         
 
     def add_db_position(self, node):
@@ -125,12 +129,27 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
             if self.db_cistrans not in {"E", "Z"}: self.set_lipid_level(LipidLevel.STRUCTURE_DEFINED)
         
         
+    def gl_half_sub_fa(self, node):
+        self.fa_suffix_molecular = True
+        
+        
     def set_nape(self, node):
         self.head_group = "PE-N"
         hgd = HeadgroupDecorator("decorator_acyl", suffix = True)
         self.headgroup_decorators.append(hgd)
         hgd.functional_groups["decorator_acyl"] = [self.fa_list[-1]]
         self.fa_list.pop()
+        
+        
+    def set_lcb_18_1(self, node):
+        self.new_lcb(node)
+        self.current_fa.num_carbon = 18
+        self.current_fa.double_bonds = 1
+        functional_group = get_functional_group("OH")
+        if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
+        self.current_fa.functional_groups["OH"].append(functional_group)
+        self.clean_lcb(node)
+        
         
         
 
@@ -219,6 +238,12 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
             self.fa_list = [self.lcb] + self.fa_list
             
         headgroup = self.prepare_headgroup_and_checks()
+
+        if self.fa_suffix_molecular:
+            self.fa_list[0].num_carbon -= self.fa_list[1].num_carbon
+            self.fa_list[0].double_bonds -= self.fa_list[1].double_bonds
+            if self.level.value < LipidLevel.MOLECULAR_SPECIES.value: self.level = LipidLevel.MOLECULAR_SPECIES
+        
         lipid = LipidAdduct()
         lipid.lipid = self.assemble_lipid(headgroup)
         lipid.adduct = self.adduct
@@ -228,8 +253,8 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         
     def add_ether(self, node):
         ether = node.get_text()
-        if ether == "O-": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
-        elif ether == "P-":
+        if ether == "O": self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMANYL
+        elif ether == "P":
             self.current_fa.lipid_FA_bond_type = LipidFaBondType.ETHER_PLASMENYL
             
             
