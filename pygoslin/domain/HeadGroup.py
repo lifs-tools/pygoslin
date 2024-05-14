@@ -50,7 +50,17 @@ glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
                "gq1": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
                "gt1": ["Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
                "gt2": ["GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
-               "gt3": ["NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"]
+               "gt3": ["NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               
+               "gd0a": ["HexNAc", "Hex", "NeuAc", "HexNAc", "Hex", "NeuAc", "Hex"],
+               "gd1b": ["Gal", "GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gq1b": ["NeuAc", "NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt1b": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gd1a-ac": ["Hex", "Hex", "Hex", "HexNAc", "NeuAc", "NeuAc", "NeuAc"],
+               "gq1-ac": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt1b-ac": ["NeuAc", "Gal", "GalNAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               "gt3-ac": ["NeuAc", "NeuAc", "NeuAc", "NeuAc", "NeuAc", "Gal", "Glc"],
+               
                }
 
 class HeadGroup:

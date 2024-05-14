@@ -146,6 +146,9 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         self.current_fa.num_carbon = 18
         self.current_fa.double_bonds = 1
         functional_group = get_functional_group("OH")
+        
+        headgroup = HeadGroup(self.head_group)
+        functional_group.count = 1 + headgroup.sp_exception + (self.head_group == "DCER")
         if "OH" not in self.current_fa.functional_groups: self.current_fa.functional_groups["OH"] = []
         self.current_fa.functional_groups["OH"].append(functional_group)
         self.clean_lcb(node)
@@ -202,7 +205,9 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         self.lcb = FattyAcid("LCB")
         self.current_fa = self.lcb
         self.set_structural_subspecies_level(node)
-        self.lcb.set_type(LipidFaBondType.LCB_REGULAR)
+        
+        headgroup = HeadGroup(self.head_group)
+        self.lcb.set_type(LipidFaBondType.LCB_EXCEPTION if headgroup.sp_exception else LipidFaBondType.LCB_REGULAR)
             
             
     def clean_lcb(self, node):
@@ -240,10 +245,7 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
             
         headgroup = self.prepare_headgroup_and_checks()
 
-        if self.fa_suffix_molecular:
-            self.fa_list[0].num_carbon -= self.fa_list[1].num_carbon
-            self.fa_list[0].double_bonds -= self.fa_list[1].double_bonds
-            if self.level.value < LipidLevel.MOLECULAR_SPECIES.value: self.level = LipidLevel.MOLECULAR_SPECIES
+        if self.fa_suffix_molecular: self.fa_list = self.fa_list[:1]
         
         lipid = LipidAdduct()
         lipid.lipid = self.assemble_lipid(headgroup)
