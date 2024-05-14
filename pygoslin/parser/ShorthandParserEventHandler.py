@@ -196,7 +196,6 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
     def set_sterol_definition(self, node):
         self.head_group += " " + node.get_text()
-        self.fa_list = self.fa_list[1:]
     
     
         
