@@ -172,6 +172,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_PE_PS_type_pre_event"] = self.suffix_decorator_species
         
         self.registered_events["sterol_definition_post_event"] = self.set_sterol_definition
+        self.registered_events["sterol_ester_definition_post_event"] = self.set_sterol_definition
         self.registered_events["adduct_heavy_element_pre_event"] = self.set_heavy_element
         self.registered_events["adduct_heavy_number_pre_event"] = self.set_heavy_number
         self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
