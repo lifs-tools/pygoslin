@@ -472,6 +472,7 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
     def add_hydroxyl(self, node):
         num_h = int(node.get_text())
+        if num_h <= 0: return
         functional_group = get_functional_group("OH")
         
         if self.sp_regular_lcb(): num_h -= 1

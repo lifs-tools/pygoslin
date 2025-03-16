@@ -31,7 +31,7 @@ grammar Shorthand2020;
 /* first rule is always start rule */
 lipid : lipid_eof EOF;
 lipid_eof : lipid_pure | lipid_pure adduct_info;
-lipid_pure : gl | pl | sl | sterol | med; /* glycero lipids, phospho lipids, sphingo lipids, sterol lipids, lipid mediators
+lipid_pure : gl | pl | sl | sterol | med | sacc; /* glycero lipids, phospho lipids, sphingo lipids, sterol lipids, lipid mediators
 
 
 /* adduct information */
@@ -238,6 +238,23 @@ sterol_definition : '27:1;O' | '27:2;O' | '28:2;O' | '28:3;O' | '29:2;O' | '30:2
 sterol_ester_definition : '27:1' | '27:2' | '28:1' | '28:2' | '28:3' | '29:1' | '29:2' | '30:2';
 st_hg : 'ST'; // | 'BA' | 'FC' | 'SG' | 'ASG';
 st_hg_ester : 'SE' | 'CE';
+
+
+
+sacc : la;
+la : la_sub | la_species;
+la_species : la_hg headgroup_separator fatty_acyl_chain;
+la_sub : la2 | la3 | la4;
+la2 : la2_hg headgroup_separator fatty_acyl_chain2;
+la3 : la3_hg headgroup_separator fatty_acyl_chain3;
+la4 : la4_hg headgroup_separator fatty_acyl_chain4;
+la_hg : la2_hg | la3_hg | la4_hg;
+la2_hg : 'DLLA' | 'DLLA1' | 'DLLA2';
+la3_hg : 'LLA' | 'LLA1' | 'LLA2';
+la4_hg : 'LA' | 'LA1' | 'LA2';
+
+
+
 
 
 /* separators */

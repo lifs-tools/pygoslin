@@ -72,6 +72,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["pl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_molecular_species_pre_event"] = self.set_molecular_level
         self.registered_events["sl_species_pre_event"] = self.set_species_level
+        self.registered_events["la_species_pre_event"] = self.set_species_level
         
         self.registered_events["pl_single_pre_event"] = self.set_molecular_level
         self.registered_events["unsorted_fa_separator_pre_event"] = self.set_molecular_level
@@ -100,6 +101,9 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["hg_pip_pure_t_pre_event"] = self.set_headgroup_name
         self.registered_events["sl_hg_glyco_pre_event"] = self.set_headgroup_name
         self.registered_events["hg_PE_PS_pre_event"] = self.set_headgroup_name
+        self.registered_events["la2_hg_pre_event"] = self.set_headgroup_name
+        self.registered_events["la3_hg_pre_event"] = self.set_headgroup_name
+        self.registered_events["la4_hg_pre_event"] = self.set_headgroup_name
         self.registered_events["acer_hg_post_event"] = self.set_acer
         self.registered_events["acer_species_post_event"] = self.set_acer_species
         self.registered_events["glyco_sphingo_lipid_pre_event"] = self.set_glyco_sphingo_lipid

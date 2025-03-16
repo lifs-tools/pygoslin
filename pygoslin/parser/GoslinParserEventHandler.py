@@ -562,7 +562,13 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         headgroup = self.prepare_headgroup_and_checks()
         
         if self.trivial_mediator and node.get_text() in trivial_mediators:
-            self.fa_list[0].double_bonds = {p: "" for p in trivial_mediators[node.get_text()]}
+            if type(self.fa_list[0].double_bonds) != dict: self.fa_list[0].double_bonds = {}
+            for p in trivial_mediators[node.get_text()]:
+                if len(p) == 0: continue
+                if p[-1] in {"E", "Z"}:
+                    self.fa_list[0].double_bonds[int(p[:-1])] = p[-1]
+                else:
+                    self.fa_list[0].double_bonds[int(p)] = ""
             self.level = LipidLevel.FULL_STRUCTURE
             
         lipid = LipidAdduct()
@@ -668,4 +674,4 @@ with open(tm_file_name, mode = "rt", encoding= "utf-8") as tm_infile:
     for line in tm_infile:
         tokens = line.strip().split("\t")
         if len(tokens) != 2: continue
-        trivial_mediators[tokens[0]] = [int(p) for p in tokens[1].split(",")]
+        trivial_mediators[tokens[0]] = [p for p in tokens[1].split(",")]
