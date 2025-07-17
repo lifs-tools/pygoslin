@@ -46,6 +46,7 @@ class Element(Enum):
     Br = 16
     I = 17
     As = 18
+    B = 19
     
 electron_rest_mass = 0.00054857990946
 
@@ -104,7 +105,8 @@ element_masses = {Element.C: 12.0,
                     Element.O18: 17.9991604,
                     Element.P32: 31.973907274,
                     Element.S33: 32.97145876,
-                    Element.S34: 33.96786690
+                    Element.S34: 33.96786690,
+                    Element.B: 10.012936862,
                     }
 
 element_shortcut = {Element.C: "C",

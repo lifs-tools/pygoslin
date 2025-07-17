@@ -43,12 +43,17 @@ class Adduct:
                "+NH4": {Element.N: 1, Element.H: 4},
                "+Cl": {Element.Cl: 1},
                "+HCOO": {Element.H: 1, Element.C: 1, Element.O: 2},
-               "+CH3COO": {Element.H: 3, Element.C: 2, Element.O: 2}
+               "+CH3COO": {Element.H: 3, Element.C: 2, Element.O: 2},
+               "+CH2OCOO": {Element.H: 2, Element.C: 2, Element.O: 3},
+               "-CH3": {Element.H: -3, Element.C: -1},
+               "+COO": {Element.H: 1, Element.C: 1, Element.O: 2},
+               "+CH2COO": {Element.H: 2, Element.C: 2, Element.O: 2},
                }
     
     adduct_charges = {"+H": 1, "+2H": 2, "+3H": 3, "+4H": 4, "-H": -1,
                       "-2H": -2, "-3H": -3, "-4H": -4, "+H-H2O": 1,
-                      "+NH4": 1, "+Cl": -1, "+HCOO": -1, "+CH3COO": -1
+                      "+NH4": 1, "+Cl": -1, "+HCOO": -1, "+CH3COO": -1, "-CH3": -1,
+                      "+COO": -2, "+CH2COO": -2, "+CH2OCOO": -2
                       }
     
     def __init__(self, sum_formula, adduct_string, charge = 0, sign = 1):
