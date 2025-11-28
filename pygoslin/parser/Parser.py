@@ -112,6 +112,7 @@ class HmdbParser(Parser):
 class LipidParser:
     def __init__(self):
         self.parser_list = [ShorthandParser(), GoslinParser(), FattyAcidParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
+        self.parser_event_handler = None
         """
         self.trivial_names = {}
         dir_name = path.dirname(pygoslin.__file__)
@@ -143,10 +144,12 @@ class LipidParser:
         #if lipid_name_lower in self.trivial_names:
         #    lipid_name = self.trivial_names[lipid_name_lower]
         
+        self.parser_event_handler = None
         # go through all parsers
         for parser in self.parser_list:
             lipid = parser.parse(lipid_name, raise_error = False)
             if lipid != None:
+                self.parser_event_handler = parser.parser_event_handler
                 return lipid
             
         raise LipidException("Lipid not found")

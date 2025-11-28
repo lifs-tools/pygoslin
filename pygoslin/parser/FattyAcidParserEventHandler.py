@@ -66,6 +66,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
         self.registered_events["acid_single_type_pre_event"] = self.set_fatty_acyl_type
         self.registered_events["ol_ending_pre_event"] = self.set_fatty_acyl_type
+        self.registered_events["acid_heavy_single_type_post_event"] = self.setting_fatty_acyl_type
         self.registered_events["double_bond_position_pre_event"] = self.set_double_bond_information
         self.registered_events["double_bond_position_post_event"] = self.add_double_bond_information
         self.registered_events["db_number_post_event"] = self.set_double_bond_position
@@ -160,8 +161,24 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.registered_events["fg_pos_summary_pre_event"] = self.set_functional_group
         self.registered_events["fg_pos_summary_post_event"] = self.add_summary
         self.registered_events["func_stereo_pre_event"] = self.add_func_stereo
+
+        self.registered_events["nic_pre_event"] = self.set_nic
+        self.registered_events["deuterium_number_pre_event"] = self.add_heavy_adduct
         
         self.debug = ""
+        self.adduct = None
+
+
+
+    def set_nic(self, node):
+        self.tmp["nic"] = node.get_text()
+
+
+
+    def add_heavy_adduct(self, node):
+        if not self.adduct: self.adduct = Adduct("", "")
+        self.adduct.heavy_elements[Element.H2] = int(node.get_text())
+
         
         
     def reset_lipid(self, node):
@@ -169,6 +186,7 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         self.headgroup = ""
         self.fatty_acyl_stack = [FattyAcid("FA")]
         self.tmp = {"fa1": {}}
+        self.adduct = None
         
         
         
@@ -632,7 +650,17 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         
     def set_cistrans(self, node):
         self.tmp["fa%i" % len(self.fatty_acyl_stack)]["db_cistrans"] = node.get_text()
-        
+
+
+
+    def setting_fatty_acyl_type(self, node):
+        class texter:
+            def __init__(self, t):
+                self.t = t
+            def get_text(self):
+                return self.t
+        self.set_fatty_acyl_type(texter(self.tmp["nic"] + " acid"))
+
         
         
     def set_fatty_acyl_type(self, node):
@@ -900,5 +928,6 @@ class FattyAcidParserEventHandler(BaseParserEventHandler):
         headgroup = HeadGroup(self.headgroup)
         
         self.content = LipidAdduct()
+        self.content.adduct = self.adduct
         self.content.lipid = lipid_level_class(headgroup, self.fatty_acyl_stack)
 
