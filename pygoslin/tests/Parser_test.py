@@ -223,7 +223,7 @@ class ParserTest(unittest.TestCase):
             lipid = lipid_maps_parser.parse(lipid_name_input)
             assert lipid_maps_parser.word_in_grammar
             assert lipid != None
-            assert lipid.get_lipid_string() == lipid_name_output, "wrong: %s" % lipid.get_lipid_string()
+            assert lipid.get_lipid_string() == lipid_name_output, "wrong: %s vs %s" % (lipid.get_lipid_string(), lipid_name_output)
         
         
     @unittest.expectedFailure

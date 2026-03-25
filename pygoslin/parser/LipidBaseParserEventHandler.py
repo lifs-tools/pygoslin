@@ -46,6 +46,54 @@ from pygoslin.domain.LipidExceptions import *
 from pygoslin.domain.Cycle import *
 
 
+BILE_ACIDS = {
+    "TCA": "TCA",
+    "Taurocholic acid": "TCA",
+    "Taurocholate": "TCA",
+    "CA": "CA",
+    "Cholic acid": "CA",
+    "CDCA": "CDCA",
+    "Chenodeoxycholic acid": "CDCA",
+    "GCA": "GCA",
+    "Glycocholic acid": "GCA",
+    "Cholylglycine": "GCA",
+    "GCDCA": "GCDCA",
+    "Glycochenodeoxycholic acid": "GCDCA",
+    "TCDCA": "TCDCA",
+    "Taurochenodeoxycholic acid": "TCDCA",
+    "DCA": "DCA",
+    "Deoxycholic acid": "DCA",
+    "LCA": "LCA",
+    "Lithocholic acid": "LCA",
+    "UDCA": "UDCA",
+    "Ursodeoxycholic acid": "UDCA",
+    "GDCA": "GDCA",
+    "Glycodeoxycholic acid": "GDCA",
+    "TDCA": "TDCA",
+    "Taurodeoxycholic acid": "TDCA",
+    "GLCA": "GLCA",
+    "Glycolithocholic acid": "GLCA",
+    "TLCA": "TLCA",
+    "Taurolithocholic acid": "TLCA",
+    "GUDCA": "GUDCA",
+    "Glycoursodeoxycholic acid": "GUDCA",
+    "TUDCA": "TUDCA",
+    "Tauroursodeoxycholic acid": "TUDCA",
+    "HCA": "HCA",
+    "Hyocholic acid": "HCA",
+    "GHCA": "GHCA",
+    "Glycohyocholic acid": "GHCA",
+    "THCA": "THCA",
+    "Trihydroxycholestanoic acid": "THCA",
+    "HDCA": "HDCA",
+    "Hyodeoxycholic acid": "HDCA",
+    "GHDCA": "GHDCA",
+    "Glycohyodeoxycholic acid": "GHDCA",
+    "THDCA": "THDCA",
+    "Taurohyodeoxycholic acid": "THDCA",
+}
+
+
 class LipidBaseParserEventHandler(BaseParserEventHandler):
     SP_EXCEPTION_CLASSES = set(all_lipids[get_class("Cer")]["synonyms"]) | set(all_lipids[get_class("SPB")]["synonyms"]) | set(["Cer"]) | set(["SPB"])
     
@@ -59,6 +107,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
         self.adduct = None
         self.headgroup_decorators = []
         self.use_head_group = False
+        self.imported_headgroup = None
         
         
         
@@ -88,7 +137,7 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     def prepare_headgroup_and_checks(self, allow_class_shift = True):
         
-        headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group)
+        headgroup = HeadGroup(self.head_group, self.headgroup_decorators, self.use_head_group, self.imported_headgroup)
         if self.use_head_group: return headgroup
     
         self.head_group = all_lipids[headgroup.lipid_class]["name"]

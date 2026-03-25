@@ -64,40 +64,50 @@ glyco_table = {"ga1": ["Gal", "GalNAc", "Gal", "Glc"],
                }
 
 class HeadGroup:
-    def __init__(self, headgroup, decorators = None, use_headgroup = False):
-        self.imported_headgroup = headgroup
+    def __init__(self, headgroup, decorators = None, use_headgroup = False, imported_headgroup = None):
+        self.imported_headgroup = imported_headgroup
+        self.use_headgroup = use_headgroup
+        self.headgroup = headgroup.strip(" ")
         self.decorators = [d for d in decorators] if decorators != None else []
-        self.parsed_headgroup = get_class(headgroup)
-        if self.parsed_headgroup == UNDEFINED_LIPID_CLASS:
-            self.parsed_headgroup = headgroup
-        else:
-            self.parsed_headgroup = all_lipids[self.parsed_headgroup]["name"]
-        
+
         # checking if head group is a glyco-sphingolipid
-        hg = headgroup.strip(" ").lower()
+        hg = self.headgroup.lower()
         if hg in glyco_table and not use_headgroup:
             for carbohydrate in glyco_table[hg]:
                 try:
-                    
+
                     functional_group = get_functional_group(carbohydrate)
                     functional_group.elements[Element.O] -= 1
                     self.decorators.append(functional_group)
                 except Exception:
                     raise LipidParsingException("Carbohydrate '%s' unknown" % carbohydrate)
-            headgroup = "Cer"
-        
-        self.headgroup = headgroup.strip(" ")
-        self.lipid_category = get_category(self.headgroup)
+            self.headgroup = "Cer"
+
         self.lipid_class = get_class(self.headgroup)
-        self.use_headgroup = use_headgroup
+
+        if not use_headgroup or imported_headgroup != None:
+            if self.lipid_class == UNDEFINED_LIPID_CLASS:
+                self.headgroup = headgroup
+            else:
+                self.headgroup = all_lipids[self.lipid_class]["name"]
+
+        if self.imported_headgroup != None:
+            self.lipid_class = get_class(self.imported_headgroup)
+
+
+        self.lipid_category = get_category(self.headgroup)
         self.sp_exception = self.lipid_category == LipidCategory.SP and all_lipids[self.lipid_class]["name"] in {"Cer", "SPB"} and len(self.decorators) == 0
-        
+
         
     def get_lipid_string(self, level = None):
         if level == LipidLevel.CATEGORY:
             return self.lipid_category.name
         
-        headgoup_string = [all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup]
+        elif level == LipidLevel.CLASS:
+            headgoup_string = [all_lipids[self.lipid_class]["name"] if not self.use_headgroup else self.headgroup]
+        else:
+            headgoup_string = [all_lipids[self.lipid_class]["name"] if not self.use_headgroup else (self.imported_headgroup if self.imported_headgroup != None else self.headgroup)]
+
         prefix = []
                 
         if len(self.decorators) > 0:
@@ -136,8 +146,8 @@ class HeadGroup:
         
         
     def get_elements(self):
-        if self.use_headgroup:
-            raise LipidException("Element table cannot be computed for lipid '%s'" % self.headgroup)
+        if self.use_headgroup and self.imported_headgroup == None:
+            raise LipidException("Element table cannot be computed for lipid '%s'" % self.imported_headgroup)
         
         dummy = FunctionalGroup("dummy", elements = all_lipids[self.lipid_class]["elements"])
         for hgd in self.decorators: dummy += hgd

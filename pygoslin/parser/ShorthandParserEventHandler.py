@@ -24,7 +24,7 @@ SOFTWARE.
 """
 
 
-from pygoslin.parser.LipidBaseParserEventHandler import LipidBaseParserEventHandler
+from pygoslin.parser.LipidBaseParserEventHandler import LipidBaseParserEventHandler, BILE_ACIDS
 from pygoslin.domain.LipidAdduct import LipidAdduct
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.LipidCategory import LipidCategory
@@ -104,6 +104,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["la2_hg_pre_event"] = self.set_headgroup_name
         self.registered_events["la3_hg_pre_event"] = self.set_headgroup_name
         self.registered_events["la4_hg_pre_event"] = self.set_headgroup_name
+        self.registered_events["bile_acids_pre_event"] = self.set_headgroup_name
         self.registered_events["acer_hg_post_event"] = self.set_acer
         self.registered_events["acer_species_post_event"] = self.set_acer_species
         self.registered_events["glyco_sphingo_lipid_pre_event"] = self.set_glyco_sphingo_lipid
@@ -180,7 +181,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["adduct_heavy_element_pre_event"] = self.set_heavy_element
         self.registered_events["adduct_heavy_number_pre_event"] = self.set_heavy_number
         self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
-        self.debug = "a"
+        self.debug = ""
 
 
     def reset_lipid(self, node):
@@ -195,6 +196,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.contains_stereo_information = False
         self.heavy_element = None
         self.heavy_element_number = 0
+        self.imported_headgroup = None
         
         
     
@@ -230,7 +232,12 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
     
         
     def set_headgroup_name(self, node):
-        if len(self.head_group) == 0: self.head_group = node.get_text()
+        if len(self.head_group) > 0: return
+        self.head_group = node.get_text()
+        if self.head_group in BILE_ACIDS:
+            self.imported_headgroup = BILE_ACIDS[self.head_group]
+            self.head_group = "BA 24:1"
+            self.use_head_group = True
         
         
         
