@@ -180,7 +180,7 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["adduct_heavy_element_pre_event"] = self.set_heavy_element
         self.registered_events["adduct_heavy_number_pre_event"] = self.set_heavy_number
         self.registered_events["adduct_heavy_component_post_event"] = self.add_heavy_component
-        self.debug = ""
+        self.debug = "a"
 
 
     def reset_lipid(self, node):

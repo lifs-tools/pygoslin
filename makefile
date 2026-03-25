@@ -19,16 +19,21 @@ distclean:
 	rm -rf build dist pygoslin.egg-info .eggs
 	
 build:
-	python3 -m build --sdist
+	python3 -m build
 	
 uploadtest:
-	python3 -m twine upload --repository testpypi dist/* -u __token__ -p PERSONAL_TOKEN
+	twine upload --repository testpypi dist/* -u __token__ -p PERSONAL_TOKEN
 	
 upload:
-	python3 -m twine upload dist/* -u __token__ -p PERSONAL_TOKEN
+	twine upload dist/* -u __token__ -p PERSONAL_TOKEN
 
 # upload to pypi:
-# distclean
-# build
-# uploadtest
-# upload
+## system python3 must be enabled
+# python3 -m venv venv
+# source venv/bin/activate
+# pip3 install twine build setuptools
+# pip3 install --upgrade pip setuptools wheel build
+# rm -rf build dist pygoslin.egg-info .eggs   (make distclean)
+# python3 -m build  (make build)
+# twine upload --repository testpypi dist/* -u __token__ -p PERSONAL_TOKEN  (make uploadtest)
+# twine upload dist/* -u __token__ -p PERSONAL_TOKEN   (make upload)
