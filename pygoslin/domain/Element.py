@@ -60,6 +60,7 @@ element_positions = {"C": Element.C,
                     "Br": Element.Br,
                     "I": Element.I,
                     "As": Element.As,
+                    "B": Element.B,
                     "P'": Element.P32,
                     "S": Element.S,
                     "S'": Element.S34,
@@ -111,6 +112,7 @@ element_masses = {Element.C: 12.0,
 
 element_shortcut = {Element.C: "C",
                     Element.H: "H",
+                    Element.B: "B",
                     Element.N: "N",
                     Element.O: "O",
                     Element.P: "P",
@@ -132,6 +134,7 @@ element_shortcut = {Element.C: "C",
 
 heavy_shortcut = {Element.C: "C",
                     Element.H: "H",
+                    Element.B: "B",
                     Element.N: "N",
                     Element.O: "O",
                     Element.P: "P",
@@ -164,7 +167,7 @@ heavy_to_regular = {Element.H2: Element.H,
 
 heavy_element_table = {"[2]H": Element.H2, "[13]C": Element.C13, "[15]N": Element.N15, "[17]O": Element.O17, "[18]O": Element.O18, "[32]P": Element.P32, "[33]S": Element.S33, "[34]S": Element.S34}
 
-element_order = [Element.C, Element.H, Element.As, Element.Br, Element.Cl, Element.F, Element.I, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
+element_order = [Element.C, Element.H, Element.B, Element.As, Element.Br, Element.Cl, Element.F, Element.I, Element.N, Element.O, Element.P, Element.S, Element.H2, Element.C13, Element.N15, Element.O17, Element.O18, Element.P32, Element.S33, Element.S34]
 
 def compute_sum_formula(elements):
     return "".join(["%s%s" % (element_shortcut[e] if elements[e] > 0 else "", str(elements[e]) if elements[e] > 1 else "") for e in element_order])
