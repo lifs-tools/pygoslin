@@ -167,19 +167,27 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         
         
     def add_prostaglandin(self, node):
-        if self.prostaglandin["type"] not in {"B", "D", "E", "F", "J", "K"} or self.prostaglandin["number"] not in {"1", "2", "3"}: return
+        if self.prostaglandin["type"] not in {"A", "B", "D", "E", "F", "J", "K", "H"} or self.prostaglandin["number"] not in {"1", "2", "3"}: return
     
         db = {}
         tmp_fa = self.current_fa
         if self.prostaglandin["number"] == "1": db = {13: "E"}
         elif self.prostaglandin["number"] == "2": db = {5: "Z", 13: "E"}
         elif self.prostaglandin["number"] == "3": db = {5: "Z", 13: "E", 17: "Z"}
-            
-        if self.prostaglandin["type"] == "B":
-            f1, f2, f3 = get_functional_group("OH"), get_functional_group("oxo")
+
+        if self.prostaglandin["type"] == "A":
+            f1, f2 = get_functional_group("OH"), get_functional_group("oxo")
             f1.position = 15
             f2.position = 9
             fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 0, functional_groups = {"oxo": [f2]})]}
+            db[10] = "Z"
+            self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
+            
+        elif self.prostaglandin["type"] == "B":
+            f1, f2 = get_functional_group("OH"), get_functional_group("oxo")
+            f1.position = 15
+            f2.position = 9
+            fg = {"OH": [f1], "cy": [Cycle(5, 8, 12, 1, functional_groups = {"oxo": [f2]})]}
             self.current_fa = FattyAcid("FA", 20, db, functional_groups = fg)
             
         elif self.prostaglandin["type"] == "D":

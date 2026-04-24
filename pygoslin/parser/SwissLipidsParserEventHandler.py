@@ -219,8 +219,8 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         
     def set_molecular_level(self, node):
         self.set_lipid_level(LipidLevel.MOLECULAR_SPECIES)
-        
-        
+
+
     def mediator_event(self, node):
         self.use_head_group = True
         self.head_group = node.get_text()
