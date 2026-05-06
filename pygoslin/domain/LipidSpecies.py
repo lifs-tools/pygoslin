@@ -114,4 +114,9 @@ class LipidSpecies:
         
         
     def sort_fatty_acyl_chains(self):
-        pass
+        return
+
+
+
+    def get_sphingolipid_subclass(self):
+        return

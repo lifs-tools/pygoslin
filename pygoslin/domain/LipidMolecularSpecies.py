@@ -89,6 +89,7 @@ class LipidMolecularSpecies(LipidSpecies):
         return dummy.elements
     
     
+
     def get_lipid_string(self, level = None):
         if level == None or level == LipidLevel.MOLECULAR_SPECIES:
             return self.build_lipid_subspecies_name(LipidLevel.MOLECULAR_SPECIES)
@@ -98,7 +99,23 @@ class LipidMolecularSpecies(LipidSpecies):
         else:
             raise Exception("LipidMolecularSpecies does not know how to create a lipid string for level %s" % level)
     
+
     
     def sort_fatty_acyl_chains(self):
-        if self.info.level != LipidLevel.MOLECULAR_SPECIES and len(self.fa_list) < 2: return
+        if self.info.level.value > LipidLevel.MOLECULAR_SPECIES.value or len(self.fa_list) < 2: return
         self.fa_list.sort(key = lambda fa: (fa.num_carbon != 0, fa.lipid_FA_bond_type.value, fa.num_carbon, fa.get_double_bonds(), LipidAdduct.compute_mass(fa.get_elements())))
+
+
+
+    def get_sphingolipid_subclass(self):
+        if self.headgroup.lipid_category != LipidCategory.SP or len(self.fa_list) != 2:
+            raise Exception("Lipid is not a sphingolipid or has a long chain base and a fatty acyl chain")
+
+        level = self.info.level
+        fa = self.fa_list.pop()
+        self.info.level = LipidLevel.MOLECULAR_SPECIES
+        sphingolipid_subclass = self.build_lipid_subspecies_name(LipidLevel.MOLECULAR_SPECIES)
+        self.info.level = level
+        self.fa_list.append(fa)
+
+        return sphingolipid_subclass + "/x:x"

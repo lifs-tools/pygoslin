@@ -49,10 +49,16 @@ class LipidAdduct:
             if self.adduct != None: lipid_name.append(self.adduct.get_lipid_string())
         
         return "".join(lipid_name)
-    
-    
+
+
+
     def get_extended_class(self):
         return self.lipid.get_extended_class() if self.lipid != None else ""
+
+
+
+    def get_sphingolipid_subclass(self):
+        return self.lipid.get_sphingolipid_subclass() if self.lipid != None else ""
         
         
         
