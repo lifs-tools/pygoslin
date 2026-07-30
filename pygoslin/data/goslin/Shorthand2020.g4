@@ -35,7 +35,7 @@ lipid_pure : gl | pl | sl | sterol | med | sacc; /* glycero lipids, phospho lipi
 
 
 /* adduct information */
-adduct_info : adduct_sep | adduct_separator adduct_sep;
+adduct_info : adduct_sep | adduct_separator adduct_sep | adduct_deuterated;
 adduct_sep : SOB 'M' adduct SCB adduct_charge | SOB 'M' adduct_heavy adduct SCB adduct_charge | SOB 'M' adduct_heavy SCB;
 adduct_charge : charge_sign | charge charge_sign;
 adduct : adduct_set;
@@ -55,9 +55,10 @@ med_subspecies : med_hg_single headgroup_separator fatty_acyl_chain |
 med_hg_single : 'FA' | 'FOH' | 'FAL' | 'CAR' | 'CoA' | 'NAE' | 'NAT' | 'WD' | 'HC' | 'FAHFA';
 med_hg_double : 'WE' | 'NA';
 med_hg_triple : 'WD';
-
-
-
+adduct_deuterated : deuter_separator deuter_symbol deuter_number | '(' deuter_symbol deuter_number ')' | deuter_separator '(' deuter_symbol deuter_number ')';
+deuter_separator : ' ' | '-' | '_';
+deuter_symbol : 'd' | 'D';
+deuter_number : number;
 
 /* fatty acyl chain */
 lcb : fa_pure | ether fa_pure | fatty_acyl_linkage | fatty_alkyl_linkage;
