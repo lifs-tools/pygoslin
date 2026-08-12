@@ -8,7 +8,7 @@ repositories {
 
 dependencies {
 <<<<<<< HEAD
-    antlr "org.antlr:antlr4:4.13.1"
+    antlr "org.antlr:antlr4:4.13.2"
 =======
     antlr "org.antlr:antlr4:4.13.2"
 >>>>>>> bcaec312faa73d3b5d4c1cdae5e4996e0bf6f6a5
