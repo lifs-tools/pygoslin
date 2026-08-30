@@ -186,18 +186,14 @@ class ShorthandParserEventHandler(LipidBaseParserEventHandler):
 
 
     def reset_lipid(self, node):
+        super().reset()
         self.level = LipidLevel.COMPLETE_STRUCTURE
-        self.head_group = ""
-        self.adduct = None
-        self.fa_list = []
         self.current_fa = []
-        self.headgroup_decorators = []
         self.tmp = {}
         self.acer_species = False
         self.contains_stereo_information = False
         self.heavy_element = None
         self.heavy_element_number = 0
-        self.imported_headgroup = None
         
         
     

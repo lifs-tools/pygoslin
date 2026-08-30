@@ -143,22 +143,16 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
 
 
     def reset_lipid(self, node):
-        self.level = LipidLevel.FULL_STRUCTURE
-        self.head_group = ""
+        super().reset()
         self.lcb = None
-        self.fa_list = []
-        self.current_fa = None
-        self.adduct = None
         self.db_position = 0
         self.db_cistrans = ""
         self.unspecified_ether = False
         self.db_numbers = -1
-        self.headgroup_decorators = []
         self.plasmalogen = ""
         self.mediator_function = ""
         self.mediator_function_positions = []
         self.mediator_suffix = False
-        self.use_head_group = False
         self.heavy_element = None
         self.heavy_element_number = 0
         self.trivial_mediator = False

@@ -26,6 +26,7 @@ SOFTWARE.
 
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.Element import *
+from scipy.stats import binom
 
 class LipidAdduct:
 
@@ -101,7 +102,24 @@ class LipidAdduct:
         if charge != 0: mass = (mass - charge * electron_rest_mass) / abs(charge)
             
         return mass
-    
+
+
+    def get_average_mass(self):
+        elements = self.get_elements()
+        if Element.C13 in elements: elements[Element.C] += elements[Element.C13]
+        elements[Element.C13] = 0
+
+        mass, N, p, cdf = 0, elements[Element.C], 0.0107, 0
+        for k in range(6):
+            prob = binom.pmf(k, N, p)
+            mass += prob * LipidAdduct.compute_mass(elements)
+            cdf += prob
+            elements[Element.C] -= 1
+            elements[Element.C13] += 1
+
+        return mass / cdf
+
+
     
     
     def compute_mass(elements):

@@ -109,16 +109,10 @@ class HmdbParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["fa_synonym_pre_event"] = self.register_fa_synonym
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.FULL_STRUCTURE
-        self.adduct = None
-        self.head_group = ""
+        super().reset()
         self.lcb = None
-        self.fa_list = []
-        self.current_fa = None
         self.db_position = 0
         self.db_cistrans = ""
-        self.use_head_group = False
-        self.headgroup_decorators = []
         self.db_number = -1
         self.furan = {}
         self.func_type = ""

@@ -99,6 +99,11 @@ class LipidBaseParserEventHandler(BaseParserEventHandler):
     
     def __init__(self):
         super().__init__()
+        self.reset()
+
+
+
+    def reset(self):
         self.level = LipidLevel.FULL_STRUCTURE
         self.head_group = ""
         self.lcb = None

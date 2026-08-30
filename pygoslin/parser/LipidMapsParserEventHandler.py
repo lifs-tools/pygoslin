@@ -147,12 +147,8 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.FULL_STRUCTURE
-        self.adduct = None
-        self.head_group = ""
+        super().reset()
         self.lcb = None
-        self.fa_list = []
-        self.current_fa = None
         self.use_head_group = False
         self.omit_fa = False
         self.db_position = 0
@@ -161,7 +157,6 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         self.mod_text = ""
         self.mod_pos = -1
         self.mod_num = 1
-        self.headgroup_decorators = []
         self.add_omega_linoleoyloxy_Cer = False
         self.heavy_number = 0
         self.heavy_element = None

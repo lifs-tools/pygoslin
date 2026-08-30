@@ -111,17 +111,10 @@ class SwissLipidsParserEventHandler(LipidBaseParserEventHandler):
         
         
     def reset_lipid(self, node):
-        self.level = LipidLevel.FULL_STRUCTURE
-        self.head_group = ""
-        self.lcb = None
-        self.fa_list = []
-        self.adduct = None
-        self.current_fa = None
+        super().reset()
         self.db_position = 0
         self.db_cistrans = ""
-        self.use_head_group = False
         self.db_numbers = -1
-        self.headgroup_decorators = []
         self.suffix_number = -1
         self.fa_suffix_molecular = False
         self.allow_class_shift = True
