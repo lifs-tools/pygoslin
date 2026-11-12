@@ -36,10 +36,12 @@ class LDAParserEventHandler(GoslinParserEventHandler):
     registers the events of the LDA grammar.
     """
 
+    # default LDA encodings, see lcbHydroxylationEncoding.txt and
+    # faHydroxylationEncoding.txt in https://github.com/ThallingerLab/LDA2
     # LDA head group -> Goslin class name
     HEADGROUPS = {"SphBase": "SPB", "Cer1P": "CerP"}
-    LCB_HYDROXYLS = {"m": 1, "d": 2, "t": 3, "q": 4}
-    FA_HYDROXYLS = {"n": 0, "h": 1}
+    LCB_HYDROXYLS = {"m": 1, "d": 2, "t": 3, "q": 4, "p": 5, "h": 6}
+    FA_HYDROXYLS = {"n": 0, "h": 1, "i": 2, "k": 3}
 
     def __init__(self):
         super().__init__()
