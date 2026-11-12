@@ -33,6 +33,7 @@ from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEvent
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
 from pygoslin.parser.ShorthandParserEventHandler import ShorthandParserEventHandler
 from pygoslin.parser.FattyAcidParserEventHandler import FattyAcidParserEventHandler
+from pygoslin.parser.LDAParserEventHandler import LDAParserEventHandler
 #from pygoslin.parser.SystematicParserEventHandler import SystematicParserEventHandler
 
 from pygoslin.parser.ParserCommon import Parser
@@ -55,6 +56,15 @@ class GoslinParser(Parser):
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
+
+class LDAParser(Parser):
+    def __init__(self):
+        self.event_handler = LDAParserEventHandler()
+        dir_name = path.dirname(pygoslin.__file__)
+        file_name = path.join(dir_name, "data", "goslin", "LDA.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
+
+
 
 class ShorthandParser(Parser):
     def __init__(self):
@@ -163,7 +173,7 @@ class HmdbParser(Parser):
         
 class LipidParser:
     def __init__(self):
-        self.parser_list = [ShorthandParser(), GoslinParser(), FattyAcidParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser(), ClassLevelParser()]
+        self.parser_list = [ShorthandParser(), GoslinParser(), FattyAcidParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser(), LDAParser(), ClassLevelParser()]
         self.parser_event_handler = None
         """
         self.trivial_names = {}
