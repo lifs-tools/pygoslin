@@ -26,7 +26,7 @@ SOFTWARE.
 
 from pygoslin.domain.LipidLevel import LipidLevel
 from pygoslin.domain.Element import *
-from scipy.stats import binom
+from math import comb
 
 class LipidAdduct:
 
@@ -111,7 +111,7 @@ class LipidAdduct:
 
         mass, N, p, cdf = 0, elements[Element.C], 0.0107, 0
         for k in range(6):
-            prob = binom.pmf(k, N, p)
+            prob = comb(N, k) * p ** k * (1 - p) ** (N - k) if k <= N else 0.0
             mass += prob * LipidAdduct.compute_mass(elements)
             cdf += prob
             elements[Element.C] -= 1
