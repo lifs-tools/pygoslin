@@ -60,7 +60,7 @@ setup(
     setup_requires = ["pytest-runner"],
     tests_require = ["pytest"],
     test_suite= "tests",
-    python_requires = '>=3.5',
+    python_requires = '>=3.8',
     include_package_data = True,
     package_data = {
         '': ['data/goslin/*.g4', 'data/goslin/*.G4', 'data/goslin/lipid-list.csv', 'data/goslin/functional-groups.csv', 'data/goslin/trivial_mediators.csv'],
