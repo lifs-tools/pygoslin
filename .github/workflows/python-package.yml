@@ -6,8 +6,8 @@ name: Python package
 on:
   push:
     branches: [ "master" ]
+  # every pull request, also those stacked on another branch
   pull_request:
-    branches: [ "master" ]
 
 jobs:
   build:
