@@ -53,7 +53,6 @@ class ParserTest(unittest.TestCase):
     PARSER_QUOTE = '\''
     
     def test_lipid_parser(self):
-        global lipid_parser
         
         lipid_name = "PE 16:1-12:0[M+H]1+"
         lipid = lipid_parser.parse(lipid_name)
@@ -138,7 +137,6 @@ class ParserTest(unittest.TestCase):
         
         
     def test_extended_class(self):
-        global lipid_parser
         
         lipid_name = "PE O-16:1a-12:0"
         lipid = lipid_parser.parse(lipid_name)
@@ -228,12 +226,10 @@ class ParserTest(unittest.TestCase):
         
     @unittest.expectedFailure
     def test_LP(self):
-        global lipid_parser
         lipid = lipid_parser.parse("LP 19:1p")
         
         
     def test_hydroxyls(self):
-        global goslin_parser, swiss_lipids_parser, lipid_maps_parser, hmdb_parser
         
         lipid = swiss_lipids_parser.parse("Cer(d18:1(4E)/24:0-2OH)")
         assert lipid != None
@@ -270,7 +266,6 @@ class ParserTest(unittest.TestCase):
 
 
     def test_lyso(self):
-        global lipid_parser
         
         lipid_name = "LPA O-16:1a"
         lipid = lipid_parser.parse(lipid_name)
@@ -291,21 +286,18 @@ class ParserTest(unittest.TestCase):
             
     @unittest.expectedFailure
     def test_lpe_fail(self):
-        global lipid_parser
         lipid_name = "LPE O-16:1p/12:0"
         lipid = lipid_parser.parse(lipid_name)
         
         
     @unittest.expectedFailure
     def test_lipid_parser_fail(self):
-        global lipid_parser
         lipid_name = "fail"
         lipid = lipid_parser.parse(lipid_name)
         
         
         
     def test_species_level(self):
-        global goslin_parser
         
         lipid_name = "PG 22:1(5Z)/12:0"
         lipid = goslin_parser.parse(lipid_name)
@@ -332,8 +324,6 @@ class ParserTest(unittest.TestCase):
         
         
     def test_info_level(self):
-        global swiss_lipids_parser
-        global lipid_maps_parser
         
         lipid_name = "PG(22:1(5Z)/12:0)"
         lipid = swiss_lipids_parser.parse(lipid_name)
@@ -488,7 +478,6 @@ class ParserTest(unittest.TestCase):
         
       
     def test_swiss_lipids(self):
-        global swiss_lipids_parser
         
         lipid_name = "TG(O-16:0/18:3(6Z,9Z,12Z)/18:1(11Z))"
         lipid = swiss_lipids_parser.parse(lipid_name)
@@ -536,7 +525,6 @@ class ParserTest(unittest.TestCase):
       
     
     def test_parser_read(self):
-        global lipid_parser
         lipidnames = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "lipidnames.csv")
         with open(file_name, mode = "rt", encoding= "utf-8") as infile:
