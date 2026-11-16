@@ -42,7 +42,6 @@ parser = GoslinParser()
 class TestFormulas(unittest.TestCase):
 
     def test_masses(self):
-        global parser
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", 'lipid-masses.csv')
         with open(file_name, newline='', encoding= "utf-8") as csvfile:
             lipidreader = csv.reader(csvfile, delimiter=',', quotechar='\"')

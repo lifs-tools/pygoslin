@@ -100,7 +100,6 @@ class LipidSpeciesInfo(FattyAcid):
         
     
     def to_string(self):
-        global ether_prefix
         
         info_string = [ether_prefix[self.num_ethers]]
         info_string.append("%i:%i" % (self.num_carbon, self.double_bonds))
