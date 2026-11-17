@@ -36,13 +36,11 @@ import csv
 UNDEFINED_LIPID_CLASS = 0
 
 def get_category(name):
-    global class_string_to_category
     return class_string_to_category[name] if name in class_string_to_category else LipidCategory.UNDEFINED
     
     
     
 def get_class(name):
-    global class_string_to_class
     return class_string_to_class[name] if name in class_string_to_class else UNDEFINED_LIPID_CLASS
     
     

@@ -33,10 +33,17 @@ from pygoslin.parser.SwissLipidsParserEventHandler import SwissLipidsParserEvent
 from pygoslin.parser.HmdbParserEventHandler import HmdbParserEventHandler
 from pygoslin.parser.ShorthandParserEventHandler import ShorthandParserEventHandler
 from pygoslin.parser.FattyAcidParserEventHandler import FattyAcidParserEventHandler
+from pygoslin.parser.LDAParserEventHandler import LDAParserEventHandler
 #from pygoslin.parser.SystematicParserEventHandler import SystematicParserEventHandler
 
 from pygoslin.parser.ParserCommon import Parser
-from pygoslin.domain.LipidExceptions import LipidException
+from pygoslin.domain.LipidExceptions import LipidException, LipidParsingException
+from pygoslin.domain.LipidClass import get_class, all_lipids, UNDEFINED_LIPID_CLASS
+from pygoslin.domain.LipidCategory import LipidCategory
+from pygoslin.domain.LipidLevel import LipidLevel
+from pygoslin.domain.HeadGroup import HeadGroup
+from pygoslin.domain.LipidSpecies import LipidSpecies
+from pygoslin.domain.LipidAdduct import LipidAdduct
 
         
     
@@ -49,6 +56,15 @@ class GoslinParser(Parser):
         super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
         
         
+
+class LDAParser(Parser):
+    def __init__(self):
+        self.event_handler = LDAParserEventHandler()
+        dir_name = path.dirname(pygoslin.__file__)
+        file_name = path.join(dir_name, "data", "goslin", "LDA.g4")
+        super().__init__(self.event_handler, file_name, Parser.DEFAULT_QUOTE)
+
+
 
 class ShorthandParser(Parser):
     def __init__(self):
@@ -71,6 +87,52 @@ class SystematicParser(Parser):
 """
         
         
+class ClassLevelParser:
+    """
+    Parses names that consist of a lipid class or a lipid category only,
+    e.g. 'PC', 'TG', 'HexCer', 'CE' (lipid class level) or 'GP', 'SP'
+    (lipid category level). Class names and their synonyms come from
+    lipid-list.csv, category names from LipidCategory. A category name that
+    is also the primary name of a class (e.g. 'FA', 'SL') is read as that
+    class; a category name that is only a class synonym (e.g. 'ST', a synonym
+    of 'ST 27:1;O') is read as the category. Names with fatty acyl information
+    are not handled here; they are parsed by the grammar based parsers.
+    """
+    CATEGORIES = {c.name: c for c in LipidCategory if c != LipidCategory.UNDEFINED}
+
+    def __init__(self):
+        self.parser_event_handler = self
+        self.content = None
+        self.error_message = ""
+        self.word_in_grammar = False
+
+    def parse(self, lipid_name, raise_error = True):
+        self.content, self.error_message, self.word_in_grammar = None, "", False
+        name = lipid_name.strip(" ")
+        lipid_class = get_class(name)
+        is_category = name in ClassLevelParser.CATEGORIES
+        if lipid_class != UNDEFINED_LIPID_CLASS and all_lipids[lipid_class]["category"] != LipidCategory.UNDEFINED and (not is_category or all_lipids[lipid_class]["name"] == name):
+            headgroup = HeadGroup(name)
+            level = LipidLevel.CLASS
+        elif is_category:
+            headgroup = HeadGroup(name)
+            headgroup.lipid_class = UNDEFINED_LIPID_CLASS
+            headgroup.lipid_category = ClassLevelParser.CATEGORIES[name]
+            level = LipidLevel.CATEGORY
+        else:
+            self.error_message = "Lipid '%s' is neither a lipid class nor a lipid category" % name
+            if raise_error: raise LipidParsingException(self.error_message)
+            return None
+
+        lipid = LipidSpecies(headgroup)
+        lipid.info.level = level
+        self.content = LipidAdduct()
+        self.content.lipid = lipid
+        self.word_in_grammar = True
+        return self.content
+
+
+
 class FattyAcidParser(Parser):
     def __init__(self):
         self.event_handler = FattyAcidParserEventHandler()
@@ -111,7 +173,7 @@ class HmdbParser(Parser):
         
 class LipidParser:
     def __init__(self):
-        self.parser_list = [ShorthandParser(), GoslinParser(), FattyAcidParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser()]
+        self.parser_list = [ShorthandParser(), GoslinParser(), FattyAcidParser(), LipidMapsParser(), SwissLipidsParser(), HmdbParser(), LDAParser(), ClassLevelParser()]
         self.parser_event_handler = None
         """
         self.trivial_names = {}

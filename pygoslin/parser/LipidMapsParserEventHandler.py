@@ -498,9 +498,12 @@ class LipidMapsParserEventHandler(LipidBaseParserEventHandler):
         
         
         if hydroxyl == "m":
-            functional_group_p3 = get_functional_group("OH")
-            functional_group_p3.position = 3
-            self.current_fa.functional_groups["OH"].append(functional_group_p3)
+            # one hydroxy group: on a regular long chain base it is the one at C1
+            # that carries the head group (e.g. SM, S1P), which is implied
+            if not self.sp_regular_lcb():
+                functional_group_p3 = get_functional_group("OH")
+                functional_group_p3.position = 3
+                self.current_fa.functional_groups["OH"].append(functional_group_p3)
             
         elif hydroxyl == "d":
             if not self.sp_regular_lcb():
