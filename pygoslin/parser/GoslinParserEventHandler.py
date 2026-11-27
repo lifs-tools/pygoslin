@@ -76,6 +76,7 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
         self.registered_events["st_pre_event"] = self.set_head_group_name
         self.registered_events["hg_ste_pre_event"] = self.set_head_group_name
         self.registered_events["hg_stes_pre_event"] = self.set_head_group_name
+        self.registered_events["hg_stet_pre_event"] = self.set_trivial_sterol_ester
         
         self.registered_events["gl_species_pre_event"] = self.set_species_level
         self.registered_events["pl_species_pre_event"] = self.set_species_level
@@ -429,6 +430,14 @@ class GoslinParserEventHandler(LipidBaseParserEventHandler):
 
     def set_head_group_name(self, node):
         self.head_group = node.get_text()
+
+        
+        
+    def set_trivial_sterol_ester(self, node):
+        # a sterol's trivial name before a fatty acyl ('Sitosterol 18:2'): the ester class of
+        # the sterol core the name stands for (ST 29:1;O -> SE 29:1)
+        sterol = all_lipids[get_class(node.get_text())]["name"]
+        self.head_group = "SE " + sterol[len("ST "):sterol.index(";")]
         
         
         

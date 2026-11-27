@@ -102,6 +102,26 @@ class GoslinTest(unittest.TestCase):
         
     
     
+    def test_trivial_sterol_names(self):
+        # name, lipid string, sum formula (the same as the Shorthand 2020 name's)
+        parser = GoslinParser()
+        for name, expected, formula in [
+            ("Sitosterol 18:2", "SE 29:1/18:2", "C47H80O2"),
+            ("Cholestatrienol 14:0", "SE 27:3/14:0", "C41H68O2"),
+            ("Ergostatetraenol 18:1", "SE 28:4/18:1", "C46H74O2"),
+            ("Cholesterol 18:1", "SE 27:1/18:1", "C45H78O2"),
+            ("Lanosterol 18:1", "SE 30:2/18:1", "C48H82O2"),
+            ("Campesterol-Hex", "ST 28:1;O;Hex", "C34H58O6"),
+            ("Sitosterol-Hex", "ST 29:1;O;Hex", "C35H60O6"),
+            ("Stigmasterol-Hex", "ST 29:2;O;Hex", "C35H58O6"),
+            ("Cholestatrienol", "ST 27:3;O", "C27H42O"),
+            ("Ergostatetraenol", "ST 28:4;O", "C28H42O")]:
+            l = parser.parse(name)
+            self.assertEqual(l.get_lipid_string(), expected, name)
+            self.assertEqual(l.get_sum_formula(), formula, name)
+        self.assertEqual(parser.parse("Sitosterol 18:2").get_lipid_string(LipidLevel.CLASS), "SE 29:1")
+    
+    
     def test_parser(self):
         lipidnames = []
         file_name = os.path.join("pygoslin", "data", "goslin", "testfiles", "goslin-test.csv")
